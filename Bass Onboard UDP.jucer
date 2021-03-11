@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="FVzcjA" name="Bass Onboard UDP" projectType="audioplug" useAppConfig="0"
+              addUsingNamespaceToJuceHeader="1" displaySplashScreen="1" jucerFormatVersion="1"
+              pluginFormats="buildAU,buildStandalone,buildVST3">
+  <MAINGROUP id="uVuKsY" name="Bass Onboard UDP">
+    <GROUP id="{2B69621A-A0C0-680E-4DA6-6D21F9351518}" name="Source">
+      <FILE id="RotxOR" name="PluginProcessor.cpp" compile="1" resource="0"
+            file="Source/PluginProcessor.cpp"/>
+      <FILE id="tbPwNC" name="PluginProcessor.h" compile="0" resource="0"
+            file="Source/PluginProcessor.h"/>
+      <FILE id="tZzLK5" name="DryWet.cpp" compile="1" resource="0" file="Source/DryWet.cpp"/>
+      <FILE id="QSCaiA" name="DryWet.h" compile="0" resource="0" file="Source/DryWet.h"/>
+      <FILE id="D8wD6X" name="WaveShaper.cpp" compile="1" resource="0" file="Source/WaveShaper.cpp"/>
+      <FILE id="NvqwQB" name="WaveShaper.h" compile="0" resource="0" file="Source/WaveShaper.h"/>
+      <FILE id="ag5ggb" name="FoldbackDistortion.cpp" compile="1" resource="0"
+            file="Source/FoldbackDistortion.cpp"/>
+      <FILE id="luO0cD" name="FoldbackDistortion.h" compile="0" resource="0"
+            file="Source/FoldbackDistortion.h"/>
+      <FILE id="O1haaI" name="BitCrusher.cpp" compile="1" resource="0" file="Source/BitCrusher.cpp"/>
+      <FILE id="mBGKh5" name="BitCrusher.h" compile="0" resource="0" file="Source/BitCrusher.h"/>
+      <FILE id="Yvmmas" name="Wavetable.cpp" compile="1" resource="0" file="Source/Wavetable.cpp"/>
+      <FILE id="Ro9lqX" name="Wavetable.h" compile="0" resource="0" file="Source/Wavetable.h"/>
+      <FILE id="aHoL9s" name="Oscillators.cpp" compile="1" resource="0" file="Source/Oscillators.cpp"/>
+      <FILE id="qHDfJz" name="Oscillators.h" compile="0" resource="0" file="Source/Oscillators.h"/>
+      <FILE id="t8XrcW" name="FormantFilter.cpp" compile="1" resource="0"
+            file="Source/FormantFilter.cpp"/>
+      <FILE id="XFG88Z" name="FormantFilter.h" compile="0" resource="0" file="Source/FormantFilter.h"/>
+      <FILE id="ldXMg8" name="PluginEditor.cpp" compile="1" resource="0"
+            file="Source/PluginEditor.cpp"/>
+      <FILE id="fFTxtu" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+      <FILE id="LO0JHG" name="UDPConnection.cpp" compile="1" resource="0"
+            file="Source/UDPConnection.cpp"/>
+      <FILE id="NuvVNa" name="UDPConnection.h" compile="0" resource="0" file="Source/UDPConnection.h"/>
+      <FILE id="xGhEAD" name="SerialConnect.cpp" compile="1" resource="0"
+            file="Source/SerialConnect.cpp"/>
+      <FILE id="DdWVOJ" name="SerialConnect.h" compile="0" resource="0" file="Source/SerialConnect.h"/>
+      <FILE id="j2PVzw" name="Accelerometer.cpp" compile="1" resource="0"
+            file="Source/Accelerometer.cpp"/>
+      <FILE id="QKbE2V" name="Accelerometer.h" compile="0" resource="0" file="Source/Accelerometer.h"/>
+      <FILE id="wFUCGe" name="DistanceMeter.cpp" compile="1" resource="0"
+            file="Source/DistanceMeter.cpp"/>
+      <FILE id="J0VSIg" name="DistanceMeter.h" compile="0" resource="0" file="Source/DistanceMeter.h"/>
+      <FILE id="izZWcA" name="TouchScreen.cpp" compile="1" resource="0" file="Source/TouchScreen.cpp"/>
+      <FILE id="N2XVwn" name="TouchScreen.h" compile="0" resource="0" file="Source/TouchScreen.h"/>
+      <GROUP id="{7B10390A-73EB-591C-6C71-1CB431908EB4}" name="juce_serialport">
+        <GROUP id="{28D83683-D6B8-DC0B-08B3-1F8D5B0D78C5}" name="com">
+          <GROUP id="{680D39F7-642F-313C-3AF7-199E9BAD206F}" name="artiphon">
+            <GROUP id="{18866FA4-9B4A-B1D1-00F4-A7EFC9B7D2B4}" name="juce_serial">
+              <FILE id="PhWd8d" name="UsbSerialHelper.java" compile="0" resource="1"
+                    file="Source/juce_serialport/com/artiphon/juce_serial/UsbSerialHelper.java"/>
+            </GROUP>
+          </GROUP>
+        </GROUP>
+        <GROUP id="{6EF3A8CC-4DDA-EE14-614E-4467A60CD87E}" name="submodules">
+          <GROUP id="{E055559D-287C-9E82-A27F-D650E967D951}" name="usb-serial-for-android"/>
+        </GROUP>
+        <FILE id="XaQObl" name="juce_serialport.h" compile="0" resource="0"
+              file="Source/juce_serialport/juce_serialport.h"/>
+        <FILE id="ig4hYf" name="juce_serialport_Android.cpp" compile="1" resource="0"
+              file="Source/juce_serialport/juce_serialport_Android.cpp"/>
+        <FILE id="DW9Rhj" name="juce_serialport_iOS.cpp" compile="1" resource="0"
+              file="Source/juce_serialport/juce_serialport_iOS.cpp"/>
+        <FILE id="tPzaWA" name="juce_serialport_OSX.cpp" compile="1" resource="0"
+              file="Source/juce_serialport/juce_serialport_OSX.cpp"/>
+        <FILE id="RMMbUn" name="juce_serialport_Windows.cpp" compile="1" resource="0"
+              file="Source/juce_serialport/juce_serialport_Windows.cpp"/>
+        <FILE id="t4qHE8" name="README.md" compile="0" resource="1" file="Source/juce_serialport/README.md"/>
+      </GROUP>
+    </GROUP>
+  </MAINGROUP>
+  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>
+  <EXPORTFORMATS>
+    <XCODE_MAC targetFolder="Builds/MacOSX" microphonePermissionNeeded="1">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="Bass Onboard"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="Bass Onboard"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_audio_basics" path="../../modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../../modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../../modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../../modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../../modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../../modules"/>
+        <MODULEPATH id="juce_core" path="../../modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../modules"/>
+        <MODULEPATH id="juce_dsp" path="../../modules"/>
+        <MODULEPATH id="juce_events" path="../../modules"/>
+        <MODULEPATH id="juce_graphics" path="../../modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../../modules"/>
+      </MODULEPATHS>
+    </XCODE_MAC>
+  </EXPORTFORMATS>
+  <MODULES>
+    <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"
+            useGlobalPath="1"/>
+    <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_dsp" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+  </MODULES>
+  <LIVE_SETTINGS>
+    <OSX/>
+  </LIVE_SETTINGS>
+</JUCERPROJECT>
