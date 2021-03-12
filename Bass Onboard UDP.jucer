@@ -32,9 +32,6 @@
       <FILE id="LO0JHG" name="UDPConnection.cpp" compile="1" resource="0"
             file="Source/UDPConnection.cpp"/>
       <FILE id="NuvVNa" name="UDPConnection.h" compile="0" resource="0" file="Source/UDPConnection.h"/>
-      <FILE id="xGhEAD" name="SerialConnect.cpp" compile="1" resource="0"
-            file="Source/SerialConnect.cpp"/>
-      <FILE id="DdWVOJ" name="SerialConnect.h" compile="0" resource="0" file="Source/SerialConnect.h"/>
       <FILE id="j2PVzw" name="Accelerometer.cpp" compile="1" resource="0"
             file="Source/Accelerometer.cpp"/>
       <FILE id="QKbE2V" name="Accelerometer.h" compile="0" resource="0" file="Source/Accelerometer.h"/>

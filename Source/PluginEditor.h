@@ -10,7 +10,9 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
-#include "SerialConnect.h"
+#include "Accelerometer.h"
+#include "DistanceMeter.h"
+#include "TouchScreen.h"
 
 //==============================================================================
 /**
@@ -180,10 +182,11 @@ private:
     std::unique_ptr<AudioProcessorValueTreeState::ComboBoxAttachment> filtOnOffAttachment;
     std::unique_ptr<AudioProcessorValueTreeState::ComboBoxAttachment> haasOnOffAttachment;
     
-    
-    // Serial Connections
-    SerialConnect serialConnect;
-    
+    // Sensor Instances
+    Accelerometer accelerometer;
+    Gyroscope     gyroscope;
+    DistanceMeter distanceMeter;
+    TouchScreen   touchScreen;
     
     
     BassOnboardAudioProcessor& audioProcessor;

@@ -24,6 +24,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "UDPConnection.h"
 
 class TouchScreen
 {
@@ -32,10 +33,10 @@ public:
     ~TouchScreen();
     
     /**
-    Takes a String in the form of "[TAG][VALUE]\n". Uses the TAG to route the value to the appropriate variable and converts to float
+    Sets the distance value from the sensor
     Call in timerCallback()
     */
-    void setTouchScreenCoords(String& stringIn);
+    void setTouchScreenCoords();
     
     /// Returns Touchscreen X Coordinate 0.0f to 1024 (useable surface approx 200.0f to 800.0f
     float getXCoord();
@@ -47,6 +48,12 @@ public:
     float getPressure();
     
 private:
+    // UDP Connection
+    UDPConnection udpX;
+    UDPConnection udpY;
+    UDPConnection udpZ;
+    
+    // Member Variables
     float smoothingFactor;
     float smoothedValX;
     float smoothedValY;

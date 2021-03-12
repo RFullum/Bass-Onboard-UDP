@@ -22,21 +22,23 @@
 #include "DistanceMeter.h"
 
 DistanceMeter::DistanceMeter() : smoothingFactor(0.4f), smoothedDistVal(0.0f)
-{}
+{
+    udp.setPortBind ( 65023 );
+}
 
 DistanceMeter::~DistanceMeter() {}
 
 /**
-Takes a String in the form of "[TAG][VALUE]\n". Uses the TAG to route the value to the appropriate variable and converts to float
+Sets the distance value from the sensor
 Call in timerCallback()
 */
-void DistanceMeter::setDistanceValue(String& stringIn)
+void DistanceMeter::setDistanceValue()
 {
     float dist = 0.0f;
     
-    String subString = stringIn.fromFirstOccurrenceOf( "dist", false, true ).upToFirstOccurrenceOf( "\n", false, true );
-    dist             = subString.getDoubleValue();
-    smoothedDistVal += (dist - smoothedDistVal) * smoothingFactor;
+    dist = udp.getSensorValue();
+    
+    smoothedDistVal += ( dist - smoothedDistVal ) * smoothingFactor;
 }
 
 /// Returns float of distance in millimeters

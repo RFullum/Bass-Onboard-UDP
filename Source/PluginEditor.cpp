@@ -517,14 +517,21 @@ void BassOnboardAudioProcessorEditor::resized()
 
 void BassOnboardAudioProcessorEditor::timerCallback()
 {
-    // Calls Arduinos, gets the input stream, and sets the values in the Sensors' classess
-    serialConnect.setValues();
+    accelerometer.setAccelValue();
+    gyroscope.setGyroValue();
+    distanceMeter.setDistanceValue();
+    touchScreen.setTouchScreenCoords();
     
-    // Gets values from Acceleromter axes and updates the Slider values with them
-    delayTimeSlider.setValue     ( serialConnect.getAccelX() );
-    delayFeedbackSlider.setValue ( serialConnect.getAccelY() );
-    delayDryWetSlider.setValue   ( serialConnect.getAccelZ() );
+    wsAmtSlider.setValue ( accelerometer.getAccelX() );
+    fbAmtSlider.setValue ( accelerometer.getAccelY() );
+    bcAmtSlider.setValue ( accelerometer.getAccelZ() );
     
+    formMorphSlider.setValue ( distanceMeter.getDistanceValue() );
+    
+    filtCutoffSlider.setValue ( touchScreen.getXCoord() );
+    filtResSlider.setValue    ( touchScreen.getYCoord() );
+    
+    haasWidthSlider.setValue ( touchScreen.getPressure() );
 }
 
 

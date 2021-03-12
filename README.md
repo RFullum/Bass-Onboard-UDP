@@ -1,39 +1,36 @@
 # Bass-Onboard
 A standalone plugin that will be used as onboard audio processing for my bass guitar on a Raspberry Pi.
 
-A work in progress. The current idea is to feed the signal from the bass pickups directly into the 
+A work in progress. The current idea is to feed the signal from the bass pickups directly into the
 Raspberry Pi via a ADC. The signal will be processed digitally within this app. Then out via stereo DAC.
 
+*This is the UDP version. The Raspberry Pi will create an ad-hock WiFi network. The Arduino will connect to that network and send the sensor data over UDP* 
 
 ## Probable/Possible Onboard Processing:
 
-* Input Gain
-* Noise Gate
-* Compressor
-* Waveshaper Distortion
-* Foldback Distortion
-* Bitcrush/Sample & Hold distortion
-* Resonant Filtering
-* Haas Widening
-* Phaser
-* Chorus
-* Flanger
-* Delay
+* Input Gain (Y)
+* Noise Gate (Y)
+* Compressor (Y)
+* Waveshaper Distortion (Y)
+* Foldback Distortion (Y)
+* Bitcrush/Sample & Hold distortion (Y)
+* Formant Filtering (Y)
+* Resonant Filtering (Y)
+* Haas Widening (Y)
+* Phaser (N)
+* Chorus (N)
+* Flanger (N)
+* Delay (Y)
 * Hopefully some really bizarre shit, because there area already enough Phaser/Chorus/Flanger/Delay plugins in the world.
 
 
 ## Physical Interface Ideas
 
-* bno055 Absolute Orientation sensor
-  - Euler Orientation
-  - Quaterion Orientation
-  - Angular Velocity
-  - Acceleration
-  - Magnetic Field Strenght
-  - Linear Acceleration
-  - Gravity Vector
-  - Temperature
+* Arduino Nano 33 IoT IMU
+  - Gyroscope
+  - Accelerometer
 * Touchscreen overlay XY positioning mounted on the bass
+* Time of Flight distance sensor
 * Buttons & Knobs
   - Buttons or master knob choose active process
   - Knobs change color via LED based on active process and control parameters accordingly (e.g. Gain amount, dry/wet, cutoff, resonance, etc.)
@@ -59,7 +56,7 @@ Raspberry Pi via a ADC. The signal will be processed digitally within this app. 
   - Getting the audio in and out of the Juce App if it doesn't recognize as sound card?
   - Having different sound card devices for input and output always gave me a hard time in Linux
 * Wireless
-  - RasPi already has wireless abilities. 
+  - RasPi already has wireless abilities.
   - DAC into onboard Pi. Process. WiFi to another Pi with ADC.
   - Less cables in the studio or on stage.
   - Possible latency issues
@@ -84,11 +81,11 @@ Raspberry Pi via a ADC. The signal will be processed digitally within this app. 
 
 ## Mounting, Routing, & Ports
 
-* RasPi 
-  - w/stacked audio card (HiFiBerry?) 
+* RasPi
+  - w/stacked audio card (HiFiBerry?)
   - mounted in cutout inside body of bass
   - Cutout has clear panels so you can see through both sides
-* bno055
+* Arduino
   - Mounted inside body of bass
   - Covered cutout on back of bass
   - Wires drilled from cutout to RasPi cutout
@@ -104,6 +101,6 @@ Raspberry Pi via a ADC. The signal will be processed digitally within this app. 
   - HDMI port access from outside bass.
   - USB port access from outside bass.
   - Battery Charger port.
-  
-  
+
+
 ## This will all change many times as i come up with new ideas and run into roadblocks and limitations.
