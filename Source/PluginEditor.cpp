@@ -11,7 +11,13 @@
 
 //==============================================================================
 BassOnboardAudioProcessorEditor::BassOnboardAudioProcessorEditor (BassOnboardAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p)
+    : AudioProcessorEditor (&p),
+    onyx                   ( Colour( (uint8)53,  (uint8)59,  (uint8)60  ) ),
+    lightSlateGray         ( Colour( (uint8)130, (uint8)146, (uint8)152 ) ),
+    magicMint              ( Colour( (uint8)174, (uint8)255, (uint8)216 ) ),
+    fieryRose              ( Colour( (uint8)255, (uint8)104, (uint8)114 ) ),
+    orangePeel             ( Colour( (uint8)252, (uint8)152, (uint8)0   ) ),
+    audioProcessor (p)
 {
     setSize (1000, 600);
     
@@ -20,53 +26,53 @@ BassOnboardAudioProcessorEditor::BassOnboardAudioProcessorEditor (BassOnboardAud
     //
     // Sliders Setup
     //
-    Slider::SliderStyle genericSlider = Slider::SliderStyle::LinearVertical;
+    Slider::SliderStyle vertSlider = Slider::SliderStyle::LinearVertical;
     
     // In Gain
-    sliderSetup ( inGainSlider, genericSlider, true );
+    sliderSetup ( inGainSlider, vertSlider, true );
     
     // Noise Gate
-    sliderSetup ( ngThreshSlider,  genericSlider, true );
-    sliderSetup ( ngRatioSlider,   genericSlider, true );
-    sliderSetup ( ngAttackSlider,  genericSlider, true );
-    sliderSetup ( ngReleaseSlider, genericSlider, true );
+    sliderSetup ( ngThreshSlider,  vertSlider, true );
+    sliderSetup ( ngRatioSlider,   vertSlider, true );
+    sliderSetup ( ngAttackSlider,  vertSlider, true );
+    sliderSetup ( ngReleaseSlider, vertSlider, true );
     
     // Compressor
-    sliderSetup ( compThreshSlider,  genericSlider, true );
-    sliderSetup ( compRatioSlider,   genericSlider, true );
-    sliderSetup ( compAttackSlider,  genericSlider, true );
-    sliderSetup ( compReleaseSlider, genericSlider, true );
+    sliderSetup ( compThreshSlider,  vertSlider, true );
+    sliderSetup ( compRatioSlider,   vertSlider, true );
+    sliderSetup ( compAttackSlider,  vertSlider, true );
+    sliderSetup ( compReleaseSlider, vertSlider, true );
     
     // Waveshaper
-    sliderSetup ( wsAmtSlider,    genericSlider, true );
-    sliderSetup ( wsDryWetSlider, genericSlider, true );
+    sliderSetup ( wsAmtSlider,    vertSlider, true );
+    sliderSetup ( wsDryWetSlider, vertSlider, true );
     
     // Foldback
-    sliderSetup ( fbAmtSlider,    genericSlider, true );
-    sliderSetup ( fbDryWetSlider, genericSlider, true );
+    sliderSetup ( fbAmtSlider,    vertSlider, true );
+    sliderSetup ( fbDryWetSlider, vertSlider, true );
     
     // Bitcrusher
-    sliderSetup ( bcAmtSlider,    genericSlider, true );
-    sliderSetup ( bcDryWetSlider, genericSlider, true );
+    sliderSetup ( bcAmtSlider,    vertSlider, true );
+    sliderSetup ( bcDryWetSlider, vertSlider, true );
     
     // Formant
-    sliderSetup ( formMorphSlider,  genericSlider, true );
-    sliderSetup ( formDryWetSlider, genericSlider, true );
+    sliderSetup ( formMorphSlider,  vertSlider, true );
+    sliderSetup ( formDryWetSlider, vertSlider, true );
     
     // Delay
-    sliderSetup ( delayTimeSlider,     genericSlider, true );
-    sliderSetup ( delayFeedbackSlider, genericSlider, true );
-    sliderSetup ( delayDryWetSlider,   genericSlider, true );
+    sliderSetup ( delayTimeSlider,     vertSlider, true );
+    sliderSetup ( delayFeedbackSlider, vertSlider, true );
+    sliderSetup ( delayDryWetSlider,   vertSlider, true );
     
     // Filter
-    sliderSetup ( filtCutoffSlider, genericSlider, true );
-    sliderSetup ( filtResSlider,    genericSlider, true );
+    sliderSetup ( filtCutoffSlider, vertSlider, true );
+    sliderSetup ( filtResSlider,    vertSlider, true );
     
     // Haas Width
-    sliderSetup ( haasWidthSlider, genericSlider, true );
+    sliderSetup ( haasWidthSlider, vertSlider, true );
     
     // Out Gain
-    sliderSetup ( outGainSlider, genericSlider, true );
+    sliderSetup ( outGainSlider, vertSlider, true );
     
     //
     // Combo Box Setup
@@ -89,6 +95,12 @@ BassOnboardAudioProcessorEditor::BassOnboardAudioProcessorEditor (BassOnboardAud
     filtTypeBox.addItem              ( "HPF", 3 );
     filtTypeBox.setJustificationType ( Justification::centred );
     filtTypeBox.setSelectedItemIndex ( 0 );
+    
+    filtTypeBox.setColour ( ComboBox::backgroundColourId, onyx        );
+    filtTypeBox.setColour ( ComboBox::outlineColourId, lightSlateGray );
+    filtTypeBox.setColour ( ComboBox::textColourId, orangePeel        );
+    filtTypeBox.setColour ( ComboBox::arrowColourId, magicMint        );
+    
     addAndMakeVisible                ( filtTypeBox );
     
     // Filter Poles
@@ -96,68 +108,77 @@ BassOnboardAudioProcessorEditor::BassOnboardAudioProcessorEditor (BassOnboardAud
     filtPolesBox.addItem              ( "-24dB", 2 );
     filtPolesBox.setJustificationType ( Justification::centred );
     filtPolesBox.setSelectedItemIndex ( 0 );
+    
+    filtPolesBox.setColour ( ComboBox::backgroundColourId, onyx        );
+    filtPolesBox.setColour ( ComboBox::outlineColourId, lightSlateGray );
+    filtPolesBox.setColour ( ComboBox::textColourId, orangePeel        );
+    filtPolesBox.setColour ( ComboBox::arrowColourId, magicMint        );
+    
     addAndMakeVisible                 ( filtPolesBox );
     
     //
     // Label Setup
     //
     
+    float bigLabelSize   = 16.0f;
+    float smallLabelSize = 12.0f;
+    
     // In Gain
-    sliderLabelSetup ( inLabel, "In"       );
-    sliderLabelSetup ( inGainLabel, "Gain" );
+    sliderLabelSetup ( inLabel,     "In",   bigLabelSize   );
+    sliderLabelSetup ( inGainLabel, "Gain", smallLabelSize );
     
     // Noise Gate
-    sliderLabelSetup ( ngLabel, "Noise Gate"     );
-    sliderLabelSetup ( ngThreshLabel, "Thresh"   );
-    sliderLabelSetup ( ngRatioLabel, "Ratio"     );
-    sliderLabelSetup ( ngAttackLabel, "Attack"   );
-    sliderLabelSetup ( ngReleaseLabel, "Release" );
+    sliderLabelSetup ( ngLabel,        "Noise Gate", bigLabelSize   );
+    sliderLabelSetup ( ngThreshLabel,  "Thresh",     smallLabelSize );
+    sliderLabelSetup ( ngRatioLabel,   "Ratio",      smallLabelSize );
+    sliderLabelSetup ( ngAttackLabel,  "Attack",     smallLabelSize );
+    sliderLabelSetup ( ngReleaseLabel, "Release",    smallLabelSize );
     
     // Compressor
-    sliderLabelSetup ( compLabel, "Compressor"     );
-    sliderLabelSetup ( compThreshLabel, "Thresh"   );
-    sliderLabelSetup ( compRatioLabel, "Ratio"     );
-    sliderLabelSetup ( compAttackLabel, "Attack"   );
-    sliderLabelSetup ( compReleaseLabel, "Release" );
+    sliderLabelSetup ( compLabel,        "Compressor", bigLabelSize   );
+    sliderLabelSetup ( compThreshLabel,  "Thresh",     smallLabelSize );
+    sliderLabelSetup ( compRatioLabel,   "Ratio",      smallLabelSize );
+    sliderLabelSetup ( compAttackLabel,  "Attack",     smallLabelSize );
+    sliderLabelSetup ( compReleaseLabel, "Release",    smallLabelSize );
     
     // Waveshaper
-    sliderLabelSetup ( wsLabel, "Waveshaper"    );
-    sliderLabelSetup ( wsAmtLabel, "Amount"     );
-    sliderLabelSetup ( wsDryWetLabel, "Dry/Wet" );
+    sliderLabelSetup ( wsLabel,       "Waveshaper", bigLabelSize   );
+    sliderLabelSetup ( wsAmtLabel,    "Amount",     smallLabelSize );
+    sliderLabelSetup ( wsDryWetLabel, "Dry/Wet",    smallLabelSize );
     
     // Foldback
-    sliderLabelSetup ( fbLabel, "Foldback"      );
-    sliderLabelSetup ( fbAmtLabel, "Amount"     );
-    sliderLabelSetup ( fbDryWetLabel, "Dry/Wet" );
+    sliderLabelSetup ( fbLabel,       "Foldback", bigLabelSize   );
+    sliderLabelSetup ( fbAmtLabel,    "Amount",   smallLabelSize );
+    sliderLabelSetup ( fbDryWetLabel, "Dry/Wet",  smallLabelSize );
     
     // Bitcursher
-    sliderLabelSetup ( bcLabel, "Bitcrusher"     );
-    sliderLabelSetup ( bcAmtLabel, "Amount"     );
-    sliderLabelSetup ( bcDryWetLabel, "Dry/Wet" );
+    sliderLabelSetup ( bcLabel,       "Bitcrusher", bigLabelSize   );
+    sliderLabelSetup ( bcAmtLabel,    "Amount",     smallLabelSize );
+    sliderLabelSetup ( bcDryWetLabel, "Dry/Wet",    smallLabelSize );
     
     // Formant
-    sliderLabelSetup ( formLabel, "Formant"       );
-    sliderLabelSetup ( formMorphLabel, "Morph"    );
-    sliderLabelSetup ( formDryWetLabel, "Dry/Wet" );
+    sliderLabelSetup ( formLabel,       "Formant", bigLabelSize   );
+    sliderLabelSetup ( formMorphLabel,  "Morph",   smallLabelSize );
+    sliderLabelSetup ( formDryWetLabel, "Dry/Wet", smallLabelSize );
     
     // Delay
-    sliderLabelSetup ( delayLabel, "Delay"            );
-    sliderLabelSetup ( delayTimeLabel, "Time"         );
-    sliderLabelSetup ( delayFeedbackLabel, "Feedback" );
-    sliderLabelSetup ( delayDryWetLabel, "Dry/Wet"    );
+    sliderLabelSetup ( delayLabel,         "Delay",    bigLabelSize   );
+    sliderLabelSetup ( delayTimeLabel,     "Time",     smallLabelSize );
+    sliderLabelSetup ( delayFeedbackLabel, "Feedback", smallLabelSize );
+    sliderLabelSetup ( delayDryWetLabel,   "Dry/Wet",  smallLabelSize );
     
     // Filter
-    sliderLabelSetup ( filtLabel, "Filter"       );
-    sliderLabelSetup ( filtCutoffLabel, "Cutoff" );
-    sliderLabelSetup ( filtResLabel, "Resonance" );
+    sliderLabelSetup ( filtLabel,       "Filter",    bigLabelSize   );
+    sliderLabelSetup ( filtCutoffLabel, "Cutoff",    smallLabelSize );
+    sliderLabelSetup ( filtResLabel,    "Resonance", smallLabelSize );
     
     // Haas Width
-    sliderLabelSetup ( haasLabel, "Width"       );
-    sliderLabelSetup ( haasWidthLabel, "Amount" );
+    sliderLabelSetup ( haasLabel,      "Width",  bigLabelSize   );
+    sliderLabelSetup ( haasWidthLabel, "Amount", smallLabelSize );
     
     // Out Gain
-    sliderLabelSetup ( outLabel, "Out"      );
-    sliderLabelSetup ( outGainLabel, "Gain" );
+    sliderLabelSetup ( outLabel,     "Out",  bigLabelSize   );
+    sliderLabelSetup ( outGainLabel, "Gain", smallLabelSize );
     
     //
     // Slider Attachments
@@ -231,15 +252,34 @@ BassOnboardAudioProcessorEditor::~BassOnboardAudioProcessorEditor()
 }
 
 //==============================================================================
-void BassOnboardAudioProcessorEditor::paint (juce::Graphics& g) {}
+void BassOnboardAudioProcessorEditor::paint (juce::Graphics& g)
+{
+    float rounding = 2.0f;
+    
+    g.fillAll( lightSlateGray );
+    
+    // Subsections
+    g.setColour            ( onyx );
+    g.fillRoundedRectangle ( inAreaBG,    rounding );
+    g.fillRoundedRectangle ( ngAreaBG,    rounding );
+    g.fillRoundedRectangle (compAreaBG,   rounding );
+    g.fillRoundedRectangle ( wsAreaBG,    rounding );
+    g.fillRoundedRectangle ( fbAreaBG,    rounding );
+    g.fillRoundedRectangle ( bcAreaBG,    rounding );
+    g.fillRoundedRectangle ( formAreaBG,  rounding );
+    g.fillRoundedRectangle ( delayAreaBG, rounding );
+    g.fillRoundedRectangle ( filtAreaBG,  rounding );
+    g.fillRoundedRectangle ( haasAreaBG,  rounding );
+    g.fillRoundedRectangle ( outAreaBG,   rounding );
+}
 
 void BassOnboardAudioProcessorEditor::resized()
 {
     // Padding around each effect section to visually separate
-    float areaPadding = 10.0f;
+    float areaPadding = 2.0f;
     
     // Total area split to top & bottom halves
-    Rectangle<int> totalArea  = getLocalBounds();
+    Rectangle<int> totalArea  = getLocalBounds().reduced( areaPadding );
     Rectangle<int> topHalf    = totalArea.removeFromTop( totalArea.getHeight() * 0.5f );
     Rectangle<int> bottomHalf = totalArea;
     
@@ -259,6 +299,18 @@ void BassOnboardAudioProcessorEditor::resized()
     Rectangle<int> filtArea  = bottomHalf.removeFromLeft ( bottomSpacing * 4.0f ).reduced ( areaPadding );
     Rectangle<int> haasArea  = bottomHalf.removeFromLeft ( bottomSpacing ).reduced        ( areaPadding );
     Rectangle<int> outArea   = bottomHalf.reduced                                         ( areaPadding );
+    
+    inAreaBG.setBounds    ( inArea.getX(),    inArea.getY(),    inArea.getWidth(),    inArea.getHeight()    );
+    ngAreaBG.setBounds    ( ngArea.getX(),    ngArea.getY(),    ngArea.getWidth(),    ngArea.getHeight()    );
+    compAreaBG.setBounds  ( compArea.getX(),  compArea.getY(),  compArea.getWidth(),  compArea.getHeight()  );
+    wsAreaBG.setBounds    ( wsArea.getX(),    wsArea.getY(),    wsArea.getWidth(),    wsArea.getHeight()    );
+    fbAreaBG.setBounds    ( fbArea.getX(),    fbArea.getY(),    fbArea.getWidth(),    fbArea.getHeight()    );
+    bcAreaBG.setBounds    ( bcArea.getX(),    bcArea.getY(),    bcArea.getWidth(),    bcArea.getHeight()    );
+    formAreaBG.setBounds  ( formArea.getX(),  formArea.getY(),  formArea.getWidth(),  formArea.getHeight()  );
+    delayAreaBG.setBounds ( delayArea.getX(), delayArea.getY(), delayArea.getWidth(), delayArea.getHeight() );
+    filtAreaBG.setBounds  ( filtArea.getX(),  filtArea.getY(),  filtArea.getWidth(),  filtArea.getHeight()  );
+    haasAreaBG.setBounds  ( haasArea.getX(),  haasArea.getY(),  haasArea.getWidth(),  haasArea.getHeight()  );
+    outAreaBG.setBounds   ( outArea.getX(),   outArea.getY(),   outArea.getWidth(),   outArea.getHeight()   );
     
     float labelHeight = 50.0f;
     float boxHeight   = 50.0f;
@@ -417,7 +469,7 @@ void BassOnboardAudioProcessorEditor::resized()
     Rectangle<int> formBoxArea        = formArea.removeFromBottom ( boxHeight   );
     
     formLabel.setBounds    ( formLabelArea );
-    formOnOffBox.setBounds ( formBoxArea.reduced(boxReduceY, boxReduceY) );
+    formOnOffBox.setBounds ( formBoxArea.reduced(boxReduceY * 2.0f, boxReduceY) );
     
     float formWidth = formArea.getWidth() * 0.5f;
     
@@ -467,7 +519,7 @@ void BassOnboardAudioProcessorEditor::resized()
     Rectangle<int> filtBoxArea        = filtArea.removeFromBottom ( boxHeight   );
     
     filtLabel.setBounds    ( filtLabelArea );
-    filtOnOffBox.setBounds ( filtBoxArea.reduced(boxReduceX, boxReduceY) );
+    filtOnOffBox.setBounds ( filtBoxArea.reduced(boxReduceX * 1.5f, boxReduceY) );
     
     float filtWidth = filtArea.getWidth() * 0.25f;
     
@@ -496,7 +548,7 @@ void BassOnboardAudioProcessorEditor::resized()
     
     haasLabel.setBounds       ( haasLabelArea );
     haasWidthLabel.setBounds  ( haasParamLabelArea );
-    haasOnOffBox.setBounds    ( haasBoxArea.reduced( 0.0f, boxReduceY) );
+    haasOnOffBox.setBounds    ( haasBoxArea.reduced( 4.0f, boxReduceY) );
     haasWidthSlider.setBounds ( haasArea );
     
     
@@ -517,21 +569,37 @@ void BassOnboardAudioProcessorEditor::resized()
 
 void BassOnboardAudioProcessorEditor::timerCallback()
 {
+    //udpSend.callArduinoUDP();
+    
+    // Read Sensor Values
     accelerometer.setAccelValue();
     gyroscope.setGyroValue();
     distanceMeter.setDistanceValue();
     touchScreen.setTouchScreenCoords();
     
-    wsAmtSlider.setValue ( accelerometer.getAccelX() );
-    fbAmtSlider.setValue ( accelerometer.getAccelY() );
-    bcAmtSlider.setValue ( accelerometer.getAccelZ() );
+    // Map sensor value to parameter range
+    float accelXMapped = jmap( accelerometer.getAccelX(), -4.0f, 4.0f, 1.0f, 200.0f );
+    float accelYMapped = jmap( accelerometer.getAccelY(), -4.0f, 4.0f, 1.0f, 200.0f );
+    float accelZMapped = jmap( accelerometer.getAccelZ(), -4.0f, 4.0f, 0.0f, 1.0f   );
     
-    formMorphSlider.setValue ( distanceMeter.getDistanceValue() );
+    float distanceMapped = jmap( distanceMeter.getDistanceValue(), 0.0f, 1200.0f, 0.0f, 9.0f );
     
-    filtCutoffSlider.setValue ( touchScreen.getXCoord() );
-    filtResSlider.setValue    ( touchScreen.getYCoord() );
+    float touchXMapped = jmap( touchScreen.getXCoord(), 300.0f, 800.0f, 20.0f, 18000.0f );
+    float touchYMapped = jmap( touchScreen.getYCoord(), 300.0f, 800.0f, 0.7f,  2.5f     );
     
-    haasWidthSlider.setValue ( touchScreen.getPressure() );
+    float touchZMapped = jmap( touchScreen.getPressure(), 0.0f, 2000.0f, 0.0f, 1.0f );
+    
+    // Control Parameter with mapped Sensor values
+    wsAmtSlider.setValue ( accelXMapped );
+    fbAmtSlider.setValue ( accelYMapped );
+    bcAmtSlider.setValue ( accelZMapped );
+    
+    formMorphSlider.setValue ( distanceMapped );
+    
+    filtCutoffSlider.setValue ( touchXMapped );
+    filtResSlider.setValue    ( touchYMapped );
+    
+    haasWidthSlider.setValue ( touchZMapped );
 }
 
 
@@ -545,22 +613,27 @@ void BassOnboardAudioProcessorEditor::sliderSetup(Slider &sliderInstance, Slider
     {
         sliderInstance.setTextBoxStyle ( Slider::TextBoxBelow, false, 50, 20 );
         sliderInstance.setColour       ( Slider::textBoxOutlineColourId, Colour( (uint8)0, (uint8)0, (uint8)0, (uint8)0 ) );
-        sliderInstance.setColour       ( Slider::textBoxTextColourId, Colours::darkblue );
+        sliderInstance.setColour       ( Slider::textBoxTextColourId, magicMint );
     }
     else
     {
         sliderInstance.setTextBoxStyle( Slider::NoTextBox, false, 0, 0 );
     }
     
+    sliderInstance.setColour( Slider::trackColourId, fieryRose );
+    sliderInstance.setColour( Slider::thumbColourId, magicMint );
+    
     addAndMakeVisible(sliderInstance);
 }
 
 
 /// Sets up Label for the Slider instances. Takes the labelInstance and the text for setText
-void BassOnboardAudioProcessorEditor::sliderLabelSetup(Label &labelInstance, String labelText)
+void BassOnboardAudioProcessorEditor::sliderLabelSetup(Label &labelInstance, String labelText, float fontSize)
 {
     labelInstance.setText              ( labelText, dontSendNotification );
     labelInstance.setJustificationType ( Justification::centred );
+    labelInstance.setColour            ( Label::textColourId, orangePeel );
+    labelInstance.setFont              ( Font("helvetica", fontSize, 1) );
     addAndMakeVisible                  ( labelInstance );
 }
 
@@ -572,5 +645,11 @@ void BassOnboardAudioProcessorEditor::onOffBoxSetup(ComboBox &boxInstance)
     boxInstance.addItem              ( "On",  2 );
     boxInstance.setJustificationType ( Justification::centred );
     boxInstance.setSelectedItemIndex ( 0 );
-    addAndMakeVisible                ( boxInstance );
+    
+    boxInstance.setColour ( ComboBox::backgroundColourId, onyx        );
+    boxInstance.setColour ( ComboBox::outlineColourId, lightSlateGray );
+    boxInstance.setColour ( ComboBox::textColourId, orangePeel        );
+    boxInstance.setColour ( ComboBox::arrowColourId, magicMint        );
+    
+    addAndMakeVisible ( boxInstance );
 }

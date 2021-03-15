@@ -35,3 +35,32 @@ float UDPConnection::getSensorValue()
     
     return *floatBuffer;
 }
+
+
+
+// ====================================================================================
+// ====================================================================================
+// ====================================================================================
+
+
+UDPSend::UDPSend()
+{
+    udp.bindToPort ( 2390 );    // Arduino's localPort
+}
+
+
+UDPSend::~UDPSend()
+{
+    //if (*sendByte)
+    //    delete[] sendByte;
+}
+
+void UDPSend::callArduinoUDP()
+{
+    String arduinoName = "ArduinoSensors";
+    bool callArduino   = true;
+    sendByte           = (unsigned char*)callArduino;
+    
+    if ( udp.waitUntilReady ( false, 60 ) )
+         udp.write( arduinoName, udp.getBoundPort(), sendByte, 1 );
+}

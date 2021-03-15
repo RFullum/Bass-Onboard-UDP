@@ -32,3 +32,26 @@ private:
     // Member Variables
     unsigned char* udpInBuffer = new unsigned char[4];
 };
+
+
+// ====================================================================================
+// ====================================================================================
+// ====================================================================================
+
+class UDPSend
+{
+public:
+    UDPSend();
+    ~UDPSend();
+    
+    void callArduinoUDP();
+    
+    
+private:
+    // Member Variables
+    unsigned char* sendByte = new unsigned char[1];
+    
+    // UDP Connection
+    DatagramSocket udp;
+    
+};

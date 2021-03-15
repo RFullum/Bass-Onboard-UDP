@@ -13,6 +13,7 @@
 #include "Accelerometer.h"
 #include "DistanceMeter.h"
 #include "TouchScreen.h"
+#include "UDPConnection.h"
 
 //==============================================================================
 /**
@@ -33,7 +34,7 @@ private:
     void sliderSetup(Slider& sliderInstance, Slider::SliderStyle style, bool showTextBox);
     
     /// Sets up Label for the Slider instances. Takes the labelInstance and the text for setText
-    void sliderLabelSetup(Label& labelInstance, String labelText);
+    void sliderLabelSetup(Label& labelInstance, String labelText, float fontSize);
     
     /// Sets up an On/Off combo box
     void onOffBoxSetup(ComboBox& boxInstance);
@@ -182,12 +183,34 @@ private:
     std::unique_ptr<AudioProcessorValueTreeState::ComboBoxAttachment> filtOnOffAttachment;
     std::unique_ptr<AudioProcessorValueTreeState::ComboBoxAttachment> haasOnOffAttachment;
     
+    // Colors
+    Colour onyx;
+    Colour lightSlateGray;
+    Colour magicMint;
+    Colour fieryRose;
+    Colour orangePeel;
+    
+    // Rectangles
+    Rectangle<float> inAreaBG;
+    Rectangle<float> ngAreaBG;
+    Rectangle<float> compAreaBG;
+    Rectangle<float> wsAreaBG;
+    Rectangle<float> fbAreaBG;
+    Rectangle<float> bcAreaBG;
+    Rectangle<float> formAreaBG;
+    Rectangle<float> delayAreaBG;
+    Rectangle<float> filtAreaBG;
+    Rectangle<float> haasAreaBG;
+    Rectangle<float> outAreaBG;
+    
     // Sensor Instances
     Accelerometer accelerometer;
     Gyroscope     gyroscope;
     DistanceMeter distanceMeter;
     TouchScreen   touchScreen;
     
+    // UDP Instance
+    //UDPSend udpSend;
     
     BassOnboardAudioProcessor& audioProcessor;
 
