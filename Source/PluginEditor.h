@@ -13,7 +13,7 @@
 #include "Accelerometer.h"
 #include "DistanceMeter.h"
 #include "TouchScreen.h"
-#include "UDPConnection.h"
+#include "OSCHandling.h"
 
 //==============================================================================
 /**
@@ -209,8 +209,8 @@ private:
     DistanceMeter distanceMeter;
     TouchScreen   touchScreen;
     
-    // UDP Instance
-    //UDPSend udpSend;
+    // OSC
+    OSCHandler oscAccelX;
     
     BassOnboardAudioProcessor& audioProcessor;
 

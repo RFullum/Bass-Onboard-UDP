@@ -6,11 +6,7 @@
     Author:  Robert Fullum
     
     
-    Written for Arduino Nano 33 IoT internal IMU Accelerometer and Gyroscope ->
-    UDP Socket
- 
-    Used in conjunction with UDPConnection class, it takes the data from the
-    UDP Sockets. The Accelerometer values are from -4.0f to 4.0f, with gravity being 1.0f.
+    The Accelerometer values are from -4.0f to 4.0f, with gravity being 1.0f.
     Values between -1.0f and 1.0f are the orientation. Greater than 1.0f or less than -1.0f
     are movements that more Gs than gravity, for instance, stopping suddenly from speed.
     The Gyroscope measures directions of movement, range -2000.0f to 2000.0f.
@@ -23,53 +19,25 @@
 #include "Accelerometer.h"
 
 //==============================================================================
-Accelerometer::Accelerometer() : smoothingFactor(0.4f), smoothValX(0.0f), smoothValY(0.0f), smoothValZ(0.0f)
-{
-    udpX.setPortBind ( 65016 );
-    udpY.setPortBind ( 65017 );
-    udpZ.setPortBind ( 65018 );
-}
+Accelerometer::Accelerometer() :
+    smoothingFactor(0.4f),
+    smoothVal(0.0f)
+{}
 
 Accelerometer::~Accelerometer() {}
 
 
-/**
-Sets acceleromteter axes' values
-Call in timerCallback()
-*/
-void Accelerometer::setAccelValue()
-{
-    float accelX = 0.0f;
-    float accelY = 0.0f;
-    float accelZ = 0.0f;
-    
-    accelX = udpX.getSensorValue();
-    accelY = udpY.getSensorValue();
-    accelZ = udpZ.getSensorValue();
-    
-    smoothValX += ( accelX - smoothValX ) * smoothingFactor;
-    smoothValY += ( accelY - smoothValY ) * smoothingFactor;
-    smoothValZ += ( accelZ - smoothValZ ) * smoothingFactor;
-}
+/*
+ * These classes need to be updated to use OSCHandler class instead of UDPConnection
+ * They need to know if the player has the sensor on or off.
+ * If the sensor is on, they need to get the appropriate value from the OSCHandler.
+ * They need to know wha parameter they're being mapped to and value-map the sensor values
+ *      to the parameter's range.
+ * They need to smooth the values.
+ * They need to set the parameter value.
+ */
 
 
-/// Returns the X value from the Accelerometer, -4.0f to 4.0f
-float Accelerometer::getAccelX()
-{
-    return smoothValX;
-}
-
-/// Returns the Y value from the Accelerometer, -4.0f to 4.0f
-float Accelerometer::getAccelY()
-{
-    return smoothValY;
-}
-
-/// Returns the Z value from the Accelerometer, -4.0f to 4.0f
-float Accelerometer::getAccelZ()
-{
-    return smoothValZ;
-}
 
 
 

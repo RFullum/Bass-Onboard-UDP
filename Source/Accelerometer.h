@@ -50,16 +50,9 @@ public:
     float getAccelZ();
 
 private:
-    // UDP Connection
-    UDPConnection udpX;
-    UDPConnection udpY;
-    UDPConnection udpZ;
-    
     // Member Variables
     float smoothingFactor;
-    float smoothValX;
-    float smoothValY;
-    float smoothValZ;
+    float smoothVal;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Accelerometer)
 };
