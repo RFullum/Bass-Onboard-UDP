@@ -4,6 +4,18 @@
     OSCHandling.h
     Created: 17 Mar 2021 11:13:21pm
     Author:  Robert Fullum
+ 
+ Arduino Pinout Connections:
+ 
+    Touchscreen -X to A3
+    Touchscreen +Y to A2
+    Touchscreen +X to D9
+    Touchscreen -Y to D8
+    
+    Distance VIN to 3.3V
+    Distance GND to GND (Between VIN and RST)
+    Distance SCL to A5
+    Distance SDA to A4
 
   ==============================================================================
 */
