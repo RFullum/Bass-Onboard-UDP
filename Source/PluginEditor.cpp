@@ -31,11 +31,16 @@ BassOnboardAudioProcessorEditor::BassOnboardAudioProcessorEditor (BassOnboardAud
     // In Gain
     sliderSetup ( inGainSlider, vertSlider, true );
     
+    /*
+     
+     Might want to re-introduce the compressor so I'm just commenting it out.
+     
     // Compressor
     sliderSetup ( compThreshSlider,  vertSlider, true );
     sliderSetup ( compRatioSlider,   vertSlider, true );
     sliderSetup ( compAttackSlider,  vertSlider, true );
     sliderSetup ( compReleaseSlider, vertSlider, true );
+    */
     
     // Waveshaper
     sliderSetup ( wsAmtSlider,    vertSlider, true );
@@ -73,7 +78,7 @@ BassOnboardAudioProcessorEditor::BassOnboardAudioProcessorEditor (BassOnboardAud
     //
     
     // On/Off boxes
-    onOffBoxSetup ( compOnOffBox  );
+    // onOffBoxSetup ( compOnOffBox  ); // Might want to re-introduce the compressor so I'm just commenting it out.
     onOffBoxSetup ( wsOnOffBox    );
     onOffBoxSetup ( fbOnOffBox    );
     onOffBoxSetup ( bcOnOffBox    );
@@ -120,12 +125,17 @@ BassOnboardAudioProcessorEditor::BassOnboardAudioProcessorEditor (BassOnboardAud
     sliderLabelSetup ( inLabel,     "In",   bigLabelSize   );
     sliderLabelSetup ( inGainLabel, "Gain", smallLabelSize );
     
+    /*
+     
+     Might want to re-introduce the compressor so I'm just commenting it out.
+     
     // Compressor
     sliderLabelSetup ( compLabel,        "Compressor", bigLabelSize   );
     sliderLabelSetup ( compThreshLabel,  "Thresh",     smallLabelSize );
     sliderLabelSetup ( compRatioLabel,   "Ratio",      smallLabelSize );
     sliderLabelSetup ( compAttackLabel,  "Attack",     smallLabelSize );
     sliderLabelSetup ( compReleaseLabel, "Release",    smallLabelSize );
+    */
     
     // Waveshaper
     sliderLabelSetup ( wsLabel,       "Waveshaper", bigLabelSize   );
@@ -173,11 +183,16 @@ BassOnboardAudioProcessorEditor::BassOnboardAudioProcessorEditor (BassOnboardAud
     // In Gain
     inGainAttachment = std::make_unique<AudioProcessorValueTreeState::SliderAttachment> ( audioProcessor.parameters, "inGain", inGainSlider );
     
+    /*
+     
+     Might want to re-introduce the compressor so I'm just commenting it out.
+     
     // Compressor
     compThreshAttachment  = std::make_unique<AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.parameters,"compThresh",  compThreshSlider  );
     compRatioAttachment   = std::make_unique<AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.parameters,"compRatio",   compRatioSlider   );
     compAttackAttachment  = std::make_unique<AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.parameters,"compAttack",  compAttackSlider  );
     compReleaseAttachment = std::make_unique<AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.parameters,"compRelease", compReleaseSlider );
+    */
     
     // Waveshaper
     wsAmtAttachment    = std::make_unique<AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.parameters, "wsAmt",    wsAmtSlider    );
@@ -213,7 +228,7 @@ BassOnboardAudioProcessorEditor::BassOnboardAudioProcessorEditor (BassOnboardAud
     //
     // ComboBox Attachments
     //
-    compOnOffAttachment  = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "compOnOff",     compOnOffBox  );
+    // compOnOffAttachment  = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "compOnOff",     compOnOffBox  ); // Might want to re-introduce the compressor so I'm just commenting it out.
     wsOnOffAttachment    = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "wsOnOff",       wsOnOffBox    );
     fbOnOffAttachment    = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "foldbackOnOff", fbOnOffBox    );
     bcOnOffAttachment    = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "bitcrushOnOff", bcOnOffBox    );
@@ -316,6 +331,10 @@ void BassOnboardAudioProcessorEditor::resized()
     
     // Compressor
     Rectangle<int> compLabelArea      = compArea.removeFromTop    ( labelHeight );
+    /*
+     
+     Might want to re-introduce the compressor so I'm just commenting it out.
+     
     Rectangle<int> compParamLabelArea = compArea.removeFromTop    ( labelHeight );
     Rectangle<int> compBoxArea        = compArea.removeFromBottom ( boxHeight   );
     
@@ -343,7 +362,7 @@ void BassOnboardAudioProcessorEditor::resized()
     compRatioSlider.setBounds   ( compRatioArea   );
     compAttackSlider.setBounds  ( compAttackArea  );
     compReleaseSlider.setBounds ( compReleaseArea );
-    
+    */
     
     // Waveshaper
     Rectangle<int> wsLabelArea      = wsArea.removeFromTop    ( labelHeight );

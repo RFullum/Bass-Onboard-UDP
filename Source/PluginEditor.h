@@ -42,10 +42,16 @@ private:
     // Sliders
     Slider inGainSlider;
     
+    /*
+     
+     Might want to re-introduce the compressor so I'm just commenting it out.
+     
     Slider compThreshSlider;
     Slider compRatioSlider;
     Slider compAttackSlider;
     Slider compReleaseSlider;
+    */
+    
     
     Slider wsAmtSlider;
     Slider wsDryWetSlider;
@@ -71,7 +77,7 @@ private:
     Slider outGainSlider;
     
     // ComboBox
-    ComboBox compOnOffBox;
+    // ComboBox compOnOffBox;   // Might want to re-introduce the compressor so I'm just commenting it out.
     ComboBox wsOnOffBox;
     ComboBox fbOnOffBox;
     ComboBox bcOnOffBox;
@@ -86,11 +92,16 @@ private:
     Label inLabel;
     Label inGainLabel;
     
+    /*
+     
+     Might want to re-introduce the compressor so I'm just commenting it out.
+     
     Label compLabel;
     Label compThreshLabel;
     Label compRatioLabel;
     Label compAttackLabel;
     Label compReleaseLabel;
+    */
     
     Label wsLabel;
     Label wsAmtLabel;
@@ -126,10 +137,15 @@ private:
     // Attachments
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> inGainAttachment;
     
+    /*
+     
+     Might want to re-introduce the compressor so I'm just commenting it out.
+     
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> compThreshAttachment;
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> compRatioAttachment;
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> compAttackAttachment;
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> compReleaseAttachment;
+    */
     
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> wsAmtAttachment;
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> wsDryWetAttachment;
@@ -155,7 +171,7 @@ private:
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> outGainAttachment;
     
     std::unique_ptr<AudioProcessorValueTreeState::ComboBoxAttachment> ngOnOffAttachment;
-    std::unique_ptr<AudioProcessorValueTreeState::ComboBoxAttachment> compOnOffAttachment;
+    //std::unique_ptr<AudioProcessorValueTreeState::ComboBoxAttachment> compOnOffAttachment;    // Might want to re-introduce the compressor so I'm just commenting it out.
     std::unique_ptr<AudioProcessorValueTreeState::ComboBoxAttachment> wsOnOffAttachment;
     std::unique_ptr<AudioProcessorValueTreeState::ComboBoxAttachment> fbOnOffAttachment;
     std::unique_ptr<AudioProcessorValueTreeState::ComboBoxAttachment> bcOnOffAttachment;

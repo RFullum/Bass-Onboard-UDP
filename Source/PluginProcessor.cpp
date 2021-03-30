@@ -39,7 +39,10 @@ parameters(*this, nullptr, "ParameterTree",
                                           NormalisableRange<float>(-100.0f, 12.0f, 0.01f, 2.0f, true), 0.0f, "dB" ),
     std::make_unique<AudioParameterFloat>("outGain", "Output Gain",
                                           NormalisableRange<float>(-100.0f, 12.0f, 0.01f, 2.0f, true), 0.0f, "dB" ),
-    
+    /*
+     
+     Might want to re-introduce the compressor so I'm just commenting it out.
+     
     // Compressor Params
     std::make_unique<AudioParameterFloat>("compThresh", "Compressor Threshold",
                                           NormalisableRange<float>(-100.0f, 12.0f, 0.01f, 2.0f, false), 0.0f, "dB" ),
@@ -50,6 +53,7 @@ parameters(*this, nullptr, "ParameterTree",
     std::make_unique<AudioParameterFloat>("compRelease", "Compressor Release",
                                           NormalisableRange<float>(0.1f, 10.0f, 0.1f, 1.0f, false), 2.0f, "ms" ),
     std::make_unique<AudioParameterChoice>("compOnOff", "Compressor On/Off", StringArray( {"Off", "On"} ), 0 ),
+    */
     
     // Distortion Params
     // Waveshaper
@@ -112,12 +116,17 @@ parameters(*this, nullptr, "ParameterTree",
     inGainDBParam  = parameters.getRawParameterValue ( "inGain"  );
     outGainDBParam = parameters.getRawParameterValue ( "outGain" );
     
+    /*
+     
+     Might want to re-introduce the compressor so I'm just commenting it out.
+     
     // Compressor Params
     compThreshParam  = parameters.getRawParameterValue ( "compThresh"  );
     compRatioParam   = parameters.getRawParameterValue ( "compRatio"   );
     compAttackParam  = parameters.getRawParameterValue ( "compAttack"  );
     compReleaseParam = parameters.getRawParameterValue ( "compRelease" );
     compOnOffParam   = parameters.getRawParameterValue ( "compOnOff"   );
+    */
     
     // Distortion Params
     waveShapeAmountParam = parameters.getRawParameterValue ( "wsAmt"    );
@@ -240,9 +249,14 @@ void BassOnboardAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     outGain.reset                  ();
     outGain.setRampDurationSeconds ( 0.01f );
     
+    /*
+     
+     Might want to re-introduce the compressor so I'm just commenting it out.
+     
     // Dynamics
     comp.prepare ( spec );
     comp.reset   ();
+    */
     
     // Spatial
     delayFX.prepare ( spec );
@@ -341,6 +355,10 @@ void BassOnboardAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     inGain.setGainDecibels ( *inGainDBParam );
     inGain.process         ( dsp::ProcessContextReplacing<float>(sampleBlock) );
     
+    /*
+     
+     Might want to re-introduce the compressor so I'm just commenting it out.
+     
     // Apply Compressor
     if (*compOnOffParam)
     {
@@ -350,7 +368,7 @@ void BassOnboardAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
         comp.setRatio     ( *compRatioParam  );
         comp.process      ( dsp::ProcessContextReplacing<float>(sampleBlock) );
     }
-    
+    */
     
     // Apply Effects
     

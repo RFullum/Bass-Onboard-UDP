@@ -71,12 +71,17 @@ private:
     std::atomic<float>* inGainDBParam;
     std::atomic<float>* outGainDBParam;
     
+    /*
+     
+     Might want to re-introduce the compressor so I'm just commenting it out.
+     
     // Compressor Params
     std::atomic<float>* compThreshParam;
     std::atomic<float>* compRatioParam;
     std::atomic<float>* compAttackParam;
     std::atomic<float>* compReleaseParam;
     std::atomic<float>* compOnOffParam;
+    */
     
     // Distortion Params
     std::atomic<float>* waveShapeAmountParam;
@@ -119,7 +124,7 @@ private:
     // DSP Widgets & Processors
     dsp::Gain<float> inGain;
     dsp::Gain<float> outGain;
-    dsp::Compressor<float> comp;
+    //dsp::Compressor<float> comp;  // Might want to re-introduce the compressor so I'm just commenting it out.
     dsp::DelayLine<float, dsp::DelayLineInterpolationTypes::Lagrange3rd> delayFX   { 192000 };
     dsp::DelayLine<float, dsp::DelayLineInterpolationTypes::Lagrange3rd> haasDelay { 192000 };
     dsp::StateVariableTPTFilter<float> svFilter1;
