@@ -204,13 +204,13 @@ private:
     Rectangle<float> outAreaBG;
     
     // Sensor Instances
-    Accelerometer accelerometer;
-    Gyroscope     gyroscope;
-    DistanceMeter distanceMeter;
-    TouchScreen   touchScreen;
+    //Accelerometer accelerometer;
+    //Gyroscope     gyroscope;
+    //DistanceMeter distanceMeter;
+    //TouchScreen   touchScreen;
     
     // OSC
-    OSCHandler oscAccelX;
+    OSCHandler osc;
     
     BassOnboardAudioProcessor& audioProcessor;
 

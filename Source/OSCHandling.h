@@ -62,6 +62,36 @@ public:
     /// Returns float value of Touchscreen Z Axis (Pressure)
     float getTouchZ();
     
+    /// Returns 0 or 1 if this sensor is Off or On respectively
+    int getAccelXOnOff();
+    
+    /// Returns 0 or 1 if this sensor is Off or On respectively
+    int getAccelYOnOff();
+    
+    /// Returns 0 or 1 if this sensor is Off or On respectively
+    int getAccelZOnOff();
+    
+    /// Returns 0 or 1 if this sensor is Off or On respectively
+    int getGyroXOnOff();
+    
+    /// Returns 0 or 1 if this sensor is Off or On respectively
+    int getGyroYOnOff();
+    
+    /// Returns 0 or 1 if this sensor is Off or On respectively
+    int getGyroZOnOff();
+    
+    /// Returns 0 or 1 if this sensor is Off or On respectively
+    int getTouchXOnOff();
+    
+    /// Returns 0 or 1 if this sensor is Off or On respectively
+    int getTouchYOnOff();
+    
+    /// Returns 0 or 1 if this sensor is Off or On respectively
+    int getTouchZOnOff();
+    
+    /// Returns 0 or 1 if this sensor is Off or On respectively
+    int getDistanceOnOff();
+    
 private:
     /// Automatically called when an OSC Message comes in. Checks the address, and sets appropriate variable with incoming float
     void oscMessageReceived (const OSCMessage& message) override;
@@ -86,6 +116,21 @@ private:
     OSCAddress touchYAddress;
     OSCAddress touchZAddress;
     
+    OSCAddress accelXOnOffAddress;
+    OSCAddress accelYOnOffAddress;
+    OSCAddress accelZOnOffAddress;
+    
+    OSCAddress gyroXOnOffAddress;
+    OSCAddress gyroYOnOffAddress;
+    OSCAddress gyroZOnOffAddress;
+    
+    OSCAddress touchXOnOffAddress;
+    OSCAddress touchYOnOffAddress;
+    OSCAddress touchZOnOffAddress;
+    
+    OSCAddress distanceOnOffAddress;
+    
+    
     float accelXVal;
     float accelYVal;
     float accelZVal;
@@ -99,4 +144,18 @@ private:
     float touchXVal;
     float touchYVal;
     float touchZVal;
+    
+    float accelXOnOff;
+    float accelYOnOff;
+    float accelZOnOff;
+    
+    float gyroXOnOff;
+    float gyroYOnOff;
+    float gyroZOnOff;
+    
+    float touchXOnOff;
+    float touchYOnOff;
+    float touchZOnOff;
+    
+    float distanceOnOff;
 };

@@ -2,7 +2,6 @@
 #include <WiFiNINA.h>           // Wifi library
 #include <WiFiUdp.h>            // UDP library
 #include <OSCBundle.h>          // OSC Bundle Library
-#include <OSCMessage.h>         // OSC Message Library
 
 
 // Button Press Variables
@@ -16,8 +15,8 @@ const int BUTTONS_TOTAL = 10;
 
 // Red = R, Yellow = Y, Green = G, Brown = B
 // The button order goes clockwise from the Vin wire, starting at the Red button.
-//                                        R1, R2, R3,  Y1,  Y2,  Y3,  G1, G2,  G3,  B1
-const int BUTTONS_VALUES[BUTTONS_TOTAL] = {0, 65, 120, 166, 206, 241, 271,298, 323, 343};
+//                                        R1, R2, R3,  Y1,  Y2,  Y3,  G1,  G2,  G3,  B1
+const int BUTTONS_VALUES[BUTTONS_TOTAL] = {0, 92, 167, 233, 288, 337, 381, 417, 450, 480};
 
 // Define constants for each button
 const int RED_1    = 0;
@@ -75,7 +74,6 @@ const unsigned int destPort = 9001;
 
 // OSC
 OSCBundle  bndl;
-OSCMessage msg;
 
 
 //
@@ -99,29 +97,46 @@ void setup()
 
 void loop() 
 {  
+  float on  = 1.0f;
+  float off = 0.0f;
+  
   // update the AnalogMultiButton object every loop
   buttons.update();
 
   // When pressed button is released, flip On/Off bool and send via OSC:
 
+  // Tell me Button Values (If you add more devices to the Arduino's power, check values because they'll change.)
+  //Serial.println(analogRead(BUTTONS_PIN));
 
   // Acceleromter
   if (buttons.onRelease(YELLOW_3))
   {
     accelX = !accelX;
-    sendOSCMessage( "/juce/accelXOnOff", accelX );
+    
+    if (accelX)
+      sendOSCMessage( "/juce/accelXOnOff", on );
+    else
+      sendOSCMessage( "/juce/accelXOnOff", off );
   }
   
   if (buttons.onRelease(YELLOW_2))
   {
     accelY = !accelY;
-    sendOSCMessage( "/juce/accelYOnOff", accelY );
+
+    if (accelY)
+      sendOSCMessage( "/juce/accelYOnOff", on );
+    else
+      sendOSCMessage( "/juce/accelYOnOff", off );
   }
   
   if (buttons.onRelease(YELLOW_1))
   {
     accelZ = !accelZ;
-    sendOSCMessage( "/juce/accelZOnOff", accelZ );
+    
+    if (accelZ)
+      sendOSCMessage( "/juce/accelZOnOff", on );
+    else
+      sendOSCMessage( "/juce/accelZOnOff", off );
   }
 
 
@@ -129,19 +144,31 @@ void loop()
   if (buttons.onRelease(RED_3))
   {
     gyroX = !gyroX;
-    sendOSCMessage( "/juce/gyroXOnOff", gyroX );
+
+    if (gyroX)
+      sendOSCMessage( "/juce/gyroXOnOff", on );
+    else
+      sendOSCMessage( "/juce/gyroXOnOff", off );
   }
   
   if (buttons.onRelease(RED_2))
   {
     gyroY = !gyroY;
-    sendOSCMessage( "/juce/gyroYOnOff", gyroY );
+
+    if (gyroY)
+      sendOSCMessage( "/juce/gyroYOnOff", on );
+    else
+      sendOSCMessage( "/juce/gyroYOnOff", off );
   }
   
   if (buttons.onRelease(RED_1))
   {
     gyroZ = !gyroZ;
-    sendOSCMessage( "/juce/gyroZOnOff", gyroZ );
+
+    if (gyroZ)
+      sendOSCMessage( "/juce/gyroZOnOff", on );
+    else
+      sendOSCMessage( "/juce/gyroZOnOff", off );
   }
 
 
@@ -149,19 +176,31 @@ void loop()
   if (buttons.onRelease(GREEN_1))
   {
     touchScreenX = !touchScreenX;
-    sendOSCMessage( "/juce/touchXOnOff", touchScreenX );
+
+    if (touchScreenX)
+      sendOSCMessage( "/juce/touchXOnOff", on );
+    else
+      sendOSCMessage( "/juce/touchXOnOff", off );
   }
   
   if (buttons.onRelease(GREEN_2))
   {
     touchScreenY = !touchScreenY;
-    sendOSCMessage( "/juce/touchYOnOff", touchScreenY );
+
+    if (touchScreenY)
+      sendOSCMessage( "/juce/touchYOnOff", on );
+    else
+      sendOSCMessage( "/juce/touchYOnOff", off ); 
   }
   
   if (buttons.onRelease(GREEN_3))
   {
     touchScreenZ = !touchScreenZ;
-    sendOSCMessage( "/juce/touchZOnOff", touchScreenZ );
+
+    if (touchScreenZ)
+      sendOSCMessage( "/juce/touchZOnOff", on );
+    else
+      sendOSCMessage( "/juce/touchZOnOff", off );
   }
 
 
@@ -169,8 +208,13 @@ void loop()
   if (buttons.onRelease(BROWN_1))
   {
     distance = !distance;
-    sendOSCMessage( "/juce/distanceOnOff", distance );
+
+    if (distance)
+      sendOSCMessage( "/juce/distanceOnOff", distance );
+    else
+      sendOSCMessage( "/juce/distanceOnOff", distance );
   }
+
 }
 
 
@@ -220,14 +264,12 @@ void connectUDP()
 //
 
 
-void sendOSCMessage(String address, bool buttonVal)
+void sendOSCMessage(const char *address, float buttonVal)
 {
-  OSCMessage msg( address );
-  
-  msg.add( butonVal );
+  bndl.add( address ).add( buttonVal );
 
   udp.beginPacket( computerIP, destPort );
-  msg.send( udp );
+  bndl.send( udp );
   udp.endPacket();
-  msg.empty();
+  bndl.empty();
 }

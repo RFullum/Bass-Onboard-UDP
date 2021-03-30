@@ -44,10 +44,25 @@ const char* computerIP = "Speed3";
 const unsigned int destPort = 9001;
 
 // Sensor Values
-float accelX, accelY, accelZ;
-float gyroX,  gyroY,  gyroZ;
-float touchX, touchY, touchZ;
-float distance;
+float accelX = 0.0f;
+float accelY = 0.0f;
+float accelZ = 0.0f;
+
+float gyroX = 0.0f;
+float gyroY = 0.0f;
+float gyroZ = 0.0f;
+
+float touchX = 0.0f;
+float touchY = 0.0f;
+float touchZ = 0.0f;
+
+float distance = 0.0f;
+
+// Value smoothing
+float accelSmoothingFactor = 0.4f;
+float gyroSmoothingFactor  = 0.4f;
+float touchSmoothingFactor = 0.4f;
+float distSmoothingFactor  = 0.4f;
 
 // Distance Sensor instance
 Adafruit_VL53L0X lox = Adafruit_VL53L0X();
@@ -143,15 +158,27 @@ void checkDistanceSensor()
 
 
 void readSensor()
-{
+{ 
   if (IMU.accelerationAvailable())
   {
-    IMU.readAcceleration( accelX, accelY, accelZ );
-  }
+    float accelXRaw, accelYRaw, accelZRaw;
+    
+    IMU.readAcceleration( accelXRaw, accelYRaw, accelZRaw );
 
+    accelX += ( accelXRaw - accelX ) * accelSmoothingFactor;
+    accelY += ( accelYRaw - accelY ) * accelSmoothingFactor;
+    accelZ += ( accelZRaw - accelZ ) * accelSmoothingFactor;
+  }
+  
   if (IMU.gyroscopeAvailable())
   {
-    IMU.readGyroscope( gyroX, gyroY, gyroZ );
+    float gyroXRaw, gyroYRaw, gyroZRaw;
+    
+    IMU.readGyroscope( gyroXRaw, gyroYRaw, gyroZRaw );
+
+    gyroX += ( gyroXRaw - gyroX ) * gyroSmoothingFactor;
+    gyroY += ( gyroYRaw - gyroY ) * gyroSmoothingFactor;
+    gyroZ += ( gyroZRaw - gyroZ ) * gyroSmoothingFactor;
   }
 }
 
@@ -167,9 +194,13 @@ void readTouchScreen()
   // Pressur is inversed (lower number is greater pressure)
   if (p.z > ts.pressureThreshhold)
   {
-    touchX = p.x;
-    touchY = p.y;
-    touchZ = p.z;
+    float touchXRaw = p.x;
+    float touchYRaw = p.y;
+    float touchZRaw = p.z;
+
+    touchX += ( touchXRaw - touchX ) * touchSmoothingFactor;
+    touchY += ( touchYRaw - touchY ) * touchSmoothingFactor;
+    touchZ += ( touchZRaw - touchZ ) * touchSmoothingFactor;
   }
 }
 
@@ -179,20 +210,20 @@ void readDistance()
 {
   VL53L0X_RangingMeasurementData_t measure;
 
-  float dist;
+  float distRaw;
 
   lox.rangingTest( &measure, false );
 
   if (measure.RangeStatus != 4)
   {
-    dist = measure.RangeMilliMeter;
+    distRaw = measure.RangeMilliMeter;
   }
   else
   {
-    dist = 0.0f;
+    distRaw = 0.0f;
   }
 
-  distance = dist;
+  distance += ( distRaw - distance ) * distSmoothingFactor;
 }
 
 void sendOSCBundle()

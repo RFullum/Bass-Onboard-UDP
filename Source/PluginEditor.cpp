@@ -572,25 +572,15 @@ void BassOnboardAudioProcessorEditor::resized()
 
 void BassOnboardAudioProcessorEditor::timerCallback()
 {
-    //udpSend.callArduinoUDP();
+    // Generic Sensor Map
+    float accelXMapped = jmap( osc.getAccelX(), -4.0f, 4.0f, 1.0f, 200.0f );
+    float accelYMapped = jmap( osc.getAccelY(), -4.0f, 4.0f, 1.0f, 200.0f );
+    float accelZMapped = jmap( osc.getAccelZ(), -4.0f, 4.0f, 0.0f, 1.0f   );
     
-    // Read Sensor Values
-    accelerometer.setAccelValue();
-    gyroscope.setGyroValue();
-    distanceMeter.setDistanceValue();
-    touchScreen.setTouchScreenCoords();
+    float distanceMapped = jmap( osc.getDistance(), 0.0f, 1200.0f, 0.0f, 9.0f );
     
-    // Map sensor value to parameter range
-    float accelXMapped = jmap( accelerometer.getAccelX(), -4.0f, 4.0f, 1.0f, 200.0f );
-    float accelYMapped = jmap( accelerometer.getAccelY(), -4.0f, 4.0f, 1.0f, 200.0f );
-    float accelZMapped = jmap( accelerometer.getAccelZ(), -4.0f, 4.0f, 0.0f, 1.0f   );
-    
-    float distanceMapped = jmap( distanceMeter.getDistanceValue(), 0.0f, 1200.0f, 0.0f, 9.0f );
-    
-    float touchXMapped = jmap( touchScreen.getXCoord(), 300.0f, 800.0f, 20.0f, 18000.0f );
-    float touchYMapped = jmap( touchScreen.getYCoord(), 300.0f, 800.0f, 0.7f,  2.5f     );
-    
-    float touchZMapped = jmap( touchScreen.getPressure(), 0.0f, 2000.0f, 0.0f, 1.0f );
+    float touchXMapped = jmap( osc.getTouchX(), 300.0f, 800.0f, 0.7f,  2.5f     );
+    float touchYMapped = jmap( osc.getTouchY(), 300.0f, 800.0f, 20.0f, 18000.0f );
     
     // Control Parameter with mapped Sensor values
     wsAmtSlider.setValue ( accelXMapped );
@@ -599,10 +589,13 @@ void BassOnboardAudioProcessorEditor::timerCallback()
     
     formMorphSlider.setValue ( distanceMapped );
     
-    filtCutoffSlider.setValue ( touchXMapped );
-    filtResSlider.setValue    ( touchYMapped );
+    filtCutoffSlider.setValue ( touchYMapped );
+    filtResSlider.setValue    ( touchXMapped );
     
-    haasWidthSlider.setValue ( touchZMapped );
+    
+    
+    
+        
 }
 
 
