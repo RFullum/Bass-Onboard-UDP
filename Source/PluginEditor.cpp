@@ -78,7 +78,22 @@ BassOnboardAudioProcessorEditor::BassOnboardAudioProcessorEditor (BassOnboardAud
     //
     
     // On/Off boxes
+    onOffBoxSetup ( accelXOnOffBox );
+    onOffBoxSetup ( accelYOnOffBox );
+    onOffBoxSetup ( accelZOnOffBox );
+    
+    onOffBoxSetup ( gyroXOnOffBox );
+    onOffBoxSetup ( gyroYOnOffBox );
+    onOffBoxSetup ( gyroZOnOffBox );
+    
+    onOffBoxSetup( touchXOnOffBox );
+    onOffBoxSetup( touchYOnOffBox );
+    onOffBoxSetup( touchZOnOffBox );
+    
+    onOffBoxSetup( distanceOnOffBox );
+    
     // onOffBoxSetup ( compOnOffBox  ); // Might want to re-introduce the compressor so I'm just commenting it out.
+    /*
     onOffBoxSetup ( wsOnOffBox    );
     onOffBoxSetup ( fbOnOffBox    );
     onOffBoxSetup ( bcOnOffBox    );
@@ -86,6 +101,7 @@ BassOnboardAudioProcessorEditor::BassOnboardAudioProcessorEditor (BassOnboardAud
     onOffBoxSetup ( delayOnOffBox );
     onOffBoxSetup ( filtOnOffBox  );
     onOffBoxSetup ( haasOnOffBox  );
+    */
     
     // Filter Type
     filtTypeBox.addItem              ( "LPF", 1 );
@@ -228,17 +244,36 @@ BassOnboardAudioProcessorEditor::BassOnboardAudioProcessorEditor (BassOnboardAud
     //
     // ComboBox Attachments
     //
+    
+    accelXOnOffAttachment = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "accelXOnOff", accelXOnOffBox );
+    accelYOnOffAttachment = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "accelYOnOff", accelYOnOffBox );
+    accelZOnOffAttachment = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "accelZOnOff", accelZOnOffBox );
+    
+    gyroXOnOffAttachment = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "gyroXOnOff", gyroXOnOffBox );
+    gyroYOnOffAttachment = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "gyroYOnOff", gyroYOnOffBox );
+    gyroZOnOffAttachment = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "gyroZOnOff", gyroZOnOffBox );
+    
+    touchXOnOffAttachment = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "touchXOnOff", touchXOnOffBox );
+    touchYOnOffAttachment = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "touchYOnOff", touchYOnOffBox );
+    touchZOnOffAttachment = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "touchZOnOff", touchZOnOffBox );
+    
+    distanceOnOffAttachment = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "distOnOff", distanceOnOffBox );
+    
     // compOnOffAttachment  = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "compOnOff",     compOnOffBox  ); // Might want to re-introduce the compressor so I'm just commenting it out.
+    
+    /*
     wsOnOffAttachment    = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "wsOnOff",       wsOnOffBox    );
     fbOnOffAttachment    = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "foldbackOnOff", fbOnOffBox    );
     bcOnOffAttachment    = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "bitcrushOnOff", bcOnOffBox    );
     formOnOffAttachment  = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "formantOnOff",  formOnOffBox  );
     delayOnOffAttachment = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "delayFXOnOff",  delayOnOffBox );
+    */
     filtTypeAttachment   = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "svFiltType",    filtTypeBox   );
     filtPolesAttachment  = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "svFiltPoles",   filtPolesBox  );
+    /*
     filtOnOffAttachment  = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "svFiltOnOff",   filtOnOffBox  );
     haasOnOffAttachment  = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "haasOnOff",     haasOnOffBox  );
-    
+    */
 }
 
 BassOnboardAudioProcessorEditor::~BassOnboardAudioProcessorEditor()
@@ -275,8 +310,34 @@ void BassOnboardAudioProcessorEditor::resized()
     
     // Total area split to top & bottom halves
     Rectangle<int> totalArea  = getLocalBounds().reduced( areaPadding );
+    Rectangle<int> tempBottom = totalArea.removeFromBottom( totalArea.getHeight() * 0.1f ); // Space to put the Sensor On/Off until redesign
     Rectangle<int> topHalf    = totalArea.removeFromTop( totalArea.getHeight() * 0.5f );
     Rectangle<int> bottomHalf = totalArea;
+    
+    // Sensor On/Off until the redesign
+    float onOffButtonWidth = tempBottom.getWidth() * 0.1f;
+    
+    Rectangle<int> accelXOnOffArea   = tempBottom.removeFromLeft ( onOffButtonWidth );
+    Rectangle<int> accelYOnOffArea   = tempBottom.removeFromLeft ( onOffButtonWidth );
+    Rectangle<int> accelZOnOffArea   = tempBottom.removeFromLeft ( onOffButtonWidth );
+    Rectangle<int> gyroXOnOffArea    = tempBottom.removeFromLeft ( onOffButtonWidth );
+    Rectangle<int> gyroYOnOffArea    = tempBottom.removeFromLeft ( onOffButtonWidth );
+    Rectangle<int> gyroZOnOffArea    = tempBottom.removeFromLeft ( onOffButtonWidth );
+    Rectangle<int> touchXOnOffArea   = tempBottom.removeFromLeft ( onOffButtonWidth );
+    Rectangle<int> touchYOnOffArea   = tempBottom.removeFromLeft ( onOffButtonWidth );
+    Rectangle<int> touchZOnOffArea   = tempBottom.removeFromLeft ( onOffButtonWidth );
+    Rectangle<int> distanceOnOffArea = tempBottom;
+    
+    accelXOnOffBox.setBounds   ( accelXOnOffArea   );
+    accelYOnOffBox.setBounds   ( accelYOnOffArea   );
+    accelZOnOffBox.setBounds   ( accelZOnOffArea   );
+    gyroXOnOffBox.setBounds    ( gyroXOnOffArea    );
+    gyroYOnOffBox.setBounds    ( gyroYOnOffArea    );
+    gyroZOnOffBox.setBounds    ( gyroZOnOffArea    );
+    touchXOnOffBox.setBounds   ( touchXOnOffArea   );
+    touchYOnOffBox.setBounds   ( touchYOnOffArea   );
+    touchZOnOffBox.setBounds   ( touchZOnOffArea   );
+    distanceOnOffBox.setBounds ( distanceOnOffArea );
     
     // Top & Bottom Halves split into effect sections, width based on number of sliders
     float topSpacing    = topHalf.getWidth() / 15.0f;
@@ -370,7 +431,7 @@ void BassOnboardAudioProcessorEditor::resized()
     Rectangle<int> wsBoxArea        = wsArea.removeFromBottom ( boxHeight   );
     
     wsLabel.setBounds    ( wsLabelArea );
-    wsOnOffBox.setBounds ( wsBoxArea.reduced(boxReduceY, boxReduceY) );
+    //wsOnOffBox.setBounds ( wsBoxArea.reduced(boxReduceY, boxReduceY) );
     
     float wsWidth = wsArea.getWidth() * 0.5f;
     
@@ -393,7 +454,7 @@ void BassOnboardAudioProcessorEditor::resized()
     Rectangle<int> fbBoxArea        = fbArea.removeFromBottom ( boxHeight   );
     
     fbLabel.setBounds    ( fbLabelArea );
-    fbOnOffBox.setBounds ( fbBoxArea.reduced(boxReduceY, boxReduceY) );
+    //fbOnOffBox.setBounds ( fbBoxArea.reduced(boxReduceY, boxReduceY) );
     
     float fbWidth = fbArea.getWidth() * 0.5f;
     
@@ -416,7 +477,7 @@ void BassOnboardAudioProcessorEditor::resized()
     Rectangle<int> bcBoxArea        = bcArea.removeFromBottom ( boxHeight   );
     
     bcLabel.setBounds    ( bcLabelArea );
-    bcOnOffBox.setBounds ( bcBoxArea.reduced(boxReduceY, boxReduceY)   );
+    //bcOnOffBox.setBounds ( bcBoxArea.reduced(boxReduceY, boxReduceY)   );
     
     float bcWidth = bcArea.getWidth() * 0.5f;
     
@@ -441,7 +502,7 @@ void BassOnboardAudioProcessorEditor::resized()
     Rectangle<int> formBoxArea        = formArea.removeFromBottom ( boxHeight   );
     
     formLabel.setBounds    ( formLabelArea );
-    formOnOffBox.setBounds ( formBoxArea.reduced(boxReduceY * 2.0f, boxReduceY) );
+    //formOnOffBox.setBounds ( formBoxArea.reduced(boxReduceY * 2.0f, boxReduceY) );
     
     float formWidth = formArea.getWidth() * 0.5f;
     
@@ -464,7 +525,7 @@ void BassOnboardAudioProcessorEditor::resized()
     Rectangle<int> delayBoxArea        = delayArea.removeFromBottom ( boxHeight   );
     
     delayLabel.setBounds    ( delayLabelArea );
-    delayOnOffBox.setBounds ( delayBoxArea.reduced(boxReduceX, boxReduceY) );
+    //delayOnOffBox.setBounds ( delayBoxArea.reduced(boxReduceX, boxReduceY) );
     
     float delayWidth = delayArea.getWidth() * 0.33f;
     
@@ -491,7 +552,7 @@ void BassOnboardAudioProcessorEditor::resized()
     Rectangle<int> filtBoxArea        = filtArea.removeFromBottom ( boxHeight   );
     
     filtLabel.setBounds    ( filtLabelArea );
-    filtOnOffBox.setBounds ( filtBoxArea.reduced(boxReduceX * 1.5f, boxReduceY) );
+    //filtOnOffBox.setBounds ( filtBoxArea.reduced(boxReduceX * 1.5f, boxReduceY) );
     
     float filtWidth = filtArea.getWidth() * 0.25f;
     
@@ -520,7 +581,7 @@ void BassOnboardAudioProcessorEditor::resized()
     
     haasLabel.setBounds       ( haasLabelArea );
     haasWidthLabel.setBounds  ( haasParamLabelArea );
-    haasOnOffBox.setBounds    ( haasBoxArea.reduced( 4.0f, boxReduceY) );
+    //haasOnOffBox.setBounds    ( haasBoxArea.reduced( 4.0f, boxReduceY) );
     haasWidthSlider.setBounds ( haasArea );
     
     

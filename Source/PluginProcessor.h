@@ -121,6 +121,21 @@ private:
     std::atomic<float>* formantDryWetParam;
     std::atomic<float>* formantOnOffParam;
     
+    // Sensor On/Off
+    std::atomic<float>* accelXOnOffParam;
+    std::atomic<float>* accelYOnOffParam;
+    std::atomic<float>* accelZOnOffParam;
+    
+    std::atomic<float>* gyroXOnOffParam;
+    std::atomic<float>* gyroYOnOffParam;
+    std::atomic<float>* gyroZOnOffParam;
+    
+    std::atomic<float>* touchXOnOffParam;
+    std::atomic<float>* touchYOnOffParam;
+    std::atomic<float>* touchZOnOffParam;
+    
+    std::atomic<float>* distanceOnOffParam;
+    
     // DSP Widgets & Processors
     dsp::Gain<float> inGain;
     dsp::Gain<float> outGain;

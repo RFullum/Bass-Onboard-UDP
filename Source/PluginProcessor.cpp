@@ -106,7 +106,22 @@ parameters(*this, nullptr, "ParameterTree",
     // Haas Wide
     std::make_unique<AudioParameterFloat>("haasWidth", "Width Amount",
                                           NormalisableRange<float>(0.0f, 1.0f, 0.01f, 1.0f, false), 0.0f, "" ),
-    std::make_unique<AudioParameterChoice>("haasOnOff", "Width On/Off", StringArray( {"Off", "On"} ), 0 )
+    std::make_unique<AudioParameterChoice>("haasOnOff", "Width On/Off", StringArray( {"Off", "On"} ), 0 ),
+    
+    // Sensor On/Off Params
+    std::make_unique<AudioParameterChoice>("accelXOnOff", "Accel X On/Off", StringArray( {"Off", "On"} ), 0 ),
+    std::make_unique<AudioParameterChoice>("accelYOnOff", "Accel Y On/Off", StringArray( {"Off", "On"} ), 0 ),
+    std::make_unique<AudioParameterChoice>("accelZOnOff", "Accel Z On/Off", StringArray( {"Off", "On"} ), 0 ),
+    
+    std::make_unique<AudioParameterChoice>("gyroXOnOff", "Gyro X On/Off", StringArray( {"Off", "On"} ), 0 ),
+    std::make_unique<AudioParameterChoice>("gyroYOnOff", "Gyro Y On/Off", StringArray( {"Off", "On"} ), 0 ),
+    std::make_unique<AudioParameterChoice>("gyroZOnOff", "Gyro Z On/Off", StringArray( {"Off", "On"} ), 0 ),
+    
+    std::make_unique<AudioParameterChoice>("touchXOnOff", "Touch Screen X On/Off", StringArray( {"Off", "On"} ), 0 ),
+    std::make_unique<AudioParameterChoice>("touchYOnOff", "Touch Screen Y On/Off", StringArray( {"Off", "On"} ), 0 ),
+    std::make_unique<AudioParameterChoice>("touchZOnOff", "Touch Screen Z On/Off", StringArray( {"Off", "On"} ), 0 ),
+    
+    std::make_unique<AudioParameterChoice>("distOnOff", "TDistance On/Off", StringArray( {"Off", "On"} ), 0 )
     
 })
 
@@ -160,6 +175,21 @@ parameters(*this, nullptr, "ParameterTree",
     
     haasWidthParam = parameters.getRawParameterValue ( "haasWidth" );
     haasOnOffParam = parameters.getRawParameterValue ( "haasOnOff" );
+    
+    // Sensor On/Off Params
+    accelXOnOffParam = parameters.getRawParameterValue ( "accelXOnOff" );
+    accelYOnOffParam = parameters.getRawParameterValue ( "accelYOnOff" );
+    accelZOnOffParam = parameters.getRawParameterValue ( "accelZOnOff" );
+    
+    gyroXOnOffParam = parameters.getRawParameterValue ( "gyroXOnOff" );
+    gyroYOnOffParam = parameters.getRawParameterValue ( "gyroYOnOff" );
+    gyroZOnOffParam = parameters.getRawParameterValue ( "gyroZOnOff" );
+    
+    touchXOnOffParam = parameters.getRawParameterValue ( "touchXOnOff" );
+    touchYOnOffParam = parameters.getRawParameterValue ( "touchYOnOff" );
+    touchZOnOffParam = parameters.getRawParameterValue ( "touchZOnOff" );
+    
+    distanceOnOffParam = parameters.getRawParameterValue ( "distOnOff" );
 }
 
 BassOnboardAudioProcessor::~BassOnboardAudioProcessor()
