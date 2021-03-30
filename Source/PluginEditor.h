@@ -42,11 +42,6 @@ private:
     // Sliders
     Slider inGainSlider;
     
-    Slider ngThreshSlider;
-    Slider ngRatioSlider;
-    Slider ngAttackSlider;
-    Slider ngReleaseSlider;
-    
     Slider compThreshSlider;
     Slider compRatioSlider;
     Slider compAttackSlider;
@@ -76,7 +71,6 @@ private:
     Slider outGainSlider;
     
     // ComboBox
-    ComboBox ngOnOffBox;
     ComboBox compOnOffBox;
     ComboBox wsOnOffBox;
     ComboBox fbOnOffBox;
@@ -91,12 +85,6 @@ private:
     // Labels
     Label inLabel;
     Label inGainLabel;
-    
-    Label ngLabel;
-    Label ngThreshLabel;
-    Label ngRatioLabel;
-    Label ngAttackLabel;
-    Label ngReleaseLabel;
     
     Label compLabel;
     Label compThreshLabel;
@@ -137,11 +125,6 @@ private:
     
     // Attachments
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> inGainAttachment;
-    
-    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> ngThreshAttachment;
-    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> ngRatioAttachment;
-    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> ngAttackAttachment;
-    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> ngReleaseAttachment;
     
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> compThreshAttachment;
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> compRatioAttachment;

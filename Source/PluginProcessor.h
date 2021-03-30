@@ -71,13 +71,6 @@ private:
     std::atomic<float>* inGainDBParam;
     std::atomic<float>* outGainDBParam;
     
-    // Noise Gate Params
-    std::atomic<float>* ngThreshParam;
-    std::atomic<float>* ngRatioParam;
-    std::atomic<float>* ngAttackParam;
-    std::atomic<float>* ngReleaseParam;
-    std::atomic<float>* ngOnOffParam;
-    
     // Compressor Params
     std::atomic<float>* compThreshParam;
     std::atomic<float>* compRatioParam;
@@ -126,7 +119,6 @@ private:
     // DSP Widgets & Processors
     dsp::Gain<float> inGain;
     dsp::Gain<float> outGain;
-    dsp::NoiseGate<float> noiseGate;
     dsp::Compressor<float> comp;
     dsp::DelayLine<float, dsp::DelayLineInterpolationTypes::Lagrange3rd> delayFX   { 192000 };
     dsp::DelayLine<float, dsp::DelayLineInterpolationTypes::Lagrange3rd> haasDelay { 192000 };

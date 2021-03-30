@@ -31,12 +31,6 @@ BassOnboardAudioProcessorEditor::BassOnboardAudioProcessorEditor (BassOnboardAud
     // In Gain
     sliderSetup ( inGainSlider, vertSlider, true );
     
-    // Noise Gate
-    sliderSetup ( ngThreshSlider,  vertSlider, true );
-    sliderSetup ( ngRatioSlider,   vertSlider, true );
-    sliderSetup ( ngAttackSlider,  vertSlider, true );
-    sliderSetup ( ngReleaseSlider, vertSlider, true );
-    
     // Compressor
     sliderSetup ( compThreshSlider,  vertSlider, true );
     sliderSetup ( compRatioSlider,   vertSlider, true );
@@ -79,7 +73,6 @@ BassOnboardAudioProcessorEditor::BassOnboardAudioProcessorEditor (BassOnboardAud
     //
     
     // On/Off boxes
-    onOffBoxSetup ( ngOnOffBox    );
     onOffBoxSetup ( compOnOffBox  );
     onOffBoxSetup ( wsOnOffBox    );
     onOffBoxSetup ( fbOnOffBox    );
@@ -126,13 +119,6 @@ BassOnboardAudioProcessorEditor::BassOnboardAudioProcessorEditor (BassOnboardAud
     // In Gain
     sliderLabelSetup ( inLabel,     "In",   bigLabelSize   );
     sliderLabelSetup ( inGainLabel, "Gain", smallLabelSize );
-    
-    // Noise Gate
-    sliderLabelSetup ( ngLabel,        "Noise Gate", bigLabelSize   );
-    sliderLabelSetup ( ngThreshLabel,  "Thresh",     smallLabelSize );
-    sliderLabelSetup ( ngRatioLabel,   "Ratio",      smallLabelSize );
-    sliderLabelSetup ( ngAttackLabel,  "Attack",     smallLabelSize );
-    sliderLabelSetup ( ngReleaseLabel, "Release",    smallLabelSize );
     
     // Compressor
     sliderLabelSetup ( compLabel,        "Compressor", bigLabelSize   );
@@ -187,12 +173,6 @@ BassOnboardAudioProcessorEditor::BassOnboardAudioProcessorEditor (BassOnboardAud
     // In Gain
     inGainAttachment = std::make_unique<AudioProcessorValueTreeState::SliderAttachment> ( audioProcessor.parameters, "inGain", inGainSlider );
     
-    // Noise Gate
-    ngThreshAttachment  = std::make_unique<AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.parameters, "ngThresh",  ngThreshSlider  );
-    ngRatioAttachment   = std::make_unique<AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.parameters, "ngRatio",   ngRatioSlider   );
-    ngAttackAttachment  = std::make_unique<AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.parameters, "ngAttack",  ngAttackSlider  );
-    ngReleaseAttachment = std::make_unique<AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.parameters, "ngRelease", ngReleaseSlider );
-    
     // Compressor
     compThreshAttachment  = std::make_unique<AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.parameters,"compThresh",  compThreshSlider  );
     compRatioAttachment   = std::make_unique<AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.parameters,"compRatio",   compRatioSlider   );
@@ -233,7 +213,6 @@ BassOnboardAudioProcessorEditor::BassOnboardAudioProcessorEditor (BassOnboardAud
     //
     // ComboBox Attachments
     //
-    ngOnOffAttachment    = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "ngOnOff",       ngOnOffBox    );
     compOnOffAttachment  = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "compOnOff",     compOnOffBox  );
     wsOnOffAttachment    = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "wsOnOff",       wsOnOffBox    );
     fbOnOffAttachment    = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "foldbackOnOff", fbOnOffBox    );
@@ -244,8 +223,6 @@ BassOnboardAudioProcessorEditor::BassOnboardAudioProcessorEditor (BassOnboardAud
     filtPolesAttachment  = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "svFiltPoles",   filtPolesBox  );
     filtOnOffAttachment  = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "svFiltOnOff",   filtOnOffBox  );
     haasOnOffAttachment  = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "haasOnOff",     haasOnOffBox  );
-    
-    // UDP & OSC
     
 }
 
@@ -264,7 +241,7 @@ void BassOnboardAudioProcessorEditor::paint (juce::Graphics& g)
     // Subsections
     g.setColour            ( onyx );
     g.fillRoundedRectangle ( inAreaBG,    rounding );
-    g.fillRoundedRectangle ( ngAreaBG,    rounding );
+    g.fillRoundedRectangle ( ngAreaBG,    rounding ); // Not needed after re-design layout
     g.fillRoundedRectangle (compAreaBG,   rounding );
     g.fillRoundedRectangle ( wsAreaBG,    rounding );
     g.fillRoundedRectangle ( fbAreaBG,    rounding );
@@ -304,7 +281,7 @@ void BassOnboardAudioProcessorEditor::resized()
     Rectangle<int> outArea   = bottomHalf.reduced                                         ( areaPadding );
     
     inAreaBG.setBounds    ( inArea.getX(),    inArea.getY(),    inArea.getWidth(),    inArea.getHeight()    );
-    ngAreaBG.setBounds    ( ngArea.getX(),    ngArea.getY(),    ngArea.getWidth(),    ngArea.getHeight()    );
+    ngAreaBG.setBounds    ( ngArea.getX(),    ngArea.getY(),    ngArea.getWidth(),    ngArea.getHeight()    );  // Not needed after re-design layout
     compAreaBG.setBounds  ( compArea.getX(),  compArea.getY(),  compArea.getWidth(),  compArea.getHeight()  );
     wsAreaBG.setBounds    ( wsArea.getX(),    wsArea.getY(),    wsArea.getWidth(),    wsArea.getHeight()    );
     fbAreaBG.setBounds    ( fbArea.getX(),    fbArea.getY(),    fbArea.getWidth(),    fbArea.getHeight()    );
@@ -334,35 +311,8 @@ void BassOnboardAudioProcessorEditor::resized()
     
     
     // Noise Gate
-    Rectangle<int> ngLabelArea      = ngArea.removeFromTop    ( labelHeight );
-    Rectangle<int> ngParamLabelArea = ngArea.removeFromTop    ( labelHeight );
-    Rectangle<int> ngBoxArea        = ngArea.removeFromBottom ( boxHeight   );
-    
-    ngLabel.setBounds    ( ngLabelArea );
-    ngOnOffBox.setBounds ( ngBoxArea.reduced( boxReduceX, boxReduceY) );
-    
-    float ngWidth = ngArea.getWidth() * 0.25f;
-    
-    Rectangle<int> ngThreshLabelArea  = ngParamLabelArea.removeFromLeft ( ngWidth );
-    Rectangle<int> ngRatioLabelArea   = ngParamLabelArea.removeFromLeft ( ngWidth );
-    Rectangle<int> ngAttackLabelArea  = ngParamLabelArea.removeFromLeft ( ngWidth );
-    Rectangle<int> ngReleaseLabelArea = ngParamLabelArea;
-    
-    ngThreshLabel.setBounds  ( ngThreshLabelArea  );
-    ngRatioLabel.setBounds   ( ngRatioLabelArea   );
-    ngAttackLabel.setBounds  ( ngAttackLabelArea  );
-    ngReleaseLabel.setBounds ( ngReleaseLabelArea );
-    
-    Rectangle<int> ngThreshArea  = ngArea.removeFromLeft ( ngWidth );
-    Rectangle<int> ngRatioArea   = ngArea.removeFromLeft ( ngWidth );
-    Rectangle<int> ngAttackArea  = ngArea.removeFromLeft ( ngWidth );
-    Rectangle<int> ngReleaseArea = ngArea;
-    
-    ngThreshSlider.setBounds  ( ngThreshArea  );
-    ngRatioSlider.setBounds   ( ngRatioArea   );
-    ngAttackSlider.setBounds  ( ngAttackArea  );
-    ngReleaseSlider.setBounds ( ngReleaseArea );
-    
+    Rectangle<int> ngLabelArea      = ngArea.removeFromTop    ( labelHeight );  // Not needed after re-design layout
+      
     
     // Compressor
     Rectangle<int> compLabelArea      = compArea.removeFromTop    ( labelHeight );

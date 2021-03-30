@@ -40,17 +40,6 @@ parameters(*this, nullptr, "ParameterTree",
     std::make_unique<AudioParameterFloat>("outGain", "Output Gain",
                                           NormalisableRange<float>(-100.0f, 12.0f, 0.01f, 2.0f, true), 0.0f, "dB" ),
     
-    // Noise Gate Params
-    std::make_unique<AudioParameterFloat>("ngThresh", "Noise Gate Threshold",
-                                          NormalisableRange<float>(-100.0f, 12.0f, 0.01f, 2.0f, false), -96.0f, "dB" ),
-    std::make_unique<AudioParameterFloat>("ngRatio", "Noise Gate Ratio",
-                                          NormalisableRange<float>(1.0f, 25.0f, 0.1f, 0.25f, false), 25.0f, "1:x" ),
-    std::make_unique<AudioParameterFloat>("ngAttack", "Noise Gate Attack",
-                                          NormalisableRange<float>(0.1f, 10.0f, 0.1f, 1.0f, false), 0.5f, "ms" ),
-    std::make_unique<AudioParameterFloat>("ngRelease", "Noise Gate Release",
-                                          NormalisableRange<float>(0.1f, 10.0f, 0.1f, 1.0f, false), 2.0f, "ms" ),
-    std::make_unique<AudioParameterChoice>("ngOnOff", "Noise Gate On/Off", StringArray( {"Off", "On"} ), 0 ),
-    
     // Compressor Params
     std::make_unique<AudioParameterFloat>("compThresh", "Compressor Threshold",
                                           NormalisableRange<float>(-100.0f, 12.0f, 0.01f, 2.0f, false), 0.0f, "dB" ),
@@ -122,13 +111,6 @@ parameters(*this, nullptr, "ParameterTree",
     // Gain Params
     inGainDBParam  = parameters.getRawParameterValue ( "inGain"  );
     outGainDBParam = parameters.getRawParameterValue ( "outGain" );
-    
-    // Noise Gate Params
-    ngThreshParam  = parameters.getRawParameterValue ( "ngThresh"  );
-    ngRatioParam   = parameters.getRawParameterValue ( "ngRatio"   );
-    ngAttackParam  = parameters.getRawParameterValue ( "ngAttack"  );
-    ngReleaseParam = parameters.getRawParameterValue ( "ngRelease" );
-    ngOnOffParam   = parameters.getRawParameterValue ( "ngOnOff"   );
     
     // Compressor Params
     compThreshParam  = parameters.getRawParameterValue ( "compThresh"  );
@@ -259,9 +241,6 @@ void BassOnboardAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     outGain.setRampDurationSeconds ( 0.01f );
     
     // Dynamics
-    noiseGate.prepare ( spec );
-    noiseGate.reset   ();
-    
     comp.prepare ( spec );
     comp.reset   ();
     
@@ -361,16 +340,6 @@ void BassOnboardAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     // Apply Input Gain
     inGain.setGainDecibels ( *inGainDBParam );
     inGain.process         ( dsp::ProcessContextReplacing<float>(sampleBlock) );
-    
-    // Apply Noise Gate
-    if (*ngOnOffParam)
-    {
-        noiseGate.setThreshold ( *ngThreshParam  );
-        noiseGate.setRatio     ( *ngRatioParam   );
-        noiseGate.setAttack    ( *ngAttackParam  );
-        noiseGate.setRelease   ( *ngReleaseParam );
-        noiseGate.process      ( dsp::ProcessContextReplacing<float>(sampleBlock) );
-    }
     
     // Apply Compressor
     if (*compOnOffParam)
