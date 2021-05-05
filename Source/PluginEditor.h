@@ -14,6 +14,7 @@
 #include "DistanceMeter.h"
 #include "TouchScreen.h"
 #include "OSCHandling.h"
+#include "TitleHeader.h"
 
 //==============================================================================
 /**
@@ -148,6 +149,18 @@ private:
     Label outLabel;
     Label outGainLabel;
     
+    Label accelXOnOffLabel;
+    Label accelYOnOffLabel;
+    Label accelZOnOffLabel;
+    Label gyroXOnOffLabel;
+    Label gyroYOnOffLabel;
+    Label gyroZOnOffLabel;
+    Label touchXOnOffLabel;
+    Label touchYOnOffLabel;
+    Label touchZOnOffLabel;
+    Label distanceOnOffLabel;
+    
+    
     // Attachments
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> inGainAttachment;
     
@@ -242,6 +255,10 @@ private:
     
     // OSC
     OSCHandler osc;
+    
+    // Header/Footer
+    TitleHeader titleHeader;
+    TitleFooter titleFooter;
     
     BassOnboardAudioProcessor& audioProcessor;
 

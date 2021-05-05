@@ -106,8 +106,8 @@ void loop()
   // When pressed button is released, flip On/Off bool and send via OSC:
 
   // Tell me Button Values (If you add more devices to the Arduino's power, check values because they'll change.)
-  //Serial.println(analogRead(BUTTONS_PIN));
-
+  Serial.println(analogRead(BUTTONS_PIN));
+ /*
   // Acceleromter
   if (buttons.onRelease(YELLOW_3))
   {
@@ -214,7 +214,7 @@ void loop()
     else
       sendOSCMessage( "/juce/distanceOnOff", distance );
   }
-
+*/
 }
 
 

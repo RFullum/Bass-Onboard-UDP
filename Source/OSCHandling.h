@@ -16,6 +16,16 @@
     Distance GND to GND (Between VIN and RST)
     Distance SCL to A5
     Distance SDA to A4
+ 
+    Sensor Button Board:
+    Ground to GND
+    Data to A0
+    VIn to 3.3V
+ 
+    Filter Button Board:
+    Ground to GND
+    Data to A1
+    VIn to 3.3V
 
   ==============================================================================
 */

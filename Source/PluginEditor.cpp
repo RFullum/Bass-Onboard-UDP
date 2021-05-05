@@ -192,6 +192,18 @@ BassOnboardAudioProcessorEditor::BassOnboardAudioProcessorEditor (BassOnboardAud
     sliderLabelSetup ( outLabel,     "Out",  bigLabelSize   );
     sliderLabelSetup ( outGainLabel, "Gain", smallLabelSize );
     
+    // On Off ComboBox Labels
+    sliderLabelSetup ( accelXOnOffLabel,   "AX",   smallLabelSize );
+    sliderLabelSetup ( accelYOnOffLabel,   "AY",   smallLabelSize );
+    sliderLabelSetup ( accelZOnOffLabel,   "AZ",   smallLabelSize );
+    sliderLabelSetup ( gyroXOnOffLabel,    "GX",   smallLabelSize );
+    sliderLabelSetup ( gyroYOnOffLabel,    "GY",   smallLabelSize );
+    sliderLabelSetup ( gyroZOnOffLabel,    "GZ",   smallLabelSize );
+    sliderLabelSetup ( touchXOnOffLabel,   "TX",   smallLabelSize );
+    sliderLabelSetup ( touchYOnOffLabel,   "TY",   smallLabelSize );
+    sliderLabelSetup ( touchZOnOffLabel,   "TZ",   smallLabelSize );
+    sliderLabelSetup ( distanceOnOffLabel, "Dist", smallLabelSize );
+    
     //
     // Slider Attachments
     //
@@ -274,6 +286,13 @@ BassOnboardAudioProcessorEditor::BassOnboardAudioProcessorEditor (BassOnboardAud
     filtOnOffAttachment  = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "svFiltOnOff",   filtOnOffBox  );
     haasOnOffAttachment  = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "haasOnOff",     haasOnOffBox  );
     */
+    
+    // Header/Footer
+    titleHeader.setTextColor ( orangePeel );
+    titleFooter.setTextColor ( orangePeel );
+    
+    addAndMakeVisible (titleHeader );
+    addAndMakeVisible (titleFooter );
 }
 
 BassOnboardAudioProcessorEditor::~BassOnboardAudioProcessorEditor()
@@ -291,8 +310,7 @@ void BassOnboardAudioProcessorEditor::paint (juce::Graphics& g)
     // Subsections
     g.setColour            ( onyx );
     g.fillRoundedRectangle ( inAreaBG,    rounding );
-    g.fillRoundedRectangle ( ngAreaBG,    rounding ); // Not needed after re-design layout
-    g.fillRoundedRectangle (compAreaBG,   rounding );
+    //g.fillRoundedRectangle (compAreaBG,   rounding );
     g.fillRoundedRectangle ( wsAreaBG,    rounding );
     g.fillRoundedRectangle ( fbAreaBG,    rounding );
     g.fillRoundedRectangle ( bcAreaBG,    rounding );
@@ -310,23 +328,53 @@ void BassOnboardAudioProcessorEditor::resized()
     
     // Total area split to top & bottom halves
     Rectangle<int> totalArea  = getLocalBounds().reduced( areaPadding );
-    Rectangle<int> tempBottom = totalArea.removeFromBottom( totalArea.getHeight() * 0.1f ); // Space to put the Sensor On/Off until redesign
+    
+    Rectangle<int> headerArea = totalArea.removeFromTop    ( 55.0f ).reduced ( areaPadding );
+    Rectangle<int> footerArea = totalArea.removeFromBottom ( 30.0f ).reduced ( areaPadding );
+    
+    titleHeader.setBounds ( headerArea );
+    titleFooter.setBounds ( footerArea );
+    
+    Rectangle<int> onOffStrip = totalArea.removeFromBottom( totalArea.getHeight() * 0.1f ); // Space to put the Sensor On/Off until redesign
     Rectangle<int> topHalf    = totalArea.removeFromTop( totalArea.getHeight() * 0.5f );
     Rectangle<int> bottomHalf = totalArea;
     
     // Sensor On/Off until the redesign
-    float onOffButtonWidth = tempBottom.getWidth() * 0.1f;
+    float onOffButtonWidth = onOffStrip.getWidth() * 0.1f;
+    float onOffLabelHeight = onOffStrip.getHeight() * 0.33f;
     
-    Rectangle<int> accelXOnOffArea   = tempBottom.removeFromLeft ( onOffButtonWidth );
-    Rectangle<int> accelYOnOffArea   = tempBottom.removeFromLeft ( onOffButtonWidth );
-    Rectangle<int> accelZOnOffArea   = tempBottom.removeFromLeft ( onOffButtonWidth );
-    Rectangle<int> gyroXOnOffArea    = tempBottom.removeFromLeft ( onOffButtonWidth );
-    Rectangle<int> gyroYOnOffArea    = tempBottom.removeFromLeft ( onOffButtonWidth );
-    Rectangle<int> gyroZOnOffArea    = tempBottom.removeFromLeft ( onOffButtonWidth );
-    Rectangle<int> touchXOnOffArea   = tempBottom.removeFromLeft ( onOffButtonWidth );
-    Rectangle<int> touchYOnOffArea   = tempBottom.removeFromLeft ( onOffButtonWidth );
-    Rectangle<int> touchZOnOffArea   = tempBottom.removeFromLeft ( onOffButtonWidth );
-    Rectangle<int> distanceOnOffArea = tempBottom;
+    Rectangle<int> accelXOnOffArea   = onOffStrip.removeFromLeft ( onOffButtonWidth );
+    Rectangle<int> accelYOnOffArea   = onOffStrip.removeFromLeft ( onOffButtonWidth );
+    Rectangle<int> accelZOnOffArea   = onOffStrip.removeFromLeft ( onOffButtonWidth );
+    Rectangle<int> gyroXOnOffArea    = onOffStrip.removeFromLeft ( onOffButtonWidth );
+    Rectangle<int> gyroYOnOffArea    = onOffStrip.removeFromLeft ( onOffButtonWidth );
+    Rectangle<int> gyroZOnOffArea    = onOffStrip.removeFromLeft ( onOffButtonWidth );
+    Rectangle<int> touchXOnOffArea   = onOffStrip.removeFromLeft ( onOffButtonWidth );
+    Rectangle<int> touchYOnOffArea   = onOffStrip.removeFromLeft ( onOffButtonWidth );
+    Rectangle<int> touchZOnOffArea   = onOffStrip.removeFromLeft ( onOffButtonWidth );
+    Rectangle<int> distanceOnOffArea = onOffStrip;
+    
+    Rectangle<int> accelXOnOffLabelArea   = accelXOnOffArea.removeFromTop   ( onOffLabelHeight );
+    Rectangle<int> accelYOnOffLabelArea   = accelYOnOffArea.removeFromTop   ( onOffLabelHeight );
+    Rectangle<int> accelZOnOffLabelArea   = accelZOnOffArea.removeFromTop   ( onOffLabelHeight );
+    Rectangle<int> gyroXOnOffLabelArea    = gyroXOnOffArea.removeFromTop    ( onOffLabelHeight );
+    Rectangle<int> gyroYOnOffLabelArea    = gyroYOnOffArea.removeFromTop    ( onOffLabelHeight );
+    Rectangle<int> gyroZOnOffLabelArea    = gyroZOnOffArea.removeFromTop    ( onOffLabelHeight );
+    Rectangle<int> touchXOnOffLabelArea   = touchXOnOffArea.removeFromTop   ( onOffLabelHeight );
+    Rectangle<int> touchYOnOffLabelArea   = touchYOnOffArea.removeFromTop   ( onOffLabelHeight );
+    Rectangle<int> touchZOnOffLabelArea   = touchZOnOffArea.removeFromTop   ( onOffLabelHeight );
+    Rectangle<int> distanceOnOffLabelArea = distanceOnOffArea.removeFromTop ( onOffLabelHeight );
+    
+    accelXOnOffLabel.setBounds   ( accelXOnOffLabelArea   );
+    accelYOnOffLabel.setBounds   ( accelYOnOffLabelArea   );
+    accelZOnOffLabel.setBounds   ( accelZOnOffLabelArea   );
+    gyroXOnOffLabel.setBounds    ( gyroXOnOffLabelArea    );
+    gyroYOnOffLabel.setBounds    ( gyroYOnOffLabelArea    );
+    gyroZOnOffLabel.setBounds    ( gyroZOnOffLabelArea    );
+    touchXOnOffLabel.setBounds   ( touchXOnOffLabelArea   );
+    touchYOnOffLabel.setBounds   ( touchYOnOffLabelArea   );
+    touchZOnOffLabel.setBounds   ( touchZOnOffLabelArea   );
+    distanceOnOffLabel.setBounds ( distanceOnOffLabelArea );
     
     accelXOnOffBox.setBounds   ( accelXOnOffArea   );
     accelYOnOffBox.setBounds   ( accelYOnOffArea   );
@@ -340,25 +388,23 @@ void BassOnboardAudioProcessorEditor::resized()
     distanceOnOffBox.setBounds ( distanceOnOffArea );
     
     // Top & Bottom Halves split into effect sections, width based on number of sliders
-    float topSpacing    = topHalf.getWidth() / 15.0f;
-    float bottomSpacing = bottomHalf.getWidth() / 11.0f;
+    float topSpacing    = topHalf.getWidth() / 9.0f;
+    float bottomSpacing = bottomHalf.getWidth() / 9.0f;
     
     Rectangle<int> inArea   = topHalf.removeFromLeft ( topSpacing ).reduced        ( areaPadding );
-    Rectangle<int> ngArea   = topHalf.removeFromLeft ( topSpacing * 4.0f ).reduced ( areaPadding );
-    Rectangle<int> compArea = topHalf.removeFromLeft ( topSpacing * 4.0f ).reduced ( areaPadding );
+    //Rectangle<int> compArea = topHalf.removeFromLeft ( topSpacing * 4.0f ).reduced ( areaPadding );
     Rectangle<int> wsArea   = topHalf.removeFromLeft ( topSpacing * 2.0f ).reduced ( areaPadding );
     Rectangle<int> fbArea   = topHalf.removeFromLeft ( topSpacing * 2.0f ).reduced ( areaPadding );
-    Rectangle<int> bcArea   = topHalf.reduced                                      ( areaPadding );
+    Rectangle<int> bcArea   = topHalf.removeFromLeft ( topSpacing * 2.0f ).reduced ( areaPadding );
+    Rectangle<int> formArea = topHalf.reduced                                      ( areaPadding );
     
-    Rectangle<int> formArea  = bottomHalf.removeFromLeft ( bottomSpacing * 2.0f ).reduced ( areaPadding );
     Rectangle<int> delayArea = bottomHalf.removeFromLeft ( bottomSpacing * 3.0f ).reduced ( areaPadding );
     Rectangle<int> filtArea  = bottomHalf.removeFromLeft ( bottomSpacing * 4.0f ).reduced ( areaPadding );
     Rectangle<int> haasArea  = bottomHalf.removeFromLeft ( bottomSpacing ).reduced        ( areaPadding );
     Rectangle<int> outArea   = bottomHalf.reduced                                         ( areaPadding );
     
     inAreaBG.setBounds    ( inArea.getX(),    inArea.getY(),    inArea.getWidth(),    inArea.getHeight()    );
-    ngAreaBG.setBounds    ( ngArea.getX(),    ngArea.getY(),    ngArea.getWidth(),    ngArea.getHeight()    );  // Not needed after re-design layout
-    compAreaBG.setBounds  ( compArea.getX(),  compArea.getY(),  compArea.getWidth(),  compArea.getHeight()  );
+    //compAreaBG.setBounds  ( compArea.getX(),  compArea.getY(),  compArea.getWidth(),  compArea.getHeight()  );
     wsAreaBG.setBounds    ( wsArea.getX(),    wsArea.getY(),    wsArea.getWidth(),    wsArea.getHeight()    );
     fbAreaBG.setBounds    ( fbArea.getX(),    fbArea.getY(),    fbArea.getWidth(),    fbArea.getHeight()    );
     bcAreaBG.setBounds    ( bcArea.getX(),    bcArea.getY(),    bcArea.getWidth(),    bcArea.getHeight()    );
@@ -379,7 +425,6 @@ void BassOnboardAudioProcessorEditor::resized()
     // In Gain
     Rectangle<int> inLabelArea     = inArea.removeFromTop    ( labelHeight );
     Rectangle<int> inGainLabelArea = inArea.removeFromTop    ( labelHeight );
-    Rectangle<int> inBoxSpacer     = inArea.removeFromBottom ( boxHeight   );
     
     inLabel.setBounds      ( inLabelArea );
     inGainLabel.setBounds  ( inGainLabelArea );
@@ -387,11 +432,11 @@ void BassOnboardAudioProcessorEditor::resized()
     
     
     // Noise Gate
-    Rectangle<int> ngLabelArea      = ngArea.removeFromTop    ( labelHeight );  // Not needed after re-design layout
+    //Rectangle<int> ngLabelArea      = ngArea.removeFromTop    ( labelHeight );  // Not needed after re-design layout
       
     
     // Compressor
-    Rectangle<int> compLabelArea      = compArea.removeFromTop    ( labelHeight );
+    //Rectangle<int> compLabelArea      = compArea.removeFromTop    ( labelHeight );
     /*
      
      Might want to re-introduce the compressor so I'm just commenting it out.
@@ -428,10 +473,8 @@ void BassOnboardAudioProcessorEditor::resized()
     // Waveshaper
     Rectangle<int> wsLabelArea      = wsArea.removeFromTop    ( labelHeight );
     Rectangle<int> wsParamLabelArea = wsArea.removeFromTop    ( labelHeight );
-    Rectangle<int> wsBoxArea        = wsArea.removeFromBottom ( boxHeight   );
     
     wsLabel.setBounds    ( wsLabelArea );
-    //wsOnOffBox.setBounds ( wsBoxArea.reduced(boxReduceY, boxReduceY) );
     
     float wsWidth = wsArea.getWidth() * 0.5f;
     
@@ -451,10 +494,8 @@ void BassOnboardAudioProcessorEditor::resized()
     // Foldback
     Rectangle<int> fbLabelArea      = fbArea.removeFromTop    ( labelHeight );
     Rectangle<int> fbParamLabelArea = fbArea.removeFromTop    ( labelHeight );
-    Rectangle<int> fbBoxArea        = fbArea.removeFromBottom ( boxHeight   );
     
     fbLabel.setBounds    ( fbLabelArea );
-    //fbOnOffBox.setBounds ( fbBoxArea.reduced(boxReduceY, boxReduceY) );
     
     float fbWidth = fbArea.getWidth() * 0.5f;
     
@@ -474,10 +515,8 @@ void BassOnboardAudioProcessorEditor::resized()
     // Bitcrusher
     Rectangle<int> bcLabelArea      = bcArea.removeFromTop    ( labelHeight );
     Rectangle<int> bcParamLabelArea = bcArea.removeFromTop    ( labelHeight );
-    Rectangle<int> bcBoxArea        = bcArea.removeFromBottom ( boxHeight   );
     
     bcLabel.setBounds    ( bcLabelArea );
-    //bcOnOffBox.setBounds ( bcBoxArea.reduced(boxReduceY, boxReduceY)   );
     
     float bcWidth = bcArea.getWidth() * 0.5f;
     
@@ -499,10 +538,8 @@ void BassOnboardAudioProcessorEditor::resized()
     // Formant
     Rectangle<int> formLabelArea      = formArea.removeFromTop    ( labelHeight );
     Rectangle<int> formParamLabelArea = formArea.removeFromTop    ( labelHeight );
-    Rectangle<int> formBoxArea        = formArea.removeFromBottom ( boxHeight   );
     
     formLabel.setBounds    ( formLabelArea );
-    //formOnOffBox.setBounds ( formBoxArea.reduced(boxReduceY * 2.0f, boxReduceY) );
     
     float formWidth = formArea.getWidth() * 0.5f;
     
@@ -522,10 +559,8 @@ void BassOnboardAudioProcessorEditor::resized()
     // Delay
     Rectangle<int> delayLabelArea      = delayArea.removeFromTop    ( labelHeight );
     Rectangle<int> delayParamLabelArea = delayArea.removeFromTop    ( labelHeight );
-    Rectangle<int> delayBoxArea        = delayArea.removeFromBottom ( boxHeight   );
     
     delayLabel.setBounds    ( delayLabelArea );
-    //delayOnOffBox.setBounds ( delayBoxArea.reduced(boxReduceX, boxReduceY) );
     
     float delayWidth = delayArea.getWidth() * 0.33f;
     
@@ -549,10 +584,8 @@ void BassOnboardAudioProcessorEditor::resized()
     // Filter
     Rectangle<int> filtLabelArea      = filtArea.removeFromTop    ( labelHeight );
     Rectangle<int> filtParamLabelArea = filtArea.removeFromTop    ( labelHeight );
-    Rectangle<int> filtBoxArea        = filtArea.removeFromBottom ( boxHeight   );
     
     filtLabel.setBounds    ( filtLabelArea );
-    //filtOnOffBox.setBounds ( filtBoxArea.reduced(boxReduceX * 1.5f, boxReduceY) );
     
     float filtWidth = filtArea.getWidth() * 0.25f;
     
@@ -577,18 +610,15 @@ void BassOnboardAudioProcessorEditor::resized()
     // Haas Width
     Rectangle<int> haasLabelArea      = haasArea.removeFromTop    ( labelHeight );
     Rectangle<int> haasParamLabelArea = haasArea.removeFromTop    ( labelHeight );
-    Rectangle<int> haasBoxArea        = haasArea.removeFromBottom ( boxHeight   );
     
     haasLabel.setBounds       ( haasLabelArea );
     haasWidthLabel.setBounds  ( haasParamLabelArea );
-    //haasOnOffBox.setBounds    ( haasBoxArea.reduced( 4.0f, boxReduceY) );
     haasWidthSlider.setBounds ( haasArea );
     
     
     // Out Gain
     Rectangle<int> outLabelArea      = outArea.removeFromTop    ( labelHeight );
     Rectangle<int> outParamLabelArea = outArea.removeFromTop    ( labelHeight );
-    Rectangle<int> outBoxSpacer      = outArea.removeFromBottom ( boxHeight   );
     
     outLabel.setBounds      ( outLabelArea      );
     outGainLabel.setBounds  ( outParamLabelArea );
@@ -621,7 +651,6 @@ void BassOnboardAudioProcessorEditor::timerCallback()
     
     filtCutoffSlider.setValue ( touchYMapped );
     filtResSlider.setValue    ( touchXMapped );
-    
     
     
     

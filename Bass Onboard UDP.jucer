@@ -29,6 +29,8 @@
       <FILE id="ldXMg8" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
       <FILE id="fFTxtu" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+      <FILE id="HtAj02" name="TitleHeader.cpp" compile="1" resource="0" file="Source/TitleHeader.cpp"/>
+      <FILE id="M3zOc9" name="TitleHeader.h" compile="0" resource="0" file="Source/TitleHeader.h"/>
       <FILE id="ykLTsS" name="OSCHandling.cpp" compile="1" resource="0" file="Source/OSCHandling.cpp"/>
       <FILE id="sk6tzq" name="OSCHandling.h" compile="0" resource="0" file="Source/OSCHandling.h"/>
       <FILE id="LO0JHG" name="UDPConnection.cpp" compile="1" resource="0"

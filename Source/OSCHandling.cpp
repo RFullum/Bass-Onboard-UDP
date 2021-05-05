@@ -179,6 +179,8 @@ void OSCHandler::oscMessageReceived(const OSCMessage &message)
         else if (address == distanceOnOffAddress.toString())
             distanceOnOff = val;
     }
+    
+    DBG(accelXVal);
 }
 
 
