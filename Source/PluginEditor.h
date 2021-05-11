@@ -40,6 +40,30 @@ private:
     /// Sets up an On/Off combo box
     void onOffBoxSetup(ComboBox& boxInstance);
     
+    /// Interface between Filter Parameters and physical devices
+    void filterController();
+    
+    /// Turns Sensor Parameters On & Off
+    void sensorOnOffController();
+    
+    /// encoderButton1 Presses cycle through rotary ecoder mappings to parameters
+    void encoderMapping();
+    
+    void encoderMap0(float enc1Val, float enc2Val);
+    void encoderMap1(float enc1Val, float enc2Val);
+    void encoderMap2(float enc1Val, float enc2Val);
+    void encoderMap3(float enc1Val, float enc2Val);
+    void encoderMap4(float enc1Val, float enc2Val);
+    void encoderMap5(float enc1Val, float enc2Val);
+    void encoderMap6(float enc1Val, float enc2Val);
+    
+    /// encoderButton2 Presse cycle through sensor mappings to parameters
+    void sensorMapping();
+    
+    void sensorMap0();
+    void sensorMap1();
+    void sensorMap2();
+    
     // Sliders
     Slider inGainSlider;
     
@@ -259,6 +283,31 @@ private:
     // Header/Footer
     TitleHeader titleHeader;
     TitleFooter titleFooter;
+    
+    int currentEncoderMapping;
+    
+    float encoder1Val;
+    float encoder2Val;
+    float outGainVal;
+    float haasVal;
+    float wsDWVal;
+    float wsAmtVal;
+    float fbDWVal;
+    float fbAmtVal;
+    float bcDWVal;
+    float bcAmtVal;
+    float formDWVal;
+    float formAmtVal;
+    float dlyDWVal;
+    float dlyTVal;
+    float dlyFBVal;
+    
+    bool wsAmtOverride;
+    bool fbAmtOverride;
+    bool bcAmtOverride;
+    bool formMorphOverride;
+    bool delayTimeOverride;
+    
     
     BassOnboardAudioProcessor& audioProcessor;
 

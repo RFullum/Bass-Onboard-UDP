@@ -91,8 +91,8 @@ const int HPF   = 2;
 const int POLES = 3;
 
 // Encoder bank
-const int B1 = 0;
-const int B2 = 1;
+const int encB1 = 0;
+const int encB2 = 1;
 
 
 // make an AnalogMultiButton object, pass in the pin, total and values array
@@ -128,7 +128,7 @@ float filterType = 0.0f;
 // -12dB/-24dB toggle
 // -1 = -12dB
 // +1 = -24dB
-float filterPoles = -1;
+float filterPoles = -1.0f;
 
 // Encoder Buttons
 float encButton1 = 0.0f;
@@ -234,6 +234,7 @@ void loop()
   // Button Handling
   sensorButtonController();
   filterButtonController();
+  encoderButtonController();
 
   // OSC Send
   sendOSCBundle();
@@ -255,12 +256,7 @@ void connectToWiFi()
   // Check for Wifi Module. If no module, don't continue
   if (WiFi.status() == WL_NO_MODULE)
   {
-    Serial.println("FAILURE");
     while (true);
-  }
-  else
-  {
-    Serial.println("Not Failure");
   }
 
   // Connect to Wifi Access Point
@@ -500,21 +496,21 @@ void encoderButtonController()
   // update the AnalogMultiButton object every loop
   encoderButtons.update();
 
-  if (encoderButtons.onRelease(B1))
+  if (encoderButtons.onRelease(encB1))
   {
-    encButton1++;
+    encButton1 += 1.0f;
 
-    if (encButton1 < enc1Limit)
+    if (encButton1 > enc1Limit)
     {
       encButton1 = 0.0f;
     }
   }
 
-  if (encoderButtons.onRelease(B2))
+  if (encoderButtons.onRelease(encB2))
   {
-    encButton2++;
+    encButton2 += 1.0f;
 
-    if (encButton2 < enc2Limit)
+    if (encButton2 > enc2Limit)
     {
       encButton2 = 0.0f;
     }
@@ -558,8 +554,8 @@ void sendOSCBundle()
 
   bndl.add( "/juce/distanceOnOff" ).add( distanceOnOff );
 
-  bndl.add( "/juce/encoder1" ).add( encoderValue1 );
-  bndl.add( "/juce/encoder2" ).add( encoderValue2 );
+  bndl.add( "/juce/encoder1" ).add( (float)encoderValue1 );
+  bndl.add( "/juce/encoder2" ).add( (float)encoderValue2 );
 
   bndl.add( "/juce/encButton1" ).add( encButton1 );
   bndl.add( "/juce/encButton2" ).add( encButton2 );
@@ -576,9 +572,6 @@ void sendOSCBundle()
 // it happens while the loop() is running
 void updateEncoder()
 {
-  float
-
-  
   int MSB1 = digitalRead(encoderPin1); //MSB = most significant bit
   int LSB1 = digitalRead(encoderPin2); //LSB = least significant bit
 

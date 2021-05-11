@@ -17,6 +17,31 @@ BassOnboardAudioProcessorEditor::BassOnboardAudioProcessorEditor (BassOnboardAud
     magicMint              ( Colour( (uint8)174, (uint8)255, (uint8)216 ) ),
     fieryRose              ( Colour( (uint8)255, (uint8)104, (uint8)114 ) ),
     orangePeel             ( Colour( (uint8)252, (uint8)152, (uint8)0   ) ),
+    
+    currentEncoderMapping ( 0 ),
+    
+    encoder1Val ( 0.0f ),
+    encoder2Val ( 0.0f ),
+    outGainVal  ( 0.0f ),
+    haasVal     ( 0.0f ),
+    wsDWVal     ( 0.0f ),
+    wsAmtVal    ( 1.0f ),
+    fbDWVal     ( 0.0f ),
+    fbAmtVal    ( 1.0f ),
+    bcDWVal     ( 0.0f ),
+    bcAmtVal    ( 0.0f ),
+    formDWVal   ( 0.0f ),
+    formAmtVal  ( 0.0f ),
+    dlyDWVal    ( 0.0f ),
+    dlyTVal     ( 0.0f ),
+    dlyFBVal    ( 0.0f ),
+
+    wsAmtOverride     ( false ),
+    fbAmtOverride     ( false ),
+    bcAmtOverride     ( false ),
+    formMorphOverride ( false ),
+    delayTimeOverride ( false ),
+    
     audioProcessor (p)
 {
     setSize (1000, 600);
@@ -633,6 +658,7 @@ void BassOnboardAudioProcessorEditor::resized()
 void BassOnboardAudioProcessorEditor::timerCallback()
 {
     // Generic Sensor Map
+    /*
     float accelXMapped = jmap( osc.getAccelX(), -4.0f, 4.0f, 1.0f, 200.0f );
     float accelYMapped = jmap( osc.getAccelY(), -4.0f, 4.0f, 1.0f, 200.0f );
     float accelZMapped = jmap( osc.getAccelZ(), -4.0f, 4.0f, 0.0f, 1.0f   );
@@ -651,6 +677,14 @@ void BassOnboardAudioProcessorEditor::timerCallback()
     
     filtCutoffSlider.setValue ( touchYMapped );
     filtResSlider.setValue    ( touchXMapped );
+    */
+    
+    
+    sensorOnOffController();    // Update Sensor On/Off Parameters
+    sensorMapping();            // Send sensor values to mapped parameters
+    encoderMapping();           // Send encoder values to mapped parameters
+    filterController();         // Update filter parameters
+    
     
     
     
@@ -707,4 +741,463 @@ void BassOnboardAudioProcessorEditor::onOffBoxSetup(ComboBox &boxInstance)
     boxInstance.setColour ( ComboBox::arrowColourId, magicMint        );
     
     addAndMakeVisible ( boxInstance );
+}
+
+
+/// Interface between Filter Parameters and physical devices
+void BassOnboardAudioProcessorEditor::filterController()
+{
+    // Change filter type LPF/HPF/BPF
+    if (filtTypeBox.getSelectedId() != osc.getFiltType() + 1.0f)
+        filtTypeBox.setSelectedId( osc.getFiltType() + 1.0f );
+    
+    // Change Filter Poles -12dB/-24dB
+    float pole = osc.getFiltPole();
+    
+    if (pole == -1.0f)
+        pole = 2.0f;
+    
+    if (filtPolesBox.getSelectedId() != pole)
+        filtPolesBox.setSelectedId( pole );
+    
+    
+    //float cutoffOn = osc.getTouchYOnOff();
+    //float resOn    = osc.getTouchXOnOff();
+    float cutoffOn = touchYOnOffBox.getSelectedId();
+    float resOn    = touchXOnOffBox.getSelectedId();
+    
+    if (cutoffOn == 2.0f)
+    {
+        float cutoff    = jlimit ( 200.0f, 800.0f, osc.getTouchY()         );   // Get values from touchscreen, limiting to reliably useable area
+        float cutoffMap = jmap   ( cutoff, 300.0f, 800.0f, 45.0f, 18000.0f );   // Map touchscreen values to parameter values
+        
+        // Set cutoff value
+        if (filtCutoffSlider.getValue() != cutoffMap)
+            filtCutoffSlider.setValue( cutoffMap );
+    }
+    
+    if (resOn == 2.0f)
+    {
+        float res    = jlimit ( 200.0f, 800.0f, osc.getTouchX()         );  // Get values from touchscreen, limiting to reliably useable area
+        float resMap = jmap   ( res,    300.0f, 800.0f, 0.7f,  2.5f     );  // Map touchscreen values to parameter values
+        
+        // Set resonance value
+        if (filtResSlider.getValue() != resMap)
+            filtResSlider.setValue( resMap );
+    }
+}
+
+/// Turns Sensor Parameters On & Off
+void BassOnboardAudioProcessorEditor::sensorOnOffController()
+{
+    float aX = ( osc.getAccelXOnOff() == 1.0f ) ? 2.0f : 1.0f;
+    float aY = ( osc.getAccelYOnOff() == 1.0f ) ? 2.0f : 1.0f;
+    float aZ = ( osc.getAccelZOnOff() == 1.0f ) ? 2.0f : 1.0f;
+    
+    float gX = ( osc.getGyroXOnOff() == 1.0f ) ? 2.0f : 1.0f;
+    float gY = ( osc.getGyroYOnOff() == 1.0f ) ? 2.0f : 1.0f;
+    float gZ = ( osc.getGyroZOnOff() == 1.0f ) ? 2.0f : 1.0f;
+    
+    float tX = ( osc.getTouchXOnOff() == 1.0f ) ? 2.0f : 1.0f;
+    float tY = ( osc.getTouchYOnOff() == 1.0f ) ? 2.0f : 1.0f;
+    float tZ = ( osc.getTouchZOnOff() == 1.0f ) ? 2.0f : 1.0f;
+    
+    float dis = (osc.getDistanceOnOff() == 1.0f ) ? 2.0f : 1.0f;
+    
+    if (accelXOnOffBox.getSelectedId() != aX)
+        accelXOnOffBox.setSelectedId( aX );
+    
+    if (accelYOnOffBox.getSelectedId() != aY)
+        accelYOnOffBox.setSelectedId( aY );
+    
+    if (accelZOnOffBox.getSelectedId() != aZ)
+        accelZOnOffBox.setSelectedId( aZ );
+    
+    if (gyroXOnOffBox.getSelectedId() != gX)
+        gyroXOnOffBox.setSelectedId( gX );
+    
+    if (gyroYOnOffBox.getSelectedId() != gY)
+        gyroYOnOffBox.setSelectedId( gY );
+    
+    if (gyroZOnOffBox.getSelectedId() != gZ)
+        gyroZOnOffBox.setSelectedId( gZ );
+    
+    if (touchXOnOffBox.getSelectedId() != tX)
+        touchXOnOffBox.setSelectedId( tX );
+    
+    if (touchYOnOffBox.getSelectedId() != tY)
+        touchYOnOffBox.setSelectedId( tY );
+    
+    if (touchZOnOffBox.getSelectedIdAsValue() != tZ)
+        touchZOnOffBox.setSelectedId( tZ );
+    
+    if (distanceOnOffBox.getSelectedId() != dis)
+        distanceOnOffBox.setSelectedId( dis );
+}
+
+/// encoderButton1 Presses cycle through rotary ecoder mappings to parameters
+void BassOnboardAudioProcessorEditor::encoderMapping()
+{
+    float enc1Val_ = osc.getEncoder1();
+    float enc2Val_ = osc.getEncoder2();
+    
+    switch ((int)osc.getEncButton1())
+    {
+        // Enc1 = outGain; Enc2 = Haas;
+        case 0:
+            encoderMap0(enc1Val_, enc2Val_);
+            break;
+            
+        // Enc1 = WS D/W; Enc2 = WS Amt
+        case 1:
+            encoderMap1(enc1Val_, enc2Val_);
+            break;
+            
+        // Enc1 = FB D/W; Enc2 = FB Amt
+        case 2:
+            encoderMap2(enc1Val_, enc2Val_);
+            break;
+            
+        // Enc1 = BC D/W; Enc2 = BC Amt
+        case 3:
+            encoderMap3(enc1Val_, enc2Val_);
+            break;
+            
+        // Enc1 = Form D/W; Enc2 = Form Morph
+        case 4:
+            encoderMap4(enc1Val_, enc2Val_);
+            break;
+            
+        // Enc1 = Delay D/W; Enc2 = Delay Time
+        case 5:
+            encoderMap5(enc1Val_, enc2Val_);
+            break;
+            
+        // Enc2 = Delay D/W; Enc2 = Delay FB
+        case 6:
+            encoderMap6(enc1Val_, enc2Val_);
+            break;
+            
+        // Same as case 0: Enc1 = OutGain; Enc2 = Haas
+        default:
+            encoderMap0(enc1Val_, enc2Val_);
+            break;
+    }
+    
+    encoder1Val = enc1Val_;
+    encoder2Val = enc2Val_;
+}
+
+
+void BassOnboardAudioProcessorEditor::encoderMap0(float enc1Val, float enc2Val)
+{
+    // outGain
+    if (enc1Val != encoder1Val)
+    {
+        outGainVal += (enc1Val - encoder1Val);
+        outGainVal  = jlimit( -100.0f, 12.0f, outGainVal );
+        
+        outGainSlider.setValue( outGainVal );
+    }
+    
+    // Haas
+    if (enc2Val != encoder2Val)
+    {
+        haasVal += (enc2Val - encoder2Val) * 0.1f;
+        haasVal  = jlimit( 0.0f, 1.0f, haasVal );
+        
+        haasWidthSlider.setValue( haasVal );
+    }
+}
+
+void BassOnboardAudioProcessorEditor::encoderMap1(float enc1Val, float enc2Val)
+{
+    // D/W
+    if (enc1Val != encoder1Val)
+    {
+        wsDWVal += (enc1Val - encoder1Val) * 0.1f;
+        wsDWVal  = jlimit( 0.0f, 1.0f, wsDWVal );
+        
+        wsDryWetSlider.setValue( wsDWVal );
+    }
+    
+    // Amt
+    if (enc2Val != encoder2Val && !wsAmtOverride)
+    {
+        wsAmtVal += (enc2Val - encoder2Val);
+        wsAmtVal  = jlimit( 1.0f, 200.0f, wsAmtVal );
+        
+        wsAmtSlider.setValue( wsAmtVal );
+    }
+}
+
+void BassOnboardAudioProcessorEditor::encoderMap2(float enc1Val, float enc2Val)
+{
+    // D/W
+    if (enc1Val != encoder1Val)
+    {
+        fbDWVal += (enc1Val - encoder1Val) * 0.1f;
+        fbDWVal  = jlimit( 0.0f, 1.0f, fbDWVal );
+        
+        fbDryWetSlider.setValue( fbDWVal );
+    }
+    
+    // Amt
+    if (enc2Val != encoder2Val && !fbAmtOverride)
+    {
+        fbAmtVal += (enc2Val - encoder2Val);
+        fbAmtVal  = jlimit( 1.0f, 200.0f, fbAmtVal );
+        
+        fbAmtSlider.setValue( fbAmtVal );
+    }
+}
+
+
+void BassOnboardAudioProcessorEditor::encoderMap3(float enc1Val, float enc2Val)
+{
+    // D/W
+    if (enc1Val != encoder1Val)
+    {
+        bcDWVal += (enc1Val - encoder1Val) * 0.1f;
+        bcDWVal  = jlimit( 0.0f, 1.0f, bcDWVal );
+        
+        bcDryWetSlider.setValue( bcDWVal );
+    }
+    
+    // Amt
+    if (enc2Val != encoder2Val && !bcAmtOverride)
+    {
+        bcAmtVal += (enc2Val - encoder2Val) * 0.1f;
+        bcAmtVal  = jlimit( 0.0f, 1.0f, bcAmtVal );
+        
+        bcAmtSlider.setValue( bcAmtVal );
+    }
+}
+
+void BassOnboardAudioProcessorEditor::encoderMap4(float enc1Val, float enc2Val)
+{
+    // D/W
+    if (enc1Val != encoder1Val)
+    {
+        formDWVal += (enc1Val - encoder1Val) * 0.1f;
+        formDWVal  = jlimit( 0.0f, 1.0f, formDWVal );
+        
+        formDryWetSlider.setValue( formDWVal );
+    }
+    
+    // Amt
+    if (enc2Val != encoder2Val && !formMorphOverride)
+    {
+        formAmtVal += (enc2Val - encoder2Val);
+        formAmtVal  = jlimit( 0.0f, 9.0f, formAmtVal );
+        
+        formMorphSlider.setValue( formAmtVal );
+    }
+}
+
+
+void BassOnboardAudioProcessorEditor::encoderMap5(float enc1Val, float enc2Val)
+{
+    // D/W
+    if (enc1Val != encoder1Val)
+    {
+        dlyDWVal += (enc1Val - encoder1Val) * 0.1f;
+        dlyDWVal  = jlimit( 0.0f, 1.0f, dlyDWVal );
+        
+        delayDryWetSlider.setValue( dlyDWVal );
+    }
+    
+    // Time
+    if (enc2Val != encoder2Val && !delayTimeOverride)
+    {
+        dlyTVal += (enc2Val - encoder2Val) * 0.1f;
+        dlyTVal  = jlimit( 0.0f, 1.0f, dlyTVal );
+        
+        delayTimeSlider.setValue( dlyTVal );
+    }
+}
+
+void BassOnboardAudioProcessorEditor::encoderMap6(float enc1Val, float enc2Val)
+{
+    // D/W
+    if (enc1Val != encoder1Val)
+    {
+        dlyDWVal += (enc1Val - encoder1Val) * 0.1f;
+        dlyDWVal  = jlimit( 0.0f, 1.0f, dlyDWVal );
+        
+        delayDryWetSlider.setValue( dlyDWVal );
+    }
+    
+    // Feedback
+    if (enc2Val != encoder2Val)
+    {
+        dlyFBVal += (enc2Val - encoder2Val) * 0.1f;
+        dlyFBVal  = jlimit( 0.0f, 1.0f, dlyFBVal );
+        
+        delayFeedbackSlider.setValue( dlyFBVal );
+    }
+}
+
+
+
+
+/// encoderButton2 Presse cycle through sensor mappings to parameters
+void BassOnboardAudioProcessorEditor::sensorMapping()
+{
+    switch ((int)osc.getEncButton2())
+    {
+        case 0:
+            sensorMap0();
+            break;
+            
+        case 1:
+            sensorMap1();
+            break;
+            
+        case 2:
+            sensorMap2();
+            break;
+            
+        default:
+            sensorMap0();
+            break;
+    }
+}
+
+
+void BassOnboardAudioProcessorEditor::sensorMap0()
+{
+    // AccelX to Waveshape Amt
+    if (accelXOnOffBox.getSelectedId() == 2.0f)
+    {
+        wsAmtOverride = true;
+        wsAmtSlider.setValue( jmap( osc.getAccelX(), -4.0f, 4.0f, 1.0f, 200.0f ) );
+    }
+    else
+        wsAmtOverride = false;
+    
+    // AccelY to Foldback Amt
+    if (accelYOnOffBox.getSelectedId() == 2.0f)
+    {
+        fbAmtOverride = true;
+        fbAmtSlider.setValue( jmap( osc.getAccelY(), -4.0f, 4.0f, 1.0f, 200.0f) );
+    }
+    else
+        fbAmtOverride = false;
+    
+    // AccelZ to Bitcrush Amt
+    if (accelZOnOffBox.getSelectedId() == 2.0f)
+    {
+        bcAmtOverride = true;
+        bcAmtSlider.setValue( jmap( osc.getAccelZ(), -4.0f, 4.0f, 0.0f, 1.0f) );
+    }
+    else
+        bcAmtOverride = false;
+    
+    // Distance to Formant Morph
+    if (distanceOnOffBox.getSelectedId() == 2.0f)
+    {
+        formMorphOverride = true;
+        formMorphSlider.setValue( jmap( osc.getDistance(), 0.0f, 1200.0f, 0.0f, 9.0f) );
+    }
+    else
+        formMorphOverride = false;
+    
+    // GyroX to Delay Time
+    if (gyroXOnOffBox.getSelectedId() == 2.0f)
+    {
+        delayTimeOverride = true;
+        delayTimeSlider.setValue( jmap( osc.getGyroX(), -2000.0f, 2000.0f, 0.0f, 1.0f) );
+    }
+    else
+        delayTimeOverride = false;
+}
+
+
+void BassOnboardAudioProcessorEditor::sensorMap1()
+{
+    // AccelX to Waveshape Amt
+    if (accelXOnOffBox.getSelectedId() == 2.0f)
+    {
+        wsAmtOverride = true;
+        wsAmtSlider.setValue( jmap( osc.getAccelX(), -4.0f, 4.0f, 1.0f, 200.0f ) );
+    }
+    else
+        wsAmtOverride = false;
+    
+    // AccelY to Foldback Amt
+    if (accelYOnOffBox.getSelectedId() == 2.0f)
+    {
+        fbAmtOverride = true;
+        fbAmtSlider.setValue( jmap( osc.getAccelY(), -4.0f, 4.0f, 1.0f, 200.0f) );
+    }
+    else
+        fbAmtOverride = false;
+    
+    // AccelZ to Bitcrush Amt
+    if (accelZOnOffBox.getSelectedId() == 2.0f)
+    {
+        bcAmtOverride = true;
+        bcAmtSlider.setValue( jmap( osc.getAccelZ(), -4.0f, 4.0f, 0.0f, 1.0f) );
+    }
+    else
+        bcAmtOverride = false;
+    
+    // GyroX to formant morph
+    if (gyroXOnOffBox.getSelectedId() == 2.0f)
+    {
+        formMorphOverride = true;
+        formMorphSlider.setValue( jmap( osc.getGyroX(), -2000.0f, 2000.0f, 0.0f, 9.0f) );
+    }
+    else
+        formMorphOverride = false;
+    
+    // Distance to delay time
+    if (distanceOnOffBox.getSelectedId() == 2.0f)
+    {
+        delayTimeOverride = true;
+        delayTimeSlider.setValue( jmap( osc.getDistance(), 0.0f, 1200.0f, 0.0f, 1.0f) );
+    }
+    else
+        delayTimeOverride = false;
+}
+
+
+void BassOnboardAudioProcessorEditor::sensorMap2()
+{
+    // GyroX to WS Amt
+    if (gyroXOnOffBox.getSelectedId() == 2.0f)
+    {
+        wsAmtOverride = true;
+        wsAmtSlider.setValue( jmap( osc.getGyroX(), -2000.0f, 2000.0f, 1.0f, 200.0f) );
+    }
+    else
+        wsAmtOverride = false;
+    
+    // GyroY to FB Amt
+    if (gyroYOnOffBox.getSelectedIdAsValue() == 2.0f)
+    {
+        fbAmtOverride = true;
+        fbAmtSlider.setValue( jmap( osc.getGyroY(), -2000.0f, 2000.0f, 1.0f, 200.0f) );
+    }
+    else
+        fbAmtOverride = false;
+    
+    // GyroZ to BC Amt
+    if (gyroZOnOffBox.getSelectedId() == 2.0f)
+    {
+        bcAmtOverride = true;
+        bcAmtSlider.setValue( jmap( osc.getGyroZ(), -2000.0f, 2000.0f, 0.0f, 1.0f) );
+    }
+    else
+        bcAmtOverride = false;
+    
+    // AccelX to Formant morph
+    if (accelXOnOffBox.getSelectedId() == 2.0f)
+    {
+        formMorphOverride = true;
+        formMorphSlider.setValue( jmap( osc.getAccelX(), -4.0f, 4.0f, 0.0f, 9.0f) );
+    }
+    else
+        formMorphOverride = false;
 }

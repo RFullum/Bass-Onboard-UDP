@@ -33,11 +33,20 @@ OSCHandler::OSCHandler() :
     gyroYOnOffAddress("/juce/gyroYOnOff"),
     gyroZOnOffAddress("/juce/gyroZOnOff"),
 
-    touchXOnOffAddress("/juce/touchXOnOff"),
-    touchYOnOffAddress("/juce/touchYOnOff"),
-    touchZOnOffAddress("/juce/touchZOnOff"),
+    touchXOnOffAddress("/juce/touchScreenXOnOff"),
+    touchYOnOffAddress("/juce/touchScreenYOnOff"),
+    touchZOnOffAddress("/juce/touchScreenZOnOff"),
 
     distanceOnOffAddress("/juce/distanceOnOff"),
+
+    filterTypeAddress("/juce/filtType"),
+    filterPoleAddress("/juce/filtPole"),
+
+    encoder1Address("/juce/encoder1"),
+    encoder2Address("/juce/encoder2"),
+
+    encButton1Address("/juce/encButton1"),
+    encButton2Address("/juce/encButton2"),
 
     accelXVal(0.0f),
     accelYVal(0.0f),
@@ -53,19 +62,27 @@ OSCHandler::OSCHandler() :
     touchYVal(0.0f),
     touchZVal(0.0f),
 
-    accelXOnOff(false),
-    accelYOnOff(false),
-    accelZOnOff(false),
+    accelXOnOff(-1.0f),
+    accelYOnOff(-1.0f),
+    accelZOnOff(-1.0f),
     
-    gyroXOnOff(false),
-    gyroYOnOff(false),
-    gyroZOnOff(false),
+    gyroXOnOff(-1.0f),
+    gyroYOnOff(-1.0f),
+    gyroZOnOff(-1.0f),
 
-    touchXOnOff(false),
-    touchYOnOff(false),
-    touchZOnOff(false),
+    touchXOnOff(-1.0f),
+    touchYOnOff(-1.0f),
+    touchZOnOff(-1.0f),
 
-    distanceOnOff(false)
+    distanceOnOff(-1.0f),
+
+    filtType(0.0f),
+    filtPole(-1.0f),
+
+    encoder1(0.0f),
+    encoder2(0.0f),
+    encButton1(0.0f),
+    encButton2(0.0f)
 
 {
     // UDP Socket Port
@@ -102,6 +119,14 @@ OSCHandler::OSCHandler() :
     addListener( this, touchZOnOffAddress );
     
     addListener( this, distanceOnOffAddress );
+    
+    addListener( this, filterTypeAddress );
+    addListener( this, filterPoleAddress );
+    
+    addListener( this, encoder1Address   );
+    addListener( this, encoder2Address   );
+    addListener( this, encButton1Address );
+    addListener( this, encButton2Address );
 }
 
 
@@ -178,9 +203,19 @@ void OSCHandler::oscMessageReceived(const OSCMessage &message)
             touchZOnOff = val;
         else if (address == distanceOnOffAddress.toString())
             distanceOnOff = val;
+        else if (address == filterTypeAddress.toString())
+            filtType = val;
+        else if (address == filterPoleAddress.toString())
+            filtPole = val;
+        else if (address == encoder1Address.toString())
+            encoder1 = val;
+        else if (address == encoder2Address.toString())
+            encoder2 = val;
+        else if (address == encButton1Address.toString())
+            encButton1 = val;
+        else if (address == encButton2Address.toString())
+            encButton2 = val;
     }
-    
-    DBG(accelXVal);
 }
 
 
@@ -245,61 +280,97 @@ float OSCHandler::getTouchZ()
 }
 
 /// Returns 0 or 1 if this sensor is Off or On respectively
-int OSCHandler::getAccelXOnOff()
+float OSCHandler::getAccelXOnOff()
 {
-    return (int)accelXOnOff;
+    return accelXOnOff;
 }
 
 /// Returns 0 or 1 if this sensor is Off or On respectively
-int OSCHandler::getAccelYOnOff()
+float OSCHandler::getAccelYOnOff()
 {
-    return (int)accelYOnOff;
+    return accelYOnOff;
 }
 
 /// Returns 0 or 1 if this sensor is Off or On respectively
-int OSCHandler::getAccelZOnOff()
+float OSCHandler::getAccelZOnOff()
 {
-    return (int)accelZOnOff;
+    return accelZOnOff;
 }
 
 /// Returns 0 or 1 if this sensor is Off or On respectively
-int OSCHandler::getGyroXOnOff()
+float OSCHandler::getGyroXOnOff()
 {
-    return (int)gyroXOnOff;
+    return gyroXOnOff;
 }
 
 /// Returns 0 or 1 if this sensor is Off or On respectively
-int OSCHandler::getGyroYOnOff()
+float OSCHandler::getGyroYOnOff()
 {
-    return (int)gyroYOnOff;
+    return gyroYOnOff;
 }
 
 /// Returns 0 or 1 if this sensor is Off or On respectively
-int OSCHandler::getGyroZOnOff()
+float OSCHandler::getGyroZOnOff()
 {
-    return (int)gyroZOnOff;
+    return gyroZOnOff;
 }
 
 /// Returns 0 or 1 if this sensor is Off or On respectively
-int OSCHandler::getTouchXOnOff()
+float OSCHandler::getTouchXOnOff()
 {
-    return (int)touchXOnOff;
+    return touchXOnOff;
 }
 
 /// Returns 0 or 1 if this sensor is Off or On respectively
-int OSCHandler::getTouchYOnOff()
+float OSCHandler::getTouchYOnOff()
 {
-    return (int)touchYOnOff;
+    return touchYOnOff;
 }
 
 /// Returns 0 or 1 if this sensor is Off or On respectively
-int OSCHandler::getTouchZOnOff()
+float OSCHandler::getTouchZOnOff()
 {
-    return (int)touchZOnOff;
+    return touchZOnOff;
 }
 
 /// Returns 0 or 1 if this sensor is Off or On respectively
-int OSCHandler::getDistanceOnOff()
+float OSCHandler::getDistanceOnOff()
 {
-    return (int)distanceOnOff;
+    return distanceOnOff;
+}
+
+/// Returns rotational value of encoder1
+float OSCHandler::getEncoder1()
+{
+    return encoder1;
+}
+
+/// Returns rotational value of encoder2
+float OSCHandler::getEncoder2()
+{
+    return encoder2;
+}
+
+/// Returns encButton1 value 0 to 6
+float OSCHandler::getEncButton1()
+{
+    return encButton1;
+}
+
+/// Returns encButton2 value 0 to 2
+float OSCHandler::getEncButton2()
+{
+    return encButton2;
+}
+
+/// Returns filter type 0 = LPF; 1 = BPF; 2 = HPF
+float OSCHandler::getFiltType()
+{
+    return filtType;
+}
+
+/// Returns filter pole value -1 or 1
+float OSCHandler::getFiltPole()
+{
+    return filtPole;
 }

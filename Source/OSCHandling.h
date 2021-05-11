@@ -73,34 +73,52 @@ public:
     float getTouchZ();
     
     /// Returns 0 or 1 if this sensor is Off or On respectively
-    int getAccelXOnOff();
+    float getAccelXOnOff();
     
     /// Returns 0 or 1 if this sensor is Off or On respectively
-    int getAccelYOnOff();
+    float getAccelYOnOff();
     
     /// Returns 0 or 1 if this sensor is Off or On respectively
-    int getAccelZOnOff();
+    float getAccelZOnOff();
     
     /// Returns 0 or 1 if this sensor is Off or On respectively
-    int getGyroXOnOff();
+    float getGyroXOnOff();
     
     /// Returns 0 or 1 if this sensor is Off or On respectively
-    int getGyroYOnOff();
+    float getGyroYOnOff();
     
     /// Returns 0 or 1 if this sensor is Off or On respectively
-    int getGyroZOnOff();
+    float getGyroZOnOff();
     
     /// Returns 0 or 1 if this sensor is Off or On respectively
-    int getTouchXOnOff();
+    float getTouchXOnOff();
     
     /// Returns 0 or 1 if this sensor is Off or On respectively
-    int getTouchYOnOff();
+    float getTouchYOnOff();
     
     /// Returns 0 or 1 if this sensor is Off or On respectively
-    int getTouchZOnOff();
+    float getTouchZOnOff();
     
     /// Returns 0 or 1 if this sensor is Off or On respectively
-    int getDistanceOnOff();
+    float getDistanceOnOff();
+    
+    /// Returns rotational value of encoder1
+    float getEncoder1();
+    
+    /// Returns rotational value of encoder2
+    float getEncoder2();
+    
+    /// Returns encButton1 value 0 to 6
+    float getEncButton1();
+    
+    /// Returns encButton2 value 0 to 2
+    float getEncButton2();
+    
+    /// Returns filter type 0 = LPF; 1 = BPF; 2 = HPF
+    float getFiltType();
+    
+    /// Returns filter pole value -1 or 1
+    float getFiltPole();
     
 private:
     /// Automatically called when an OSC Message comes in. Checks the address, and sets appropriate variable with incoming float
@@ -140,6 +158,15 @@ private:
     
     OSCAddress distanceOnOffAddress;
     
+    OSCAddress filterTypeAddress;
+    OSCAddress filterPoleAddress;
+    
+    OSCAddress encoder1Address;
+    OSCAddress encoder2Address;
+    
+    OSCAddress encButton1Address;
+    OSCAddress encButton2Address;
+    
     
     float accelXVal;
     float accelYVal;
@@ -168,4 +195,12 @@ private:
     float touchZOnOff;
     
     float distanceOnOff;
+    
+    float filtType;
+    float filtPole;
+    
+    float encoder1;
+    float encoder2;
+    float encButton1;
+    float encButton2;
 };
