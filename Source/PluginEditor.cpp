@@ -58,7 +58,7 @@ BassOnboardAudioProcessorEditor::BassOnboardAudioProcessorEditor (BassOnboardAud
     
     /*
      
-     Might want to re-introduce the compressor so I'm just commenting it out.
+     ~~~~ Might want to re-introduce the compressor so I'm just commenting it out. ~~~~
      
     // Compressor
     sliderSetup ( compThreshSlider,  vertSlider, true );
@@ -117,16 +117,7 @@ BassOnboardAudioProcessorEditor::BassOnboardAudioProcessorEditor (BassOnboardAud
     
     onOffBoxSetup( distanceOnOffBox );
     
-    // onOffBoxSetup ( compOnOffBox  ); // Might want to re-introduce the compressor so I'm just commenting it out.
-    /*
-    onOffBoxSetup ( wsOnOffBox    );
-    onOffBoxSetup ( fbOnOffBox    );
-    onOffBoxSetup ( bcOnOffBox    );
-    onOffBoxSetup ( formOnOffBox  );
-    onOffBoxSetup ( delayOnOffBox );
-    onOffBoxSetup ( filtOnOffBox  );
-    onOffBoxSetup ( haasOnOffBox  );
-    */
+    // onOffBoxSetup ( compOnOffBox  ); // ~~~~ Might want to re-introduce the compressor so I'm just commenting it out. ~~~~
     
     // Filter Type
     filtTypeBox.addItem              ( "LPF", 1 );
@@ -168,7 +159,7 @@ BassOnboardAudioProcessorEditor::BassOnboardAudioProcessorEditor (BassOnboardAud
     
     /*
      
-     Might want to re-introduce the compressor so I'm just commenting it out.
+     ~~~~ Might want to re-introduce the compressor so I'm just commenting it out. ~~~~
      
     // Compressor
     sliderLabelSetup ( compLabel,        "Compressor", bigLabelSize   );
@@ -238,7 +229,7 @@ BassOnboardAudioProcessorEditor::BassOnboardAudioProcessorEditor (BassOnboardAud
     
     /*
      
-     Might want to re-introduce the compressor so I'm just commenting it out.
+     ~~~~ Might want to re-introduce the compressor so I'm just commenting it out. ~~~~
      
     // Compressor
     compThreshAttachment  = std::make_unique<AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.parameters,"compThresh",  compThreshSlider  );
@@ -296,21 +287,12 @@ BassOnboardAudioProcessorEditor::BassOnboardAudioProcessorEditor (BassOnboardAud
     
     distanceOnOffAttachment = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "distOnOff", distanceOnOffBox );
     
-    // compOnOffAttachment  = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "compOnOff",     compOnOffBox  ); // Might want to re-introduce the compressor so I'm just commenting it out.
+    // ~~~~ Might want to re-introduce the compressor so I'm just commenting it out. ~~~~
+    // compOnOffAttachment  = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "compOnOff",     compOnOffBox  );
     
-    /*
-    wsOnOffAttachment    = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "wsOnOff",       wsOnOffBox    );
-    fbOnOffAttachment    = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "foldbackOnOff", fbOnOffBox    );
-    bcOnOffAttachment    = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "bitcrushOnOff", bcOnOffBox    );
-    formOnOffAttachment  = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "formantOnOff",  formOnOffBox  );
-    delayOnOffAttachment = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "delayFXOnOff",  delayOnOffBox );
-    */
     filtTypeAttachment   = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "svFiltType",    filtTypeBox   );
     filtPolesAttachment  = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "svFiltPoles",   filtPolesBox  );
-    /*
-    filtOnOffAttachment  = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "svFiltOnOff",   filtOnOffBox  );
-    haasOnOffAttachment  = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "haasOnOff",     haasOnOffBox  );
-    */
+    
     
     // Header/Footer
     titleHeader.setTextColor ( orangePeel );
@@ -335,7 +317,6 @@ void BassOnboardAudioProcessorEditor::paint (juce::Graphics& g)
     // Subsections
     g.setColour            ( onyx );
     g.fillRoundedRectangle ( inAreaBG,    rounding );
-    //g.fillRoundedRectangle (compAreaBG,   rounding );
     g.fillRoundedRectangle ( wsAreaBG,    rounding );
     g.fillRoundedRectangle ( fbAreaBG,    rounding );
     g.fillRoundedRectangle ( bcAreaBG,    rounding );
@@ -417,7 +398,6 @@ void BassOnboardAudioProcessorEditor::resized()
     float bottomSpacing = bottomHalf.getWidth() / 9.0f;
     
     Rectangle<int> inArea   = topHalf.removeFromLeft ( topSpacing ).reduced        ( areaPadding );
-    //Rectangle<int> compArea = topHalf.removeFromLeft ( topSpacing * 4.0f ).reduced ( areaPadding );
     Rectangle<int> wsArea   = topHalf.removeFromLeft ( topSpacing * 2.0f ).reduced ( areaPadding );
     Rectangle<int> fbArea   = topHalf.removeFromLeft ( topSpacing * 2.0f ).reduced ( areaPadding );
     Rectangle<int> bcArea   = topHalf.removeFromLeft ( topSpacing * 2.0f ).reduced ( areaPadding );
@@ -429,7 +409,6 @@ void BassOnboardAudioProcessorEditor::resized()
     Rectangle<int> outArea   = bottomHalf.reduced                                         ( areaPadding );
     
     inAreaBG.setBounds    ( inArea.getX(),    inArea.getY(),    inArea.getWidth(),    inArea.getHeight()    );
-    //compAreaBG.setBounds  ( compArea.getX(),  compArea.getY(),  compArea.getWidth(),  compArea.getHeight()  );
     wsAreaBG.setBounds    ( wsArea.getX(),    wsArea.getY(),    wsArea.getWidth(),    wsArea.getHeight()    );
     fbAreaBG.setBounds    ( fbArea.getX(),    fbArea.getY(),    fbArea.getWidth(),    fbArea.getHeight()    );
     bcAreaBG.setBounds    ( bcArea.getX(),    bcArea.getY(),    bcArea.getWidth(),    bcArea.getHeight()    );
@@ -440,9 +419,7 @@ void BassOnboardAudioProcessorEditor::resized()
     outAreaBG.setBounds   ( outArea.getX(),   outArea.getY(),   outArea.getWidth(),   outArea.getHeight()   );
     
     float labelHeight = 50.0f;
-    float boxHeight   = 50.0f;
-    float boxReduceX  = 75.0f;  // Only works on wider effects section
-    float boxReduceY  = 12.0f;
+    float boxReduce   = 12.0f;
     
     
     // Top Half Areas
@@ -454,46 +431,6 @@ void BassOnboardAudioProcessorEditor::resized()
     inLabel.setBounds      ( inLabelArea );
     inGainLabel.setBounds  ( inGainLabelArea );
     inGainSlider.setBounds ( inArea );
-    
-    
-    // Noise Gate
-    //Rectangle<int> ngLabelArea      = ngArea.removeFromTop    ( labelHeight );  // Not needed after re-design layout
-      
-    
-    // Compressor
-    //Rectangle<int> compLabelArea      = compArea.removeFromTop    ( labelHeight );
-    /*
-     
-     Might want to re-introduce the compressor so I'm just commenting it out.
-     
-    Rectangle<int> compParamLabelArea = compArea.removeFromTop    ( labelHeight );
-    Rectangle<int> compBoxArea        = compArea.removeFromBottom ( boxHeight   );
-    
-    compLabel.setBounds    ( compLabelArea );
-    compOnOffBox.setBounds ( compBoxArea.reduced(boxReduceX, boxReduceY) );
-    
-    float compWidth = compArea.getWidth() * 0.25f;
-    
-    Rectangle<int> compThreshLabelArea  = compParamLabelArea.removeFromLeft ( compWidth );
-    Rectangle<int> compRatioLabelArea   = compParamLabelArea.removeFromLeft ( compWidth );
-    Rectangle<int> compAttackLabelArea  = compParamLabelArea.removeFromLeft ( compWidth );
-    Rectangle<int> compReleaseLabelArea = compParamLabelArea;
-    
-    compThreshLabel.setBounds  ( compThreshLabelArea  );
-    compRatioLabel.setBounds   ( compRatioLabelArea   );
-    compAttackLabel.setBounds  ( compAttackLabelArea  );
-    compReleaseLabel.setBounds ( compReleaseLabelArea );
-    
-    Rectangle<int> compThreshArea  = compArea.removeFromLeft ( compWidth );
-    Rectangle<int> compRatioArea   = compArea.removeFromLeft ( compWidth );
-    Rectangle<int> compAttackArea  = compArea.removeFromLeft ( compWidth );
-    Rectangle<int> compReleaseArea = compArea;
-    
-    compThreshSlider.setBounds  ( compThreshArea  );
-    compRatioSlider.setBounds   ( compRatioArea   );
-    compAttackSlider.setBounds  ( compAttackArea  );
-    compReleaseSlider.setBounds ( compReleaseArea );
-    */
     
     // Waveshaper
     Rectangle<int> wsLabelArea      = wsArea.removeFromTop    ( labelHeight );
@@ -628,8 +565,8 @@ void BassOnboardAudioProcessorEditor::resized()
     
     filtCutoffSlider.setBounds ( filtCutoffArea );
     filtResSlider.setBounds    ( filtResArea    );
-    filtTypeBox.setBounds      ( filtTypeArea.reduced(boxReduceY, boxReduceY) );
-    filtPolesBox.setBounds     ( filtPoleArea.reduced(boxReduceY, boxReduceY) );
+    filtTypeBox.setBounds      ( filtTypeArea.reduced(boxReduce, boxReduce) );
+    filtPolesBox.setBounds     ( filtPoleArea.reduced(boxReduce, boxReduce) );
     
     
     // Haas Width
@@ -657,38 +594,10 @@ void BassOnboardAudioProcessorEditor::resized()
 
 void BassOnboardAudioProcessorEditor::timerCallback()
 {
-    // Generic Sensor Map
-    /*
-    float accelXMapped = jmap( osc.getAccelX(), -4.0f, 4.0f, 1.0f, 200.0f );
-    float accelYMapped = jmap( osc.getAccelY(), -4.0f, 4.0f, 1.0f, 200.0f );
-    float accelZMapped = jmap( osc.getAccelZ(), -4.0f, 4.0f, 0.0f, 1.0f   );
-    
-    float distanceMapped = jmap( osc.getDistance(), 0.0f, 1200.0f, 0.0f, 9.0f );
-    
-    float touchXMapped = jmap( osc.getTouchX(), 300.0f, 800.0f, 0.7f,  2.5f     );
-    float touchYMapped = jmap( osc.getTouchY(), 300.0f, 800.0f, 20.0f, 18000.0f );
-    
-    // Control Parameter with mapped Sensor values
-    wsAmtSlider.setValue ( accelXMapped );
-    fbAmtSlider.setValue ( accelYMapped );
-    bcAmtSlider.setValue ( accelZMapped );
-    
-    formMorphSlider.setValue ( distanceMapped );
-    
-    filtCutoffSlider.setValue ( touchYMapped );
-    filtResSlider.setValue    ( touchXMapped );
-    */
-    
-    
     sensorOnOffController();    // Update Sensor On/Off Parameters
     sensorMapping();            // Send sensor values to mapped parameters
     encoderMapping();           // Send encoder values to mapped parameters
     filterController();         // Update filter parameters
-    
-    
-    
-    
-        
 }
 
 
@@ -723,7 +632,8 @@ void BassOnboardAudioProcessorEditor::sliderLabelSetup(Label &labelInstance, Str
     labelInstance.setJustificationType ( Justification::centred );
     labelInstance.setColour            ( Label::textColourId, orangePeel );
     labelInstance.setFont              ( Font("helvetica", fontSize, 1) );
-    addAndMakeVisible                  ( labelInstance );
+    
+    addAndMakeVisible ( labelInstance );
 }
 
 
@@ -760,16 +670,15 @@ void BassOnboardAudioProcessorEditor::filterController()
     if (filtPolesBox.getSelectedId() != pole)
         filtPolesBox.setSelectedId( pole );
     
-    
-    //float cutoffOn = osc.getTouchYOnOff();
-    //float resOn    = osc.getTouchXOnOff();
+    // Filter Cutoff and Resonance
     float cutoffOn = touchYOnOffBox.getSelectedId();
     float resOn    = touchXOnOffBox.getSelectedId();
     
     if (cutoffOn == 2.0f)
     {
-        float cutoff    = jlimit ( 200.0f, 800.0f, osc.getTouchY()         );   // Get values from touchscreen, limiting to reliably useable area
-        float cutoffMap = jmap   ( cutoff, 300.0f, 800.0f, 45.0f, 18000.0f );   // Map touchscreen values to parameter values
+        float cutoffMap = jmap   ( osc.getTouchY(), 300.0f, 800.0f, 45.0f, 15000.0f );   // Map touchscreen values to parameter values
+        
+        cutoffMap = jlimit( 20.0f, 18000.0f, cutoffMap ); // Limit values to parameter range
         
         // Set cutoff value
         if (filtCutoffSlider.getValue() != cutoffMap)
@@ -778,8 +687,9 @@ void BassOnboardAudioProcessorEditor::filterController()
     
     if (resOn == 2.0f)
     {
-        float res    = jlimit ( 200.0f, 800.0f, osc.getTouchX()         );  // Get values from touchscreen, limiting to reliably useable area
-        float resMap = jmap   ( res,    300.0f, 800.0f, 0.7f,  2.5f     );  // Map touchscreen values to parameter values
+        float resMap = jmap   ( osc.getTouchX(), 300.0f, 800.0f, 0.9f,  2.4f     );  // Map touchscreen values to parameter values
+        
+        resMap = jlimit( 0.7f, 2.5f, resMap );  // Limit values to parameter range
         
         // Set resonance value
         if (filtResSlider.getValue() != resMap)
@@ -790,6 +700,7 @@ void BassOnboardAudioProcessorEditor::filterController()
 /// Turns Sensor Parameters On & Off
 void BassOnboardAudioProcessorEditor::sensorOnOffController()
 {
+    // Converts -1 Off/1 On values from Arduino to match 1 Off & 2 On values of ComboBox
     float aX = ( osc.getAccelXOnOff() == 1.0f ) ? 2.0f : 1.0f;
     float aY = ( osc.getAccelYOnOff() == 1.0f ) ? 2.0f : 1.0f;
     float aZ = ( osc.getAccelZOnOff() == 1.0f ) ? 2.0f : 1.0f;
@@ -804,6 +715,7 @@ void BassOnboardAudioProcessorEditor::sensorOnOffController()
     
     float dis = (osc.getDistanceOnOff() == 1.0f ) ? 2.0f : 1.0f;
     
+    // If the button flipped the value, change the ComboBox value
     if (accelXOnOffBox.getSelectedId() != aX)
         accelXOnOffBox.setSelectedId( aX );
     
@@ -838,9 +750,11 @@ void BassOnboardAudioProcessorEditor::sensorOnOffController()
 /// encoderButton1 Presses cycle through rotary ecoder mappings to parameters
 void BassOnboardAudioProcessorEditor::encoderMapping()
 {
+    // Get value from Rotary Encoders
     float enc1Val_ = osc.getEncoder1();
     float enc2Val_ = osc.getEncoder2();
     
+    // Encoder1 Button presses cycle through Rotary Encoder Mappings 0 - 6
     switch ((int)osc.getEncButton1())
     {
         // Enc1 = outGain; Enc2 = Haas;
@@ -884,11 +798,16 @@ void BassOnboardAudioProcessorEditor::encoderMapping()
             break;
     }
     
+    // update current encoder value
     encoder1Val = enc1Val_;
     encoder2Val = enc2Val_;
 }
 
-
+// Encoder Maps compare the incoming encoder value to the current saved (previous) encoder value
+// and update the parameter value by the difference up or down, only if that mapping is
+// active. Some paramters are also controlled by sensor values. If a sensor is mapped to
+// the same parameter as an active rotary encoder, the sensor takes priority and the rotary
+// encoder is locked out via the corresponding Override bool.
 void BassOnboardAudioProcessorEditor::encoderMap0(float enc1Val, float enc2Val)
 {
     // outGain
@@ -910,6 +829,7 @@ void BassOnboardAudioProcessorEditor::encoderMap0(float enc1Val, float enc2Val)
     }
 }
 
+// See Encoder Maps comment above
 void BassOnboardAudioProcessorEditor::encoderMap1(float enc1Val, float enc2Val)
 {
     // D/W
@@ -931,6 +851,7 @@ void BassOnboardAudioProcessorEditor::encoderMap1(float enc1Val, float enc2Val)
     }
 }
 
+// See Encoder Maps comment above
 void BassOnboardAudioProcessorEditor::encoderMap2(float enc1Val, float enc2Val)
 {
     // D/W
@@ -952,7 +873,7 @@ void BassOnboardAudioProcessorEditor::encoderMap2(float enc1Val, float enc2Val)
     }
 }
 
-
+// See Encoder Maps comment above
 void BassOnboardAudioProcessorEditor::encoderMap3(float enc1Val, float enc2Val)
 {
     // D/W
@@ -974,6 +895,7 @@ void BassOnboardAudioProcessorEditor::encoderMap3(float enc1Val, float enc2Val)
     }
 }
 
+// See Encoder Maps comment above
 void BassOnboardAudioProcessorEditor::encoderMap4(float enc1Val, float enc2Val)
 {
     // D/W
@@ -995,7 +917,7 @@ void BassOnboardAudioProcessorEditor::encoderMap4(float enc1Val, float enc2Val)
     }
 }
 
-
+// See Encoder Maps comment above
 void BassOnboardAudioProcessorEditor::encoderMap5(float enc1Val, float enc2Val)
 {
     // D/W
@@ -1017,6 +939,7 @@ void BassOnboardAudioProcessorEditor::encoderMap5(float enc1Val, float enc2Val)
     }
 }
 
+// See Encoder Maps comment above
 void BassOnboardAudioProcessorEditor::encoderMap6(float enc1Val, float enc2Val)
 {
     // D/W
@@ -1064,7 +987,10 @@ void BassOnboardAudioProcessorEditor::sensorMapping()
     }
 }
 
-
+// Sensor Maps send the values of the mappable sensors (Accel/Gyro/Distance) to various
+// parameters values. The Encoder2 Button presses cycle through the sensor mappings 0 to 2.
+// If a sensor is on and is mapped to a parameter, it triggers the override that prevents
+// a Rotary Encoder from controlling the same parameter.
 void BassOnboardAudioProcessorEditor::sensorMap0()
 {
     // AccelX to Waveshape Amt
@@ -1113,7 +1039,7 @@ void BassOnboardAudioProcessorEditor::sensorMap0()
         delayTimeOverride = false;
 }
 
-
+// See Sensor Maps comment above
 void BassOnboardAudioProcessorEditor::sensorMap1()
 {
     // AccelX to Waveshape Amt
@@ -1162,7 +1088,7 @@ void BassOnboardAudioProcessorEditor::sensorMap1()
         delayTimeOverride = false;
 }
 
-
+// See Sensor Maps comment above
 void BassOnboardAudioProcessorEditor::sensorMap2()
 {
     // GyroX to WS Amt

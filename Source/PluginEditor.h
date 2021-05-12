@@ -10,9 +10,6 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
-#include "Accelerometer.h"
-#include "DistanceMeter.h"
-#include "TouchScreen.h"
 #include "OSCHandling.h"
 #include "TitleHeader.h"
 
