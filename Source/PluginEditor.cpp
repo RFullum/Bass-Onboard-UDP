@@ -747,148 +747,114 @@ void BassOnboardAudioProcessorEditor::sensorOnOffController()
         distanceOnOffBox.setSelectedId( dis );
 }
 
-/// encoderButton1 Presses cycle through rotary ecoder mappings to parameters
+/**
+ encoderButton1 Presses cycle through rotary ecoder mappings to parameters
+ Encoder Maps compare the incoming encoder value to the current saved (previous) encoder value
+ and update the parameter value by the difference up or down, only if that mapping is
+ active. Some paramters are also controlled by sensor values. If a sensor is mapped to
+ the same parameter as an active rotary encoder, the sensor takes priority and the rotary
+ encoder is locked out via the corresponding Override bool.
+ */
 void BassOnboardAudioProcessorEditor::encoderMapping()
 {
     // Get value from Rotary Encoders
-    float enc1Val_ = osc.getEncoder1();
-    float enc2Val_ = osc.getEncoder2();
+    float enc1Val = osc.getEncoder1();
+    float enc2Val = osc.getEncoder2();
     
     // Encoder1 Button presses cycle through Rotary Encoder Mappings 0 - 6
     switch ((int)osc.getEncButton1())
     {
         // Enc1 = outGain; Enc2 = Haas;
         case 0:
-            encoderMap0(enc1Val_, enc2Val_);
+            // outGain
+            if (enc1Val != encoder1Val)
+                encoderMapValueSet( enc1Val, outGainVal, encoder1Val, 1.0f, -100.0f, 12.0f, outGainSlider );
+            
+            // Haas
+            if (enc2Val != encoder2Val)
+                encoderMapValueSet( enc2Val, haasVal, encoder2Val, 0.1f, 0.0f, 1.0f, haasWidthSlider );
             break;
             
         // Enc1 = WS D/W; Enc2 = WS Amt
         case 1:
-            encoderMap1(enc1Val_, enc2Val_);
+            // D/W
+            if (enc1Val != encoder1Val)
+                encoderMapValueSet( enc1Val, wsDWVal, encoder1Val, 0.1f, 0.0f, 1.0f, wsDryWetSlider );
+            
+            // Amt
+            if (enc2Val != encoder2Val && !wsAmtOverride)
+                encoderMapValueSet( enc2Val, wsAmtVal, encoder2Val, 1.0f, 1.0f, 200.0f, wsAmtSlider );
             break;
             
         // Enc1 = FB D/W; Enc2 = FB Amt
         case 2:
-            encoderMap2(enc1Val_, enc2Val_);
+            // D/W
+            if (enc1Val != encoder1Val)
+                encoderMapValueSet( enc1Val, fbDWVal, encoder1Val, 0.1f, 0.0f, 1.0f, fbDryWetSlider );
+            
+            // Amt
+            if (enc2Val != encoder2Val && !fbAmtOverride)
+                encoderMapValueSet( enc2Val, fbAmtVal, encoder2Val, 1.0f, 1.0f, 200.0f, fbAmtSlider );
             break;
             
         // Enc1 = BC D/W; Enc2 = BC Amt
         case 3:
-            encoderMap3(enc1Val_, enc2Val_);
+            // D/W
+            if (enc1Val != encoder1Val)
+                encoderMapValueSet( enc1Val, bcDWVal, encoder1Val, 0.1f, 0.0f, 1.0f, bcDryWetSlider );
+            
+            // Amt
+            if (enc2Val != encoder2Val && !bcAmtOverride)
+                encoderMapValueSet( enc2Val, bcAmtVal, encoder2Val, 0.1f, 0.0f, 1.0f, bcAmtSlider );
             break;
             
         // Enc1 = Form D/W; Enc2 = Form Morph
         case 4:
-            encoderMap4(enc1Val_, enc2Val_);
+            // D/W
+            if (enc1Val != encoder1Val)
+                encoderMapValueSet( enc1Val, formDWVal, encoder1Val, 0.1f, 0.0f, 1.0f, formDryWetSlider );
+            
+            // Amt
+            if (enc2Val != encoder2Val && !formMorphOverride)
+                encoderMapValueSet( enc2Val, formAmtVal, encoder2Val, 1.0f, 0.0f, 9.0f, formMorphSlider );
             break;
             
         // Enc1 = Delay D/W; Enc2 = Delay Time
         case 5:
-            encoderMap5(enc1Val_, enc2Val_);
+            // D/W
+            if (enc1Val != encoder1Val)
+                encoderMapValueSet( enc1Val, dlyDWVal, encoder1Val, 0.1f, 0.0f, 1.0f, delayDryWetSlider );
+            
+            // Time
+            if (enc2Val != encoder2Val && !delayTimeOverride)
+                encoderMapValueSet( enc2Val, dlyTVal, encoder2Val, 0.1f, 0.0f, 1.0f, delayTimeSlider );
             break;
             
         // Enc2 = Delay D/W; Enc2 = Delay FB
         case 6:
-            encoderMap6(enc1Val_, enc2Val_);
+            // D/W
+            if (enc1Val != encoder1Val)
+                encoderMapValueSet( enc1Val, dlyDWVal, encoder1Val, 0.1f, 0.0f, 1.0f, delayDryWetSlider );
+            
+            // Feedback
+            if (enc2Val != encoder2Val)
+                encoderMapValueSet( enc2Val, dlyFBVal, encoder2Val, 0.1f, 0.0f, 1.0f, delayFeedbackSlider );
             break;
             
         // Same as case 0: Enc1 = OutGain; Enc2 = Haas
         default:
-            encoderMap0(enc1Val_, enc2Val_);
+            if (enc1Val != encoder1Val)
+                encoderMapValueSet( enc1Val, outGainVal, encoder1Val, 1.0f, -100.0f, 12.0f, outGainSlider );
+            
+            // Haas
+            if (enc2Val != encoder2Val)
+                encoderMapValueSet( enc2Val, haasVal, encoder2Val, 0.1f, 0.0f, 1.0f, haasWidthSlider );
             break;
     }
     
     // update current encoder value
-    encoder1Val = enc1Val_;
-    encoder2Val = enc2Val_;
-}
-
-// Encoder Maps compare the incoming encoder value to the current saved (previous) encoder value
-// and update the parameter value by the difference up or down, only if that mapping is
-// active. Some paramters are also controlled by sensor values. If a sensor is mapped to
-// the same parameter as an active rotary encoder, the sensor takes priority and the rotary
-// encoder is locked out via the corresponding Override bool.
-void BassOnboardAudioProcessorEditor::encoderMap0(float enc1Val, float enc2Val)
-{
-    // outGain
-    if (enc1Val != encoder1Val)
-        encoderMapValueSet( enc1Val, outGainVal, encoder1Val, 1.0f, -100.0f, 12.0f, outGainSlider );
-    
-    // Haas
-    if (enc2Val != encoder2Val)
-        encoderMapValueSet( enc2Val, haasVal, encoder2Val, 0.1f, 0.0f, 1.0f, haasWidthSlider );
-}
-
-// See Encoder Maps comment above
-void BassOnboardAudioProcessorEditor::encoderMap1(float enc1Val, float enc2Val)
-{
-    // D/W
-    if (enc1Val != encoder1Val)
-        encoderMapValueSet( enc1Val, wsDWVal, encoder1Val, 0.1f, 0.0f, 1.0f, wsDryWetSlider );
-    
-    // Amt
-    if (enc2Val != encoder2Val && !wsAmtOverride)
-        encoderMapValueSet( enc2Val, wsAmtVal, encoder2Val, 1.0f, 1.0f, 200.0f, wsAmtSlider );
-}
-
-// See Encoder Maps comment above
-void BassOnboardAudioProcessorEditor::encoderMap2(float enc1Val, float enc2Val)
-{
-    // D/W
-    if (enc1Val != encoder1Val)
-        encoderMapValueSet( enc1Val, fbDWVal, encoder1Val, 0.1f, 0.0f, 1.0f, fbDryWetSlider );
-    
-    // Amt
-    if (enc2Val != encoder2Val && !fbAmtOverride)
-        encoderMapValueSet( enc2Val, fbAmtVal, encoder2Val, 1.0f, 1.0f, 200.0f, fbAmtSlider );
-}
-
-// See Encoder Maps comment above
-void BassOnboardAudioProcessorEditor::encoderMap3(float enc1Val, float enc2Val)
-{
-    // D/W
-    if (enc1Val != encoder1Val)
-        encoderMapValueSet( enc1Val, bcDWVal, encoder1Val, 0.1f, 0.0f, 1.0f, bcDryWetSlider );
-    
-    // Amt
-    if (enc2Val != encoder2Val && !bcAmtOverride)
-        encoderMapValueSet( enc2Val, bcAmtVal, encoder2Val, 0.1f, 0.0f, 1.0f, bcAmtSlider );
-}
-
-// See Encoder Maps comment above
-void BassOnboardAudioProcessorEditor::encoderMap4(float enc1Val, float enc2Val)
-{
-    // D/W
-    if (enc1Val != encoder1Val)
-        encoderMapValueSet( enc1Val, formDWVal, encoder1Val, 0.1f, 0.0f, 1.0f, formDryWetSlider );
-    
-    // Amt
-    if (enc2Val != encoder2Val && !formMorphOverride)
-        encoderMapValueSet( enc2Val, formAmtVal, encoder2Val, 1.0f, 0.0f, 9.0f, formMorphSlider );
-}
-
-// See Encoder Maps comment above
-void BassOnboardAudioProcessorEditor::encoderMap5(float enc1Val, float enc2Val)
-{
-    // D/W
-    if (enc1Val != encoder1Val)
-        encoderMapValueSet( enc1Val, dlyDWVal, encoder1Val, 0.1f, 0.0f, 1.0f, delayDryWetSlider );
-    
-    // Time
-    if (enc2Val != encoder2Val && !delayTimeOverride)
-        encoderMapValueSet( enc2Val, dlyTVal, encoder2Val, 0.1f, 0.0f, 1.0f, delayTimeSlider );
-}
-
-// See Encoder Maps comment above
-void BassOnboardAudioProcessorEditor::encoderMap6(float enc1Val, float enc2Val)
-{
-    // D/W
-    if (enc1Val != encoder1Val)
-        encoderMapValueSet( enc1Val, dlyDWVal, encoder1Val, 0.1f, 0.0f, 1.0f, delayDryWetSlider );
-    
-    // Feedback
-    if (enc2Val != encoder2Val)
-        encoderMapValueSet( enc2Val, dlyFBVal, encoder2Val, 0.1f, 0.0f, 1.0f, delayFeedbackSlider );
+    encoder1Val = enc1Val;
+    encoder2Val = enc2Val;
 }
 
 /**
@@ -902,6 +868,8 @@ void BassOnboardAudioProcessorEditor::encoderMapValueSet(float encVal, float& pa
     
     sliderInstance.setValue( paramVal );
 }
+
+
 
 /// encoderButton2 Presse cycle through sensor mappings to parameters
 void BassOnboardAudioProcessorEditor::sensorMapping()
@@ -933,136 +901,67 @@ void BassOnboardAudioProcessorEditor::sensorMapping()
 void BassOnboardAudioProcessorEditor::sensorMap0()
 {
     // AccelX to Waveshape Amt
-    if (accelXOnOffBox.getSelectedId() == 2.0f)
-    {
-        wsAmtOverride = true;
-        wsAmtSlider.setValue( jmap( osc.getAccelX(), -4.0f, 4.0f, 1.0f, 200.0f ) );
-    }
-    else
-        wsAmtOverride = false;
+    sensorMapValueSet( accelXOnOffBox, wsAmtOverride, wsAmtSlider, osc.getAccelX(), -4.0f, 4.0f, 1.0f, 200.0f );
     
     // AccelY to Foldback Amt
-    if (accelYOnOffBox.getSelectedId() == 2.0f)
-    {
-        fbAmtOverride = true;
-        fbAmtSlider.setValue( jmap( osc.getAccelY(), -4.0f, 4.0f, 1.0f, 200.0f) );
-    }
-    else
-        fbAmtOverride = false;
+    sensorMapValueSet( accelYOnOffBox, fbAmtOverride, fbAmtSlider, osc.getAccelY(), -4.0f, 4.0f, 1.0f, 200.0f );
     
     // AccelZ to Bitcrush Amt
-    if (accelZOnOffBox.getSelectedId() == 2.0f)
-    {
-        bcAmtOverride = true;
-        bcAmtSlider.setValue( jmap( osc.getAccelZ(), -4.0f, 4.0f, 0.0f, 1.0f) );
-    }
-    else
-        bcAmtOverride = false;
+    sensorMapValueSet( accelZOnOffBox, bcAmtOverride, bcAmtSlider, osc.getAccelZ(), -4.0f, 4.0f, 0.0f, 1.0f );
     
     // Distance to Formant Morph
-    if (distanceOnOffBox.getSelectedId() == 2.0f)
-    {
-        formMorphOverride = true;
-        formMorphSlider.setValue( jmap( osc.getDistance(), 0.0f, 1200.0f, 0.0f, 9.0f) );
-    }
-    else
-        formMorphOverride = false;
+    sensorMapValueSet( distanceOnOffBox, formMorphOverride, formMorphSlider, osc.getDistance(), 0.0f, 1200.0f, 0.0f, 9.0f );
     
     // GyroX to Delay Time
-    if (gyroXOnOffBox.getSelectedId() == 2.0f)
-    {
-        delayTimeOverride = true;
-        delayTimeSlider.setValue( jmap( osc.getGyroX(), -2000.0f, 2000.0f, 0.0f, 1.0f) );
-    }
-    else
-        delayTimeOverride = false;
+    sensorMapValueSet( gyroXOnOffBox, delayTimeOverride, delayTimeSlider, osc.getGyroX(), -2000.0f, 2000.0f, 0.0f, 1.0f );
 }
 
 // See Sensor Maps comment above
 void BassOnboardAudioProcessorEditor::sensorMap1()
 {
     // AccelX to Waveshape Amt
-    if (accelXOnOffBox.getSelectedId() == 2.0f)
-    {
-        wsAmtOverride = true;
-        wsAmtSlider.setValue( jmap( osc.getAccelX(), -4.0f, 4.0f, 1.0f, 200.0f ) );
-    }
-    else
-        wsAmtOverride = false;
+    sensorMapValueSet( accelXOnOffBox, wsAmtOverride, wsAmtSlider, osc.getAccelX(), -4.0f, 4.0f, 1.0f, 200.0f );
     
     // AccelY to Foldback Amt
-    if (accelYOnOffBox.getSelectedId() == 2.0f)
-    {
-        fbAmtOverride = true;
-        fbAmtSlider.setValue( jmap( osc.getAccelY(), -4.0f, 4.0f, 1.0f, 200.0f) );
-    }
-    else
-        fbAmtOverride = false;
+    sensorMapValueSet( accelYOnOffBox, fbAmtOverride, fbAmtSlider, osc.getAccelY(), -4.0f, 4.0f, 1.0f, 200.0f );
     
     // AccelZ to Bitcrush Amt
-    if (accelZOnOffBox.getSelectedId() == 2.0f)
-    {
-        bcAmtOverride = true;
-        bcAmtSlider.setValue( jmap( osc.getAccelZ(), -4.0f, 4.0f, 0.0f, 1.0f) );
-    }
-    else
-        bcAmtOverride = false;
+    sensorMapValueSet( accelZOnOffBox, bcAmtOverride, bcAmtSlider, osc.getAccelZ(), -4.0f, 4.0f, 0.0f, 1.0f );
     
     // GyroX to formant morph
-    if (gyroXOnOffBox.getSelectedId() == 2.0f)
-    {
-        formMorphOverride = true;
-        formMorphSlider.setValue( jmap( osc.getGyroX(), -2000.0f, 2000.0f, 0.0f, 9.0f) );
-    }
-    else
-        formMorphOverride = false;
+    sensorMapValueSet( gyroXOnOffBox, formMorphOverride, formMorphSlider, osc.getGyroX(), -2000.0f, 2000.0f, 0.0f, 9.0f );
     
     // Distance to delay time
-    if (distanceOnOffBox.getSelectedId() == 2.0f)
-    {
-        delayTimeOverride = true;
-        delayTimeSlider.setValue( jmap( osc.getDistance(), 0.0f, 1200.0f, 0.0f, 1.0f) );
-    }
-    else
-        delayTimeOverride = false;
+    sensorMapValueSet( distanceOnOffBox, delayTimeOverride, delayTimeSlider, osc.getDistance(), 0.0f, 1200.0f, 0.0f, 1.0f );
 }
 
 // See Sensor Maps comment above
 void BassOnboardAudioProcessorEditor::sensorMap2()
 {
     // GyroX to WS Amt
-    if (gyroXOnOffBox.getSelectedId() == 2.0f)
-    {
-        wsAmtOverride = true;
-        wsAmtSlider.setValue( jmap( osc.getGyroX(), -2000.0f, 2000.0f, 1.0f, 200.0f) );
-    }
-    else
-        wsAmtOverride = false;
+    sensorMapValueSet( gyroXOnOffBox, wsAmtOverride, wsAmtSlider, osc.getGyroX(), -2000.0f, 2000.0f, 1.0f, 200.0f );
     
     // GyroY to FB Amt
-    if (gyroYOnOffBox.getSelectedIdAsValue() == 2.0f)
-    {
-        fbAmtOverride = true;
-        fbAmtSlider.setValue( jmap( osc.getGyroY(), -2000.0f, 2000.0f, 1.0f, 200.0f) );
-    }
-    else
-        fbAmtOverride = false;
+    sensorMapValueSet( gyroYOnOffBox, fbAmtOverride, fbAmtSlider, osc.getGyroY(), -2000.0f, 2000.0f, 1.0f, 200.0f );
     
     // GyroZ to BC Amt
-    if (gyroZOnOffBox.getSelectedId() == 2.0f)
-    {
-        bcAmtOverride = true;
-        bcAmtSlider.setValue( jmap( osc.getGyroZ(), -2000.0f, 2000.0f, 0.0f, 1.0f) );
-    }
-    else
-        bcAmtOverride = false;
+    sensorMapValueSet( gyroZOnOffBox, bcAmtOverride, bcAmtSlider, osc.getGyroZ(), -2000.0f, 2000.0f, 0.0f, 1.0f );
     
     // AccelX to Formant morph
-    if (accelXOnOffBox.getSelectedId() == 2.0f)
+    sensorMapValueSet( accelXOnOffBox, formMorphOverride, formMorphSlider, osc.getAccelX(), -4.0f, 4.0f, 0.0f, 9.0f );
+}
+
+/**
+ Sets values for mapped sensors. onOffBox is the ComboBox controlling the sensor on/off. paramOverride is the bool that controls the sensor overriding the rotary encoder.
+ sliderInstance is the parameter slider. sensorVal is the current value of the sensor coming over OSC. sensorMin and sensorMax are the min and max values expected from
+ the sensor. mapMin and mapMax are the min and max of the parameter that the sensor values will be mapped to.
+ */
+void BassOnboardAudioProcessorEditor::sensorMapValueSet(ComboBox &onOffBox, bool &paramOverride, Slider &sliderInstance, float sensorVal, float sensorMin, float sensorMax, float mapMin, float mapMax)
+{
+    if (onOffBox.getSelectedId() == 2.0f)
     {
-        formMorphOverride = true;
-        formMorphSlider.setValue( jmap( osc.getAccelX(), -4.0f, 4.0f, 0.0f, 9.0f) );
+        paramOverride = true;
+        sliderInstance.setValue( jmap( sensorVal, sensorMin, sensorMax, mapMin, mapMax ) );
     }
-    else
-        formMorphOverride = false;
+    else paramOverride = false;
 }

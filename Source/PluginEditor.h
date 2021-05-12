@@ -43,16 +43,15 @@ private:
     /// Turns Sensor Parameters On & Off
     void sensorOnOffController();
     
-    /// encoderButton1 Presses cycle through rotary ecoder mappings to parameters
+    /**
+    encoderButton1 Presses cycle through rotary ecoder mappings to parameters
+    Encoder Maps compare the incoming encoder value to the current saved (previous) encoder value
+    and update the parameter value by the difference up or down, only if that mapping is
+    active. Some paramters are also controlled by sensor values. If a sensor is mapped to
+    the same parameter as an active rotary encoder, the sensor takes priority and the rotary
+    encoder is locked out via the corresponding Override bool.
+    */
     void encoderMapping();
-    
-    void encoderMap0(float enc1Val, float enc2Val);
-    void encoderMap1(float enc1Val, float enc2Val);
-    void encoderMap2(float enc1Val, float enc2Val);
-    void encoderMap3(float enc1Val, float enc2Val);
-    void encoderMap4(float enc1Val, float enc2Val);
-    void encoderMap5(float enc1Val, float enc2Val);
-    void encoderMap6(float enc1Val, float enc2Val);
     
     /**
     Sets values for mapped encoders. encVal is enc1Val or enc2Val; paramVal is a reference to the parameter value you are controlling; encoder is a reference to the current stored encoder1Val or encoder2Val
@@ -60,12 +59,20 @@ private:
     */
     void encoderMapValueSet(float encVal, float& paramVal, float& encoder, float multFactor, float limitMin, float limitMax, Slider& sliderInstance);
     
+    
     /// encoderButton2 Presse cycle through sensor mappings to parameters
     void sensorMapping();
     
     void sensorMap0();
     void sensorMap1();
     void sensorMap2();
+    
+    /**
+    Sets values for mapped sensors. onOffBox is the ComboBox controlling the sensor on/off. paramOverride is the bool that controls the sensor overriding the rotary encoder.
+    sliderInstance is the parameter slider. sensorVal is the current value of the sensor coming over OSC. sensorMin and sensorMax are the min and max values expected from
+    the sensor. mapMin and mapMax are the min and max of the parameter that the sensor values will be mapped to.
+    */
+    void sensorMapValueSet(ComboBox& onOffBox, bool& paramOverride, Slider& sliderInstance, float sensorVal, float sensorMin, float sensorMax, float mapMin, float mapMax);
     
     // Sliders
     Slider inGainSlider;
