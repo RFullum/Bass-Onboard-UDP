@@ -54,6 +54,12 @@ private:
     void encoderMap5(float enc1Val, float enc2Val);
     void encoderMap6(float enc1Val, float enc2Val);
     
+    /**
+    Sets values for mapped encoders. encVal is enc1Val or enc2Val; paramVal is a reference to the parameter value you are controlling; encoder is a reference to the current stored encoder1Val or encoder2Val
+    multFactor multiplies the value for each encoder value tick. limitMin is the parameter minimum. limitMax is the parameter maximum. sliderInstance is a reference to the Slider for the parameter.
+    */
+    void encoderMapValueSet(float encVal, float& paramVal, float& encoder, float multFactor, float limitMin, float limitMax, Slider& sliderInstance);
+    
     /// encoderButton2 Presse cycle through sensor mappings to parameters
     void sensorMapping();
     

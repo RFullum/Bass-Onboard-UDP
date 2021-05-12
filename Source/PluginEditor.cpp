@@ -812,21 +812,11 @@ void BassOnboardAudioProcessorEditor::encoderMap0(float enc1Val, float enc2Val)
 {
     // outGain
     if (enc1Val != encoder1Val)
-    {
-        outGainVal += (enc1Val - encoder1Val);
-        outGainVal  = jlimit( -100.0f, 12.0f, outGainVal );
-        
-        outGainSlider.setValue( outGainVal );
-    }
+        encoderMapValueSet( enc1Val, outGainVal, encoder1Val, 1.0f, -100.0f, 12.0f, outGainSlider );
     
     // Haas
     if (enc2Val != encoder2Val)
-    {
-        haasVal += (enc2Val - encoder2Val) * 0.1f;
-        haasVal  = jlimit( 0.0f, 1.0f, haasVal );
-        
-        haasWidthSlider.setValue( haasVal );
-    }
+        encoderMapValueSet( enc2Val, haasVal, encoder2Val, 0.1f, 0.0f, 1.0f, haasWidthSlider );
 }
 
 // See Encoder Maps comment above
@@ -834,21 +824,11 @@ void BassOnboardAudioProcessorEditor::encoderMap1(float enc1Val, float enc2Val)
 {
     // D/W
     if (enc1Val != encoder1Val)
-    {
-        wsDWVal += (enc1Val - encoder1Val) * 0.1f;
-        wsDWVal  = jlimit( 0.0f, 1.0f, wsDWVal );
-        
-        wsDryWetSlider.setValue( wsDWVal );
-    }
+        encoderMapValueSet( enc1Val, wsDWVal, encoder1Val, 0.1f, 0.0f, 1.0f, wsDryWetSlider );
     
     // Amt
     if (enc2Val != encoder2Val && !wsAmtOverride)
-    {
-        wsAmtVal += (enc2Val - encoder2Val);
-        wsAmtVal  = jlimit( 1.0f, 200.0f, wsAmtVal );
-        
-        wsAmtSlider.setValue( wsAmtVal );
-    }
+        encoderMapValueSet( enc2Val, wsAmtVal, encoder2Val, 1.0f, 1.0f, 200.0f, wsAmtSlider );
 }
 
 // See Encoder Maps comment above
@@ -856,21 +836,11 @@ void BassOnboardAudioProcessorEditor::encoderMap2(float enc1Val, float enc2Val)
 {
     // D/W
     if (enc1Val != encoder1Val)
-    {
-        fbDWVal += (enc1Val - encoder1Val) * 0.1f;
-        fbDWVal  = jlimit( 0.0f, 1.0f, fbDWVal );
-        
-        fbDryWetSlider.setValue( fbDWVal );
-    }
+        encoderMapValueSet( enc1Val, fbDWVal, encoder1Val, 0.1f, 0.0f, 1.0f, fbDryWetSlider );
     
     // Amt
     if (enc2Val != encoder2Val && !fbAmtOverride)
-    {
-        fbAmtVal += (enc2Val - encoder2Val);
-        fbAmtVal  = jlimit( 1.0f, 200.0f, fbAmtVal );
-        
-        fbAmtSlider.setValue( fbAmtVal );
-    }
+        encoderMapValueSet( enc2Val, fbAmtVal, encoder2Val, 1.0f, 1.0f, 200.0f, fbAmtSlider );
 }
 
 // See Encoder Maps comment above
@@ -878,21 +848,11 @@ void BassOnboardAudioProcessorEditor::encoderMap3(float enc1Val, float enc2Val)
 {
     // D/W
     if (enc1Val != encoder1Val)
-    {
-        bcDWVal += (enc1Val - encoder1Val) * 0.1f;
-        bcDWVal  = jlimit( 0.0f, 1.0f, bcDWVal );
-        
-        bcDryWetSlider.setValue( bcDWVal );
-    }
+        encoderMapValueSet( enc1Val, bcDWVal, encoder1Val, 0.1f, 0.0f, 1.0f, bcDryWetSlider );
     
     // Amt
     if (enc2Val != encoder2Val && !bcAmtOverride)
-    {
-        bcAmtVal += (enc2Val - encoder2Val) * 0.1f;
-        bcAmtVal  = jlimit( 0.0f, 1.0f, bcAmtVal );
-        
-        bcAmtSlider.setValue( bcAmtVal );
-    }
+        encoderMapValueSet( enc2Val, bcAmtVal, encoder2Val, 0.1f, 0.0f, 1.0f, bcAmtSlider );
 }
 
 // See Encoder Maps comment above
@@ -900,21 +860,11 @@ void BassOnboardAudioProcessorEditor::encoderMap4(float enc1Val, float enc2Val)
 {
     // D/W
     if (enc1Val != encoder1Val)
-    {
-        formDWVal += (enc1Val - encoder1Val) * 0.1f;
-        formDWVal  = jlimit( 0.0f, 1.0f, formDWVal );
-        
-        formDryWetSlider.setValue( formDWVal );
-    }
+        encoderMapValueSet( enc1Val, formDWVal, encoder1Val, 0.1f, 0.0f, 1.0f, formDryWetSlider );
     
     // Amt
     if (enc2Val != encoder2Val && !formMorphOverride)
-    {
-        formAmtVal += (enc2Val - encoder2Val);
-        formAmtVal  = jlimit( 0.0f, 9.0f, formAmtVal );
-        
-        formMorphSlider.setValue( formAmtVal );
-    }
+        encoderMapValueSet( enc2Val, formAmtVal, encoder2Val, 1.0f, 0.0f, 9.0f, formMorphSlider );
 }
 
 // See Encoder Maps comment above
@@ -922,21 +872,11 @@ void BassOnboardAudioProcessorEditor::encoderMap5(float enc1Val, float enc2Val)
 {
     // D/W
     if (enc1Val != encoder1Val)
-    {
-        dlyDWVal += (enc1Val - encoder1Val) * 0.1f;
-        dlyDWVal  = jlimit( 0.0f, 1.0f, dlyDWVal );
-        
-        delayDryWetSlider.setValue( dlyDWVal );
-    }
+        encoderMapValueSet( enc1Val, dlyDWVal, encoder1Val, 0.1f, 0.0f, 1.0f, delayDryWetSlider );
     
     // Time
     if (enc2Val != encoder2Val && !delayTimeOverride)
-    {
-        dlyTVal += (enc2Val - encoder2Val) * 0.1f;
-        dlyTVal  = jlimit( 0.0f, 1.0f, dlyTVal );
-        
-        delayTimeSlider.setValue( dlyTVal );
-    }
+        encoderMapValueSet( enc2Val, dlyTVal, encoder2Val, 0.1f, 0.0f, 1.0f, delayTimeSlider );
 }
 
 // See Encoder Maps comment above
@@ -944,25 +884,24 @@ void BassOnboardAudioProcessorEditor::encoderMap6(float enc1Val, float enc2Val)
 {
     // D/W
     if (enc1Val != encoder1Val)
-    {
-        dlyDWVal += (enc1Val - encoder1Val) * 0.1f;
-        dlyDWVal  = jlimit( 0.0f, 1.0f, dlyDWVal );
-        
-        delayDryWetSlider.setValue( dlyDWVal );
-    }
+        encoderMapValueSet( enc1Val, dlyDWVal, encoder1Val, 0.1f, 0.0f, 1.0f, delayDryWetSlider );
     
     // Feedback
     if (enc2Val != encoder2Val)
-    {
-        dlyFBVal += (enc2Val - encoder2Val) * 0.1f;
-        dlyFBVal  = jlimit( 0.0f, 1.0f, dlyFBVal );
-        
-        delayFeedbackSlider.setValue( dlyFBVal );
-    }
+        encoderMapValueSet( enc2Val, dlyFBVal, encoder2Val, 0.1f, 0.0f, 1.0f, delayFeedbackSlider );
 }
 
-
-
+/**
+ Sets values for mapped encoders. encVal is enc1Val or enc2Val; paramVal is a reference to the parameter value you are controlling; encoder is a reference to the current stored encoder1Val or encoder2Val
+ multFactor multiplies the value for each encoder value tick. limitMin is the parameter minimum. limitMax is the parameter maximum. sliderInstance is a reference to the Slider for the parameter.
+ */
+void BassOnboardAudioProcessorEditor::encoderMapValueSet(float encVal, float& paramVal, float& encoder, float multFactor, float limitMin, float limitMax, Slider &sliderInstance)
+{
+    paramVal += (encVal - encoder) * multFactor;
+    paramVal  = jlimit( limitMin, limitMax, paramVal );
+    
+    sliderInstance.setValue( paramVal );
+}
 
 /// encoderButton2 Presse cycle through sensor mappings to parameters
 void BassOnboardAudioProcessorEditor::sensorMapping()
