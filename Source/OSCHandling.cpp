@@ -4,6 +4,42 @@
     OSCHandling.cpp
     Created: 17 Mar 2021 11:13:21pm
     Author:  Robert Fullum
+ 
+    OSC over UDP Arduino, Sensor, Button, and Encoder Notes:
+ 
+    Ardiuno Sketch: ArduinoMasterSketch.ino in src subfolder
+    
+    Written for the Arduino Nano 33 IoT. The sketch will probably work for other
+    Arduino models, but modifications may be needed to account for different pin
+    connectors, and onboard/outboard IMUs or WiFi.
+ 
+    Accelerometer: Arduino Nano 33 IoT's onboard accelerometer IMU. Values from
+    -4.0f to 4.0f, with gravity equal to 1.0f. Values between -1.0f and 1.0f are
+    the orientation. Greater than 1.0f or less than -1.0f are movements with more
+    Gs than gravity, for instance, stopping suddenly from speed.
+ 
+    Gyroscope: Arduino Nano 33 IoT's onboard gyroscope IMU. Values from -2000.0f
+    to 2000.0f. Gyroscope measures directions of movement only when moving.
+ 
+    Distance Sensor: Adafruit Time of Flight Distance Sensor VL53L0X. Measures
+    distance from sensor from 50mm to 1200mm, but can get shorter or longer
+    readings depending on the ambient light and reflectivity of the object being
+    sensed. Readings out of range return 0.0f.
+ 
+    Touchscreen: Adafruit 3.2" Resistive Touchscreen (part 333) + Adafruit
+    Dual 1.0mm 4 connector FPC Touchscreen Breakout. In landscape the X
+    values are height and the Y values are width. The Z values are touch pressure,
+    inversed: the harder you push, the lower the value. The values range from 0.0f
+    to 1024.0f. However, there is reduced sensitivity near the edge of the
+    touchscreen causing the actual useable value range to be between ~200.0f
+    to ~800.0f.
+ 
+    Rotary Encoders: Generic 3 pin 20 PPR Rotary encoders with push-button
+    functionality from Bourns Inc on DigiKey.
+ 
+    Buttons: Adafruit 6MM Rainbow Tactile Button Delux. Completes circuit only
+    while pressed. Each bank of buttons can attach to 1 pin on the Arduino, plus
+    power & ground pins. 
 
   ==============================================================================
 */
