@@ -159,10 +159,9 @@ WiFiSSLClient client;             // Instantiate the Wifi client
 // ~~~ OSC SECTION ~~~
 WiFiUDP udp;                          // Instantiate UDP class
 
-unsigned int localPort = 2390;        // local port to listen on
-const char* computerIP = "Speed3";
-
-const unsigned int destPort = 9001;
+unsigned int localPort      = 2390;     // local port to listen on
+const char* computerIP      = "Speed3"; // Destination Computer IP
+const unsigned int destPort = 9001;     // Destination Port
 
 // OSC Bundle
 OSCBundle bndl;

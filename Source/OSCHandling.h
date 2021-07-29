@@ -120,6 +120,9 @@ public:
     /// Returns filter pole value -1 or 1
     float getFiltPole();
     
+    /// Calls arduino for OSC Bundle
+    void callArduino();
+    
 private:
     /// Automatically called when an OSC Message comes in. Checks the address, and sets appropriate variable with incoming float
     void oscMessageReceived (const OSCMessage& message) override;

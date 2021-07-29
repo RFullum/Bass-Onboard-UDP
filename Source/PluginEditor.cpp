@@ -43,6 +43,8 @@ BassOnboardAudioProcessorEditor::BassOnboardAudioProcessorEditor (BassOnboardAud
     delayTimeOverride ( false ),
     
     audioProcessor (p)
+
+// Constructor Body
 {
     setSize (1000, 600);
     
@@ -301,6 +303,7 @@ BassOnboardAudioProcessorEditor::BassOnboardAudioProcessorEditor (BassOnboardAud
     addAndMakeVisible (titleHeader );
     addAndMakeVisible (titleFooter );
 }
+// End Constructor
 
 BassOnboardAudioProcessorEditor::~BassOnboardAudioProcessorEditor()
 {
