@@ -24,24 +24,26 @@ public:
     void prepare(float SR);
     
     /// Takes AudioBuffer and crush amount (0 to 1). Returns bitcrushed AudioBuffer. onOff is 0 or 1 from ParameterChoice
-    AudioBuffer<float> process(AudioBuffer<float>& bufferIn, float crushAmt, float dryWetVal, float onOff);
+    juce::AudioBuffer<float> process(juce::AudioBuffer<float>& bufferIn, float crushAmt, float dryWetVal);
+    
+    void processBuffer(juce::AudioBuffer<float>& bufferIn, float crushAmt, float dryWetVal);
     
 private:
     /// Populates Wavetable
     void setWavetables();
     
-    AudioBuffer<float> crush(float dryWet);
+    juce::AudioBuffer<float> crush(juce::AudioBuffer<float> &bufferIn, float dryWetAmt);
     
+    void crushBuffer(juce::AudioBuffer<float> &bufferIn, float dryWetAmt);
     
-    // Instances
-    DryWet          dryWet;
-    SquareWavetable squareWT;
-    
+    std::unique_ptr<DryWet>          dryWet;
+    std::unique_ptr<SquareWavetable> squareWT;
+
     // Member Variables
     float sampleRate;
     
-    SmoothedValue<float> dryWetSmooth;
-    AudioBuffer<float>   sampleBuffer;
+    juce::SmoothedValue<float> dryWetSmooth;
+    juce::AudioBuffer<float>   sampleBuffer;
 };
 
 

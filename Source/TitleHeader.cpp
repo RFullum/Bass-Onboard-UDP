@@ -12,8 +12,9 @@
 #include "TitleHeader.h"
 
 //==============================================================================
-TitleHeader::TitleHeader() : backgroundColor ( Colour( (uint8)0,   (uint8)0,    (uint8)0 )   ),
-                             textColor       ( Colour( (uint8)235, (uint8)52,   (uint8)222)  )
+TitleHeader::TitleHeader() :
+    backgroundColor ( juce::Colour( (juce::uint8)0,   (juce::uint8)0,    (juce::uint8)0 )   ),
+    textColor       ( juce::Colour( (juce::uint8)235, (juce::uint8)52,   (juce::uint8)222)  )
 {
 }
 
@@ -26,11 +27,11 @@ void TitleHeader::paint (juce::Graphics& g)
     g.fillAll   ( backgroundColor );
     g.setColour ( textColor );
     
-    g.setFont   ( Font("TR-909", 45.0f, 0) );
-    g.drawText  ( "FULLUMMUSIC", fullumMusicArea.reduced( 6, 0 ), Justification::right );
+    g.setFont   ( juce::Font("TR-909", 45.0f, 0) );
+    g.drawText  ( "FULLUMMUSIC", fullumMusicArea.reduced( 6, 0 ), juce::Justification::right );
     
-    g.setFont  ( Font("TR-909", 25.0f, 0) );
-    g.drawText ( "Digital Bass Guitar", theClockArea.reduced( 6, 0), Justification::left );
+    g.setFont  ( juce::Font("TR-909", 25.0f, 0) );
+    g.drawText ( "Digital Bass Guitar", theClockArea.reduced( 6, 0), juce::Justification::left );
 }
 
 void TitleHeader::resized()
@@ -39,18 +40,18 @@ void TitleHeader::resized()
     
     fullumMusicArea = totalArea.removeFromRight( totalArea.getWidth() * 0.66f );
     
-    Rectangle<int> pluginTitleArea = totalArea;
+    juce::Rectangle<int> pluginTitleArea = totalArea;
     
     theClockArea = pluginTitleArea;
     
 }
 
-void TitleHeader::setBackgroundColor(Colour& bg)
+void TitleHeader::setBackgroundColor(juce::Colour& bg)
 {
     backgroundColor = bg;
 }
 
-void TitleHeader::setTextColor(Colour& textC)
+void TitleHeader::setTextColor(juce::Colour& textC)
 {
     textColor = textC;
 }
@@ -65,12 +66,12 @@ void TitleHeader::setTextColor(Colour& textC)
 
 void TitleFooter::paint(juce::Graphics& g)
 {
-    g.fillAll   (backgroundColor);
+    g.fillAll   ( backgroundColor );
     g.setColour ( textColor );
     
-    g.setFont  ( Font("Helvetica", 14, 0) );
-    g.drawText ( "Version 1.0", versionArea.reduced( 12, 6 ), Justification::left );
-    g.drawText ( "www.FullumMusic.com", urlArea.reduced( 12, 6 ), Justification::right );
+    g.setFont  ( juce::Font("Helvetica", 14, 0) );
+    g.drawText ( "Version 1.0", versionArea.reduced( 12, 6 ), juce::Justification::left );
+    g.drawText ( "www.FullumMusic.com", urlArea.reduced( 12, 6 ), juce::Justification::right );
 }
 
 

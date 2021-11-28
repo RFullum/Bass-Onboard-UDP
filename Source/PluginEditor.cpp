@@ -11,15 +11,45 @@
 
 //==============================================================================
 BassOnboardAudioProcessorEditor::BassOnboardAudioProcessorEditor (BassOnboardAudioProcessor& p)
-    : AudioProcessorEditor (&p),
-    onyx                   ( Colour( (uint8)53,  (uint8)59,  (uint8)60  ) ),
-    lightSlateGray         ( Colour( (uint8)130, (uint8)146, (uint8)152 ) ),
-    magicMint              ( Colour( (uint8)174, (uint8)255, (uint8)216 ) ),
-    fieryRose              ( Colour( (uint8)255, (uint8)104, (uint8)114 ) ),
-    orangePeel             ( Colour( (uint8)252, (uint8)152, (uint8)0   ) ),
-    
+    : AudioProcessorEditor (&p), audioProcessor (p),
+    inGainAttachment        ( std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> ( audioProcessor.parameters, "inGain",         inGainSlider        ) ),
+    wsAmtAttachment         ( std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> ( audioProcessor.parameters, "wsAmt",          wsAmtSlider         ) ),
+    wsDryWetAttachment      ( std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> ( audioProcessor.parameters, "wsDryWet",       wsDryWetSlider      ) ),
+    fbAmtAttachment         ( std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> ( audioProcessor.parameters, "foldbackAmt",    fbAmtSlider         ) ),
+    fbDryWetAttachment      ( std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> ( audioProcessor.parameters, "foldbackDryWet", fbDryWetSlider      ) ),
+    bcAmtAttachment         ( std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> ( audioProcessor.parameters, "bitcrushAmt",    bcAmtSlider         ) ),
+    bcDryWetAttachment      ( std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> ( audioProcessor.parameters, "bitcrushDryWet", bcDryWetSlider      ) ),
+    formMorphAttachment     ( std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> ( audioProcessor.parameters, "formantMorph",   formMorphSlider     ) ),
+    formDryWetAttachment    ( std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> ( audioProcessor.parameters, "formantDryWet",  formDryWetSlider    ) ),
+    delayTimeAttachment     ( std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> ( audioProcessor.parameters, "delayFXTime",    delayTimeSlider     ) ),
+    delayFeedbackAttachment ( std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> ( audioProcessor.parameters, "delayFXFdbck",   delayFeedbackSlider ) ),
+    delayDryWetAttachment   ( std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> ( audioProcessor.parameters, "delayFXDryWet",  delayDryWetSlider   ) ),
+    filtCutoffAttachment    ( std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> ( audioProcessor.parameters, "svFiltCutoff",   filtCutoffSlider    ) ),
+    filtResAttachment       ( std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> ( audioProcessor.parameters, "svFiltRes",      filtResSlider       ) ),
+    haasWidthAttachment     ( std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> ( audioProcessor.parameters, "haasWidth",      haasWidthSlider     ) ),
+    outGainAttachment       ( std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> ( audioProcessor.parameters, "outGain",        outGainSlider       ) ),
+    filtTypeAttachment      ( std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "svFiltType",  filtTypeBox      ) ),
+    filtPolesAttachment     ( std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "svFiltPoles", filtPolesBox     ) ),
+    accelXOnOffAttachment   ( std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "accelXOnOff", accelXOnOffBox   ) ),
+    accelYOnOffAttachment   ( std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "accelYOnOff", accelYOnOffBox   ) ),
+    accelZOnOffAttachment   ( std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "accelZOnOff", accelZOnOffBox   ) ),
+    gyroXOnOffAttachment    ( std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "gyroXOnOff",  gyroXOnOffBox    ) ),
+    gyroYOnOffAttachment    ( std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "gyroYOnOff",  gyroYOnOffBox    ) ),
+    gyroZOnOffAttachment    ( std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "gyroZOnOff",  gyroZOnOffBox    ) ),
+    touchXOnOffAttachment   ( std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "touchXOnOff", touchXOnOffBox   ) ),
+    touchYOnOffAttachment   ( std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "touchYOnOff", touchYOnOffBox   ) ),
+    touchZOnOffAttachment   ( std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "touchZOnOff", touchZOnOffBox   ) ),
+    distanceOnOffAttachment ( std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "distOnOff",   distanceOnOffBox ) ),
+    onyx           ( juce::Colour( 0xFF353B3C ) ),
+    lightSlateGray ( juce::Colour( 0xFF829298 ) ),
+    magicMint      ( juce::Colour( 0xFFAEFFD8 ) ),
+    fieryRose      ( juce::Colour( 0xFFFF6872 ) ),
+    orangePeel     ( juce::Colour( 0xFFFC9800 ) ),
+    transparent    ( juce::Colour( 0x00000000 ) ),
+    osc         ( std::make_unique<OSCHandler>()  ),
+    titleHeader ( std::make_unique<TitleHeader>() ),
+    titleFooter ( std::make_unique<TitleFooter>() ),
     currentEncoderMapping ( 0 ),
-    
     encoder1Val ( 0.0f ),
     encoder2Val ( 0.0f ),
     outGainVal  ( 0.0f ),
@@ -35,39 +65,23 @@ BassOnboardAudioProcessorEditor::BassOnboardAudioProcessorEditor (BassOnboardAud
     dlyDWVal    ( 0.0f ),
     dlyTVal     ( 0.0f ),
     dlyFBVal    ( 0.0f ),
-
     wsAmtOverride     ( false ),
     fbAmtOverride     ( false ),
     bcAmtOverride     ( false ),
     formMorphOverride ( false ),
-    delayTimeOverride ( false ),
-    
-    audioProcessor (p)
-
-// Constructor Body
+    delayTimeOverride ( false )
 {
-    setSize (1000, 600);
-    
-    Timer::startTimerHz(60);
+    setSize( 1000, 600 );
+     
+    juce::Timer::startTimerHz(60);
     
     //
     // Sliders Setup
     //
-    Slider::SliderStyle vertSlider = Slider::SliderStyle::LinearVertical;
+    juce::Slider::SliderStyle vertSlider = juce::Slider::SliderStyle::LinearVertical;
     
     // In Gain
     sliderSetup ( inGainSlider, vertSlider, true );
-    
-    /*
-     
-     ~~~~ Might want to re-introduce the compressor so I'm just commenting it out. ~~~~
-     
-    // Compressor
-    sliderSetup ( compThreshSlider,  vertSlider, true );
-    sliderSetup ( compRatioSlider,   vertSlider, true );
-    sliderSetup ( compAttackSlider,  vertSlider, true );
-    sliderSetup ( compReleaseSlider, vertSlider, true );
-    */
     
     // Waveshaper
     sliderSetup ( wsAmtSlider,    vertSlider, true );
@@ -113,40 +127,38 @@ BassOnboardAudioProcessorEditor::BassOnboardAudioProcessorEditor (BassOnboardAud
     onOffBoxSetup ( gyroYOnOffBox );
     onOffBoxSetup ( gyroZOnOffBox );
     
-    onOffBoxSetup( touchXOnOffBox );
-    onOffBoxSetup( touchYOnOffBox );
-    onOffBoxSetup( touchZOnOffBox );
+    onOffBoxSetup ( touchXOnOffBox );
+    onOffBoxSetup ( touchYOnOffBox );
+    onOffBoxSetup ( touchZOnOffBox );
     
     onOffBoxSetup( distanceOnOffBox );
-    
-    // onOffBoxSetup ( compOnOffBox  ); // ~~~~ Might want to re-introduce the compressor so I'm just commenting it out. ~~~~
     
     // Filter Type
     filtTypeBox.addItem              ( "LPF", 1 );
     filtTypeBox.addItem              ( "BPF", 2 );
     filtTypeBox.addItem              ( "HPF", 3 );
-    filtTypeBox.setJustificationType ( Justification::centred );
+    filtTypeBox.setJustificationType ( juce::Justification::centred );
     filtTypeBox.setSelectedItemIndex ( 0 );
     
-    filtTypeBox.setColour ( ComboBox::backgroundColourId, onyx        );
-    filtTypeBox.setColour ( ComboBox::outlineColourId, lightSlateGray );
-    filtTypeBox.setColour ( ComboBox::textColourId, orangePeel        );
-    filtTypeBox.setColour ( ComboBox::arrowColourId, magicMint        );
+    filtTypeBox.setColour ( juce::ComboBox::backgroundColourId, onyx           );
+    filtTypeBox.setColour ( juce::ComboBox::outlineColourId,    lightSlateGray );
+    filtTypeBox.setColour ( juce::ComboBox::textColourId,       orangePeel     );
+    filtTypeBox.setColour ( juce::ComboBox::arrowColourId,      magicMint      );
     
-    addAndMakeVisible                ( filtTypeBox );
+    addAndMakeVisible ( filtTypeBox );
     
     // Filter Poles
     filtPolesBox.addItem              ( "-12dB", 1 );
     filtPolesBox.addItem              ( "-24dB", 2 );
-    filtPolesBox.setJustificationType ( Justification::centred );
+    filtPolesBox.setJustificationType ( juce::Justification::centred );
     filtPolesBox.setSelectedItemIndex ( 0 );
     
-    filtPolesBox.setColour ( ComboBox::backgroundColourId, onyx        );
-    filtPolesBox.setColour ( ComboBox::outlineColourId, lightSlateGray );
-    filtPolesBox.setColour ( ComboBox::textColourId, orangePeel        );
-    filtPolesBox.setColour ( ComboBox::arrowColourId, magicMint        );
+    filtPolesBox.setColour ( juce::ComboBox::backgroundColourId, onyx           );
+    filtPolesBox.setColour ( juce::ComboBox::outlineColourId,    lightSlateGray );
+    filtPolesBox.setColour ( juce::ComboBox::textColourId,       orangePeel     );
+    filtPolesBox.setColour ( juce::ComboBox::arrowColourId,      magicMint      );
     
-    addAndMakeVisible                 ( filtPolesBox );
+    addAndMakeVisible ( filtPolesBox );
     
     //
     // Label Setup
@@ -158,18 +170,6 @@ BassOnboardAudioProcessorEditor::BassOnboardAudioProcessorEditor (BassOnboardAud
     // In Gain
     sliderLabelSetup ( inLabel,     "In",   bigLabelSize   );
     sliderLabelSetup ( inGainLabel, "Gain", smallLabelSize );
-    
-    /*
-     
-     ~~~~ Might want to re-introduce the compressor so I'm just commenting it out. ~~~~
-     
-    // Compressor
-    sliderLabelSetup ( compLabel,        "Compressor", bigLabelSize   );
-    sliderLabelSetup ( compThreshLabel,  "Thresh",     smallLabelSize );
-    sliderLabelSetup ( compRatioLabel,   "Ratio",      smallLabelSize );
-    sliderLabelSetup ( compAttackLabel,  "Attack",     smallLabelSize );
-    sliderLabelSetup ( compReleaseLabel, "Release",    smallLabelSize );
-    */
     
     // Waveshaper
     sliderLabelSetup ( wsLabel,       "Waveshaper", bigLabelSize   );
@@ -222,92 +222,18 @@ BassOnboardAudioProcessorEditor::BassOnboardAudioProcessorEditor (BassOnboardAud
     sliderLabelSetup ( touchZOnOffLabel,   "TZ",   smallLabelSize );
     sliderLabelSetup ( distanceOnOffLabel, "Dist", smallLabelSize );
     
-    //
-    // Slider Attachments
-    //
-    
-    // In Gain
-    inGainAttachment = std::make_unique<AudioProcessorValueTreeState::SliderAttachment> ( audioProcessor.parameters, "inGain", inGainSlider );
-    
-    /*
-     
-     ~~~~ Might want to re-introduce the compressor so I'm just commenting it out. ~~~~
-     
-    // Compressor
-    compThreshAttachment  = std::make_unique<AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.parameters,"compThresh",  compThreshSlider  );
-    compRatioAttachment   = std::make_unique<AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.parameters,"compRatio",   compRatioSlider   );
-    compAttackAttachment  = std::make_unique<AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.parameters,"compAttack",  compAttackSlider  );
-    compReleaseAttachment = std::make_unique<AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.parameters,"compRelease", compReleaseSlider );
-    */
-    
-    // Waveshaper
-    wsAmtAttachment    = std::make_unique<AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.parameters, "wsAmt",    wsAmtSlider    );
-    wsDryWetAttachment = std::make_unique<AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.parameters, "wsDryWet", wsDryWetSlider );
-    
-    // Foldback
-    fbAmtAttachment    = std::make_unique<AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.parameters, "foldbackAmt",    fbAmtSlider    );
-    fbDryWetAttachment = std::make_unique<AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.parameters, "foldbackDryWet", fbDryWetSlider );
-    
-    // Bitcrusher
-    bcAmtAttachment    = std::make_unique<AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.parameters, "bitcrushAmt",    bcAmtSlider    );
-    bcDryWetAttachment = std::make_unique<AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.parameters, "bitcrushDryWet", bcDryWetSlider );
-    
-    // Formant
-    formMorphAttachment  = std::make_unique<AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.parameters, "formantMorph",  formMorphSlider  );
-    formDryWetAttachment = std::make_unique<AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.parameters, "formantDryWet", formDryWetSlider );
-    
-    // Delay
-    delayTimeAttachment     = std::make_unique<AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.parameters, "delayFXTime",   delayTimeSlider     );
-    delayFeedbackAttachment = std::make_unique<AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.parameters, "delayFXFdbck",  delayFeedbackSlider );
-    delayDryWetAttachment   = std::make_unique<AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.parameters, "delayFXDryWet", delayDryWetSlider   );
-    
-    // Filter
-    filtCutoffAttachment = std::make_unique<AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.parameters, "svFiltCutoff", filtCutoffSlider );
-    filtResAttachment    = std::make_unique<AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.parameters, "svFiltRes",    filtResSlider    );
-    
-    // Haas Width
-    haasWidthAttachment = std::make_unique<AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.parameters, "haasWidth", haasWidthSlider );
-    
-    // Out Gain
-    outGainAttachment = std::make_unique<AudioProcessorValueTreeState::SliderAttachment> (audioProcessor.parameters, "outGain", outGainSlider );
-    
-    //
-    // ComboBox Attachments
-    //
-    
-    accelXOnOffAttachment = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "accelXOnOff", accelXOnOffBox );
-    accelYOnOffAttachment = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "accelYOnOff", accelYOnOffBox );
-    accelZOnOffAttachment = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "accelZOnOff", accelZOnOffBox );
-    
-    gyroXOnOffAttachment = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "gyroXOnOff", gyroXOnOffBox );
-    gyroYOnOffAttachment = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "gyroYOnOff", gyroYOnOffBox );
-    gyroZOnOffAttachment = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "gyroZOnOff", gyroZOnOffBox );
-    
-    touchXOnOffAttachment = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "touchXOnOff", touchXOnOffBox );
-    touchYOnOffAttachment = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "touchYOnOff", touchYOnOffBox );
-    touchZOnOffAttachment = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "touchZOnOff", touchZOnOffBox );
-    
-    distanceOnOffAttachment = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "distOnOff", distanceOnOffBox );
-    
-    // ~~~~ Might want to re-introduce the compressor so I'm just commenting it out. ~~~~
-    // compOnOffAttachment  = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "compOnOff",     compOnOffBox  );
-    
-    filtTypeAttachment   = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "svFiltType",    filtTypeBox   );
-    filtPolesAttachment  = std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment> ( audioProcessor.parameters, "svFiltPoles",   filtPolesBox  );
-    
-    
     // Header/Footer
-    titleHeader.setTextColor ( orangePeel );
-    titleFooter.setTextColor ( orangePeel );
+    titleHeader->setTextColor ( orangePeel );
+    titleFooter->setTextColor ( orangePeel );
     
-    addAndMakeVisible (titleHeader );
-    addAndMakeVisible (titleFooter );
+    addAndMakeVisible ( titleHeader.get() );
+    addAndMakeVisible ( titleFooter.get() );
 }
 // End Constructor
 
 BassOnboardAudioProcessorEditor::~BassOnboardAudioProcessorEditor()
 {
-    Timer::stopTimer();
+    juce::Timer::stopTimer();
 }
 
 //==============================================================================
@@ -336,43 +262,43 @@ void BassOnboardAudioProcessorEditor::resized()
     float areaPadding = 2.0f;
     
     // Total area split to top & bottom halves
-    Rectangle<int> totalArea  = getLocalBounds().reduced( areaPadding );
+    juce::Rectangle<int> totalArea  = getLocalBounds().reduced( areaPadding );
     
-    Rectangle<int> headerArea = totalArea.removeFromTop    ( 55.0f ).reduced ( areaPadding );
-    Rectangle<int> footerArea = totalArea.removeFromBottom ( 30.0f ).reduced ( areaPadding );
+    juce::Rectangle<int> headerArea = totalArea.removeFromTop    ( 55.0f ).reduced ( areaPadding );
+    juce::Rectangle<int> footerArea = totalArea.removeFromBottom ( 30.0f ).reduced ( areaPadding );
     
-    titleHeader.setBounds ( headerArea );
-    titleFooter.setBounds ( footerArea );
+    titleHeader->setBounds ( headerArea );
+    titleFooter->setBounds ( footerArea );
     
-    Rectangle<int> onOffStrip = totalArea.removeFromBottom( totalArea.getHeight() * 0.1f ); // Space to put the Sensor On/Off until redesign
-    Rectangle<int> topHalf    = totalArea.removeFromTop( totalArea.getHeight() * 0.5f );
-    Rectangle<int> bottomHalf = totalArea;
+    juce::Rectangle<int> onOffStrip = totalArea.removeFromBottom( totalArea.getHeight() * 0.1f ); // Space to put the Sensor On/Off until redesign
+    juce::Rectangle<int> topHalf    = totalArea.removeFromTop( totalArea.getHeight() * 0.5f );
+    juce::Rectangle<int> bottomHalf = totalArea;
     
     // Sensor On/Off until the redesign
     float onOffButtonWidth = onOffStrip.getWidth() * 0.1f;
     float onOffLabelHeight = onOffStrip.getHeight() * 0.33f;
     
-    Rectangle<int> accelXOnOffArea   = onOffStrip.removeFromLeft ( onOffButtonWidth );
-    Rectangle<int> accelYOnOffArea   = onOffStrip.removeFromLeft ( onOffButtonWidth );
-    Rectangle<int> accelZOnOffArea   = onOffStrip.removeFromLeft ( onOffButtonWidth );
-    Rectangle<int> gyroXOnOffArea    = onOffStrip.removeFromLeft ( onOffButtonWidth );
-    Rectangle<int> gyroYOnOffArea    = onOffStrip.removeFromLeft ( onOffButtonWidth );
-    Rectangle<int> gyroZOnOffArea    = onOffStrip.removeFromLeft ( onOffButtonWidth );
-    Rectangle<int> touchXOnOffArea   = onOffStrip.removeFromLeft ( onOffButtonWidth );
-    Rectangle<int> touchYOnOffArea   = onOffStrip.removeFromLeft ( onOffButtonWidth );
-    Rectangle<int> touchZOnOffArea   = onOffStrip.removeFromLeft ( onOffButtonWidth );
-    Rectangle<int> distanceOnOffArea = onOffStrip;
+    juce::Rectangle<int> accelXOnOffArea   = onOffStrip.removeFromLeft ( onOffButtonWidth );
+    juce::Rectangle<int> accelYOnOffArea   = onOffStrip.removeFromLeft ( onOffButtonWidth );
+    juce::Rectangle<int> accelZOnOffArea   = onOffStrip.removeFromLeft ( onOffButtonWidth );
+    juce::Rectangle<int> gyroXOnOffArea    = onOffStrip.removeFromLeft ( onOffButtonWidth );
+    juce::Rectangle<int> gyroYOnOffArea    = onOffStrip.removeFromLeft ( onOffButtonWidth );
+    juce::Rectangle<int> gyroZOnOffArea    = onOffStrip.removeFromLeft ( onOffButtonWidth );
+    juce::Rectangle<int> touchXOnOffArea   = onOffStrip.removeFromLeft ( onOffButtonWidth );
+    juce::Rectangle<int> touchYOnOffArea   = onOffStrip.removeFromLeft ( onOffButtonWidth );
+    juce::Rectangle<int> touchZOnOffArea   = onOffStrip.removeFromLeft ( onOffButtonWidth );
+    juce::Rectangle<int> distanceOnOffArea = onOffStrip;
     
-    Rectangle<int> accelXOnOffLabelArea   = accelXOnOffArea.removeFromTop   ( onOffLabelHeight );
-    Rectangle<int> accelYOnOffLabelArea   = accelYOnOffArea.removeFromTop   ( onOffLabelHeight );
-    Rectangle<int> accelZOnOffLabelArea   = accelZOnOffArea.removeFromTop   ( onOffLabelHeight );
-    Rectangle<int> gyroXOnOffLabelArea    = gyroXOnOffArea.removeFromTop    ( onOffLabelHeight );
-    Rectangle<int> gyroYOnOffLabelArea    = gyroYOnOffArea.removeFromTop    ( onOffLabelHeight );
-    Rectangle<int> gyroZOnOffLabelArea    = gyroZOnOffArea.removeFromTop    ( onOffLabelHeight );
-    Rectangle<int> touchXOnOffLabelArea   = touchXOnOffArea.removeFromTop   ( onOffLabelHeight );
-    Rectangle<int> touchYOnOffLabelArea   = touchYOnOffArea.removeFromTop   ( onOffLabelHeight );
-    Rectangle<int> touchZOnOffLabelArea   = touchZOnOffArea.removeFromTop   ( onOffLabelHeight );
-    Rectangle<int> distanceOnOffLabelArea = distanceOnOffArea.removeFromTop ( onOffLabelHeight );
+    juce::Rectangle<int> accelXOnOffLabelArea   = accelXOnOffArea.removeFromTop   ( onOffLabelHeight );
+    juce::Rectangle<int> accelYOnOffLabelArea   = accelYOnOffArea.removeFromTop   ( onOffLabelHeight );
+    juce::Rectangle<int> accelZOnOffLabelArea   = accelZOnOffArea.removeFromTop   ( onOffLabelHeight );
+    juce::Rectangle<int> gyroXOnOffLabelArea    = gyroXOnOffArea.removeFromTop    ( onOffLabelHeight );
+    juce::Rectangle<int> gyroYOnOffLabelArea    = gyroYOnOffArea.removeFromTop    ( onOffLabelHeight );
+    juce::Rectangle<int> gyroZOnOffLabelArea    = gyroZOnOffArea.removeFromTop    ( onOffLabelHeight );
+    juce::Rectangle<int> touchXOnOffLabelArea   = touchXOnOffArea.removeFromTop   ( onOffLabelHeight );
+    juce::Rectangle<int> touchYOnOffLabelArea   = touchYOnOffArea.removeFromTop   ( onOffLabelHeight );
+    juce::Rectangle<int> touchZOnOffLabelArea   = touchZOnOffArea.removeFromTop   ( onOffLabelHeight );
+    juce::Rectangle<int> distanceOnOffLabelArea = distanceOnOffArea.removeFromTop ( onOffLabelHeight );
     
     accelXOnOffLabel.setBounds   ( accelXOnOffLabelArea   );
     accelYOnOffLabel.setBounds   ( accelYOnOffLabelArea   );
@@ -400,16 +326,16 @@ void BassOnboardAudioProcessorEditor::resized()
     float topSpacing    = topHalf.getWidth() / 9.0f;
     float bottomSpacing = bottomHalf.getWidth() / 9.0f;
     
-    Rectangle<int> inArea   = topHalf.removeFromLeft ( topSpacing ).reduced        ( areaPadding );
-    Rectangle<int> wsArea   = topHalf.removeFromLeft ( topSpacing * 2.0f ).reduced ( areaPadding );
-    Rectangle<int> fbArea   = topHalf.removeFromLeft ( topSpacing * 2.0f ).reduced ( areaPadding );
-    Rectangle<int> bcArea   = topHalf.removeFromLeft ( topSpacing * 2.0f ).reduced ( areaPadding );
-    Rectangle<int> formArea = topHalf.reduced                                      ( areaPadding );
+    juce::Rectangle<int> inArea   = topHalf.removeFromLeft ( topSpacing ).reduced        ( areaPadding );
+    juce::Rectangle<int> wsArea   = topHalf.removeFromLeft ( topSpacing * 2.0f ).reduced ( areaPadding );
+    juce::Rectangle<int> fbArea   = topHalf.removeFromLeft ( topSpacing * 2.0f ).reduced ( areaPadding );
+    juce::Rectangle<int> bcArea   = topHalf.removeFromLeft ( topSpacing * 2.0f ).reduced ( areaPadding );
+    juce::Rectangle<int> formArea = topHalf.reduced                                      ( areaPadding );
     
-    Rectangle<int> delayArea = bottomHalf.removeFromLeft ( bottomSpacing * 3.0f ).reduced ( areaPadding );
-    Rectangle<int> filtArea  = bottomHalf.removeFromLeft ( bottomSpacing * 4.0f ).reduced ( areaPadding );
-    Rectangle<int> haasArea  = bottomHalf.removeFromLeft ( bottomSpacing ).reduced        ( areaPadding );
-    Rectangle<int> outArea   = bottomHalf.reduced                                         ( areaPadding );
+    juce::Rectangle<int> delayArea = bottomHalf.removeFromLeft ( bottomSpacing * 3.0f ).reduced ( areaPadding );
+    juce::Rectangle<int> filtArea  = bottomHalf.removeFromLeft ( bottomSpacing * 4.0f ).reduced ( areaPadding );
+    juce::Rectangle<int> haasArea  = bottomHalf.removeFromLeft ( bottomSpacing ).reduced        ( areaPadding );
+    juce::Rectangle<int> outArea   = bottomHalf.reduced                                         ( areaPadding );
     
     inAreaBG.setBounds    ( inArea.getX(),    inArea.getY(),    inArea.getWidth(),    inArea.getHeight()    );
     wsAreaBG.setBounds    ( wsArea.getX(),    wsArea.getY(),    wsArea.getWidth(),    wsArea.getHeight()    );
@@ -428,71 +354,71 @@ void BassOnboardAudioProcessorEditor::resized()
     // Top Half Areas
     
     // In Gain
-    Rectangle<int> inLabelArea     = inArea.removeFromTop    ( labelHeight );
-    Rectangle<int> inGainLabelArea = inArea.removeFromTop    ( labelHeight );
+    juce::Rectangle<int> inLabelArea     = inArea.removeFromTop    ( labelHeight );
+    juce::Rectangle<int> inGainLabelArea = inArea.removeFromTop    ( labelHeight );
     
     inLabel.setBounds      ( inLabelArea );
     inGainLabel.setBounds  ( inGainLabelArea );
     inGainSlider.setBounds ( inArea );
     
     // Waveshaper
-    Rectangle<int> wsLabelArea      = wsArea.removeFromTop    ( labelHeight );
-    Rectangle<int> wsParamLabelArea = wsArea.removeFromTop    ( labelHeight );
+    juce::Rectangle<int> wsLabelArea      = wsArea.removeFromTop    ( labelHeight );
+    juce::Rectangle<int> wsParamLabelArea = wsArea.removeFromTop    ( labelHeight );
     
     wsLabel.setBounds    ( wsLabelArea );
     
     float wsWidth = wsArea.getWidth() * 0.5f;
     
-    Rectangle<int> wsAmtLabelArea    = wsParamLabelArea.removeFromLeft ( wsWidth );
-    Rectangle<int> wsDryWetLabelArea = wsParamLabelArea;
+    juce::Rectangle<int> wsAmtLabelArea    = wsParamLabelArea.removeFromLeft ( wsWidth );
+    juce::Rectangle<int> wsDryWetLabelArea = wsParamLabelArea;
     
     wsAmtLabel.setBounds    ( wsAmtLabelArea    );
     wsDryWetLabel.setBounds ( wsDryWetLabelArea );
     
-    Rectangle<int> wsAmtArea    = wsArea.removeFromLeft ( wsWidth );
-    Rectangle<int> wsDryWetArea = wsArea;
+    juce::Rectangle<int> wsAmtArea    = wsArea.removeFromLeft ( wsWidth );
+    juce::Rectangle<int> wsDryWetArea = wsArea;
     
     wsAmtSlider.setBounds    ( wsAmtArea    );
     wsDryWetSlider.setBounds ( wsDryWetArea );
     
     
     // Foldback
-    Rectangle<int> fbLabelArea      = fbArea.removeFromTop    ( labelHeight );
-    Rectangle<int> fbParamLabelArea = fbArea.removeFromTop    ( labelHeight );
+    juce::Rectangle<int> fbLabelArea      = fbArea.removeFromTop    ( labelHeight );
+    juce::Rectangle<int> fbParamLabelArea = fbArea.removeFromTop    ( labelHeight );
     
     fbLabel.setBounds    ( fbLabelArea );
     
     float fbWidth = fbArea.getWidth() * 0.5f;
     
-    Rectangle<int> fbAmtLabelArea    = fbParamLabelArea.removeFromLeft ( fbWidth );
-    Rectangle<int> fbDryWetLabelArea = fbParamLabelArea;
+    juce::Rectangle<int> fbAmtLabelArea    = fbParamLabelArea.removeFromLeft ( fbWidth );
+    juce::Rectangle<int> fbDryWetLabelArea = fbParamLabelArea;
     
     fbAmtLabel.setBounds    ( fbAmtLabelArea    );
     fbDryWetLabel.setBounds ( fbDryWetLabelArea );
     
-    Rectangle<int> fbAmtArea    = fbArea.removeFromLeft ( fbWidth );
-    Rectangle<int> fbDryWetArea = fbArea;
+    juce::Rectangle<int> fbAmtArea    = fbArea.removeFromLeft ( fbWidth );
+    juce::Rectangle<int> fbDryWetArea = fbArea;
     
     fbAmtSlider.setBounds    ( fbAmtArea    );
     fbDryWetSlider.setBounds ( fbDryWetArea );
     
     
     // Bitcrusher
-    Rectangle<int> bcLabelArea      = bcArea.removeFromTop    ( labelHeight );
-    Rectangle<int> bcParamLabelArea = bcArea.removeFromTop    ( labelHeight );
+    juce::Rectangle<int> bcLabelArea      = bcArea.removeFromTop    ( labelHeight );
+    juce::Rectangle<int> bcParamLabelArea = bcArea.removeFromTop    ( labelHeight );
     
     bcLabel.setBounds    ( bcLabelArea );
     
     float bcWidth = bcArea.getWidth() * 0.5f;
     
-    Rectangle<int> bcAmtLabelArea    = bcParamLabelArea.removeFromLeft ( bcWidth );
-    Rectangle<int> bcDryWetLabelArea = bcParamLabelArea;
+    juce::Rectangle<int> bcAmtLabelArea    = bcParamLabelArea.removeFromLeft ( bcWidth );
+    juce::Rectangle<int> bcDryWetLabelArea = bcParamLabelArea;
     
     bcAmtLabel.setBounds    ( bcAmtLabelArea    );
     bcDryWetLabel.setBounds ( bcDryWetLabelArea );
     
-    Rectangle<int> bcAmtArea    = bcArea.removeFromLeft ( bcWidth );
-    Rectangle<int> bcDryWetArea = bcArea;
+    juce::Rectangle<int> bcAmtArea    = bcArea.removeFromLeft ( bcWidth );
+    juce::Rectangle<int> bcDryWetArea = bcArea;
     
     bcAmtSlider.setBounds    ( bcAmtArea    );
     bcDryWetSlider.setBounds ( bcDryWetArea );
@@ -501,45 +427,45 @@ void BassOnboardAudioProcessorEditor::resized()
     // Bottom Half Areas
     
     // Formant
-    Rectangle<int> formLabelArea      = formArea.removeFromTop    ( labelHeight );
-    Rectangle<int> formParamLabelArea = formArea.removeFromTop    ( labelHeight );
+    juce::Rectangle<int> formLabelArea      = formArea.removeFromTop    ( labelHeight );
+    juce::Rectangle<int> formParamLabelArea = formArea.removeFromTop    ( labelHeight );
     
     formLabel.setBounds    ( formLabelArea );
     
     float formWidth = formArea.getWidth() * 0.5f;
     
-    Rectangle<int> formMorphLabelArea  = formParamLabelArea.removeFromLeft ( formWidth );
-    Rectangle<int> formDryWetLabelArea = formParamLabelArea;
+    juce::Rectangle<int> formMorphLabelArea  = formParamLabelArea.removeFromLeft ( formWidth );
+    juce::Rectangle<int> formDryWetLabelArea = formParamLabelArea;
     
     formMorphLabel.setBounds  ( formMorphLabelArea  );
     formDryWetLabel.setBounds ( formDryWetLabelArea );
     
-    Rectangle<int> formMorphArea  = formArea.removeFromLeft ( formWidth );
-    Rectangle<int> formDryWetArea = formArea;
+    juce::Rectangle<int> formMorphArea  = formArea.removeFromLeft ( formWidth );
+    juce::Rectangle<int> formDryWetArea = formArea;
     
     formMorphSlider.setBounds  ( formMorphArea  );
     formDryWetSlider.setBounds ( formDryWetArea );
     
     
     // Delay
-    Rectangle<int> delayLabelArea      = delayArea.removeFromTop    ( labelHeight );
-    Rectangle<int> delayParamLabelArea = delayArea.removeFromTop    ( labelHeight );
+    juce::Rectangle<int> delayLabelArea      = delayArea.removeFromTop    ( labelHeight );
+    juce::Rectangle<int> delayParamLabelArea = delayArea.removeFromTop    ( labelHeight );
     
     delayLabel.setBounds    ( delayLabelArea );
     
     float delayWidth = delayArea.getWidth() * 0.33f;
     
-    Rectangle<int> delayTimeLabelArea   = delayParamLabelArea.removeFromLeft ( delayWidth );
-    Rectangle<int> delayFdbkLabelArea   = delayParamLabelArea.removeFromLeft ( delayWidth );
-    Rectangle<int> delayDryWetLabelArea = delayParamLabelArea;
+    juce::Rectangle<int> delayTimeLabelArea   = delayParamLabelArea.removeFromLeft ( delayWidth );
+    juce::Rectangle<int> delayFdbkLabelArea   = delayParamLabelArea.removeFromLeft ( delayWidth );
+    juce::Rectangle<int> delayDryWetLabelArea = delayParamLabelArea;
     
     delayTimeLabel.setBounds     ( delayTimeLabelArea  );
     delayFeedbackLabel.setBounds ( delayFdbkLabelArea  );
     delayDryWetLabel.setBounds   (delayDryWetLabelArea );
     
-    Rectangle<int> delayTimeArea   = delayArea.removeFromLeft ( delayWidth );
-    Rectangle<int> delayFdbkArea   = delayArea.removeFromLeft ( delayWidth );
-    Rectangle<int> delayDryWetArea = delayArea;
+    juce::Rectangle<int> delayTimeArea   = delayArea.removeFromLeft ( delayWidth );
+    juce::Rectangle<int> delayFdbkArea   = delayArea.removeFromLeft ( delayWidth );
+    juce::Rectangle<int> delayDryWetArea = delayArea;
     
     delayTimeSlider.setBounds     ( delayTimeArea   );
     delayFeedbackSlider.setBounds ( delayFdbkArea   );
@@ -547,24 +473,24 @@ void BassOnboardAudioProcessorEditor::resized()
     
     
     // Filter
-    Rectangle<int> filtLabelArea      = filtArea.removeFromTop    ( labelHeight );
-    Rectangle<int> filtParamLabelArea = filtArea.removeFromTop    ( labelHeight );
+    juce::Rectangle<int> filtLabelArea      = filtArea.removeFromTop    ( labelHeight );
+    juce::Rectangle<int> filtParamLabelArea = filtArea.removeFromTop    ( labelHeight );
     
     filtLabel.setBounds    ( filtLabelArea );
     
     float filtWidth = filtArea.getWidth() * 0.25f;
     
-    Rectangle<int> filtCutoffLabelArea = filtParamLabelArea.removeFromLeft  ( filtWidth );
-    Rectangle<int> filtParamSpacerArea = filtParamLabelArea.removeFromRight ( filtWidth * 2.0f );
-    Rectangle<int> filtResLabelArea    = filtParamLabelArea;
+    juce::Rectangle<int> filtCutoffLabelArea = filtParamLabelArea.removeFromLeft  ( filtWidth );
+    juce::Rectangle<int> filtParamSpacerArea = filtParamLabelArea.removeFromRight ( filtWidth * 2.0f );
+    juce::Rectangle<int> filtResLabelArea    = filtParamLabelArea;
     
     filtCutoffLabel.setBounds ( filtCutoffLabelArea );
     filtResLabel.setBounds    ( filtResLabelArea    );
     
-    Rectangle<int> filtCutoffArea = filtArea.removeFromLeft ( filtWidth );
-    Rectangle<int> filtResArea    = filtArea.removeFromLeft ( filtWidth );
-    Rectangle<int> filtTypeArea   = filtArea.removeFromTop  ( filtArea.getHeight() * 0.5f );
-    Rectangle<int> filtPoleArea   = filtArea;
+    juce::Rectangle<int> filtCutoffArea = filtArea.removeFromLeft ( filtWidth );
+    juce::Rectangle<int> filtResArea    = filtArea.removeFromLeft ( filtWidth );
+    juce::Rectangle<int> filtTypeArea   = filtArea.removeFromTop  ( filtArea.getHeight() * 0.5f );
+    juce::Rectangle<int> filtPoleArea   = filtArea;
     
     filtCutoffSlider.setBounds ( filtCutoffArea );
     filtResSlider.setBounds    ( filtResArea    );
@@ -573,8 +499,8 @@ void BassOnboardAudioProcessorEditor::resized()
     
     
     // Haas Width
-    Rectangle<int> haasLabelArea      = haasArea.removeFromTop    ( labelHeight );
-    Rectangle<int> haasParamLabelArea = haasArea.removeFromTop    ( labelHeight );
+    juce::Rectangle<int> haasLabelArea      = haasArea.removeFromTop    ( labelHeight );
+    juce::Rectangle<int> haasParamLabelArea = haasArea.removeFromTop    ( labelHeight );
     
     haasLabel.setBounds       ( haasLabelArea );
     haasWidthLabel.setBounds  ( haasParamLabelArea );
@@ -582,8 +508,8 @@ void BassOnboardAudioProcessorEditor::resized()
     
     
     // Out Gain
-    Rectangle<int> outLabelArea      = outArea.removeFromTop    ( labelHeight );
-    Rectangle<int> outParamLabelArea = outArea.removeFromTop    ( labelHeight );
+    juce::Rectangle<int> outLabelArea      = outArea.removeFromTop    ( labelHeight );
+    juce::Rectangle<int> outParamLabelArea = outArea.removeFromTop    ( labelHeight );
     
     outLabel.setBounds      ( outLabelArea      );
     outGainLabel.setBounds  ( outParamLabelArea );
@@ -605,53 +531,53 @@ void BassOnboardAudioProcessorEditor::timerCallback()
 
 
 /// Sets up Slider object instances in constructor. sliderInstance is the slider to set up, suffix is textValueSuffix, sliderFillColor is the slider color below the thumb
-void BassOnboardAudioProcessorEditor::sliderSetup(Slider &sliderInstance, Slider::SliderStyle style, bool showTextBox)
+void BassOnboardAudioProcessorEditor::sliderSetup(juce::Slider &sliderInstance, juce::Slider::SliderStyle style, bool showTextBox)
 {
     sliderInstance.setSliderStyle(style);
         
     // If slider has a textbox, draw it, otherwise, don't
     if (showTextBox)
     {
-        sliderInstance.setTextBoxStyle ( Slider::TextBoxBelow, false, 50, 20 );
-        sliderInstance.setColour       ( Slider::textBoxOutlineColourId, Colour( (uint8)0, (uint8)0, (uint8)0, (uint8)0 ) );
-        sliderInstance.setColour       ( Slider::textBoxTextColourId, magicMint );
+        sliderInstance.setTextBoxStyle ( juce::Slider::TextBoxBelow, false, 50, 20 );
+        sliderInstance.setColour       ( juce::Slider::textBoxOutlineColourId, juce::Colour( (juce::uint8)0, (juce::uint8)0, (juce::uint8)0, (juce::uint8)0 ) );
+        sliderInstance.setColour       ( juce::Slider::textBoxTextColourId, magicMint );
     }
     else
     {
-        sliderInstance.setTextBoxStyle( Slider::NoTextBox, false, 0, 0 );
+        sliderInstance.setTextBoxStyle( juce::Slider::NoTextBox, false, 0, 0 );
     }
     
-    sliderInstance.setColour( Slider::trackColourId, fieryRose );
-    sliderInstance.setColour( Slider::thumbColourId, magicMint );
+    sliderInstance.setColour( juce::Slider::trackColourId, fieryRose );
+    sliderInstance.setColour( juce::Slider::thumbColourId, magicMint );
     
-    addAndMakeVisible(sliderInstance);
+    addAndMakeVisible ( sliderInstance );
 }
 
 
 /// Sets up Label for the Slider instances. Takes the labelInstance and the text for setText
-void BassOnboardAudioProcessorEditor::sliderLabelSetup(Label &labelInstance, String labelText, float fontSize)
+void BassOnboardAudioProcessorEditor::sliderLabelSetup(juce::Label &labelInstance, juce::String labelText, float fontSize)
 {
-    labelInstance.setText              ( labelText, dontSendNotification );
-    labelInstance.setJustificationType ( Justification::centred );
-    labelInstance.setColour            ( Label::textColourId, orangePeel );
-    labelInstance.setFont              ( Font("helvetica", fontSize, 1) );
+    labelInstance.setText              ( labelText, juce::dontSendNotification );
+    labelInstance.setJustificationType ( juce::Justification::centred );
+    labelInstance.setColour            ( juce::Label::textColourId, orangePeel );
+    labelInstance.setFont              ( juce::Font("helvetica", fontSize, 1) );
     
     addAndMakeVisible ( labelInstance );
 }
 
 
 /// Sets up an On/Off combo box
-void BassOnboardAudioProcessorEditor::onOffBoxSetup(ComboBox &boxInstance)
+void BassOnboardAudioProcessorEditor::onOffBoxSetup(juce::ComboBox &boxInstance)
 {
     boxInstance.addItem              ( "Off", 1 );
     boxInstance.addItem              ( "On",  2 );
-    boxInstance.setJustificationType ( Justification::centred );
+    boxInstance.setJustificationType ( juce::Justification::centred );
     boxInstance.setSelectedItemIndex ( 0 );
     
-    boxInstance.setColour ( ComboBox::backgroundColourId, onyx        );
-    boxInstance.setColour ( ComboBox::outlineColourId, lightSlateGray );
-    boxInstance.setColour ( ComboBox::textColourId, orangePeel        );
-    boxInstance.setColour ( ComboBox::arrowColourId, magicMint        );
+    boxInstance.setColour ( juce::ComboBox::backgroundColourId, onyx        );
+    boxInstance.setColour ( juce::ComboBox::outlineColourId, lightSlateGray );
+    boxInstance.setColour ( juce::ComboBox::textColourId, orangePeel        );
+    boxInstance.setColour ( juce::ComboBox::arrowColourId, magicMint        );
     
     addAndMakeVisible ( boxInstance );
 }
@@ -661,11 +587,11 @@ void BassOnboardAudioProcessorEditor::onOffBoxSetup(ComboBox &boxInstance)
 void BassOnboardAudioProcessorEditor::filterController()
 {
     // Change filter type LPF/HPF/BPF
-    if (filtTypeBox.getSelectedId() != osc.getFiltType() + 1.0f)
-        filtTypeBox.setSelectedId( osc.getFiltType() + 1.0f );
+    if (filtTypeBox.getSelectedId() != osc->getFiltType() + 1.0f)
+        filtTypeBox.setSelectedId( osc->getFiltType() + 1.0f );
     
     // Change Filter Poles -12dB/-24dB
-    float pole = osc.getFiltPole();
+    float pole = osc->getFiltPole();
     
     if (pole == -1.0f)
         pole = 2.0f;
@@ -679,9 +605,9 @@ void BassOnboardAudioProcessorEditor::filterController()
     
     if (cutoffOn == 2.0f)
     {
-        float cutoffMap = jmap   ( osc.getTouchY(), 300.0f, 800.0f, 45.0f, 15000.0f );   // Map touchscreen values to parameter values
+        float cutoffMap = juce::jmap   ( osc->getTouchY(), 300.0f, 800.0f, 45.0f, 15000.0f );   // Map touchscreen values to parameter values
         
-        cutoffMap = jlimit( 20.0f, 18000.0f, cutoffMap ); // Limit values to parameter range
+        cutoffMap = juce::jlimit( 20.0f, 18000.0f, cutoffMap ); // Limit values to parameter range
         
         // Set cutoff value
         if (filtCutoffSlider.getValue() != cutoffMap)
@@ -690,9 +616,9 @@ void BassOnboardAudioProcessorEditor::filterController()
     
     if (resOn == 2.0f)
     {
-        float resMap = jmap   ( osc.getTouchX(), 300.0f, 800.0f, 0.9f,  2.4f     );  // Map touchscreen values to parameter values
+        float resMap = juce::jmap ( osc->getTouchX(), 300.0f, 800.0f, 0.9f,  2.4f     );  // Map touchscreen values to parameter values
         
-        resMap = jlimit( 0.7f, 2.5f, resMap );  // Limit values to parameter range
+        resMap = juce::jlimit( 0.7f, 2.5f, resMap );  // Limit values to parameter range
         
         // Set resonance value
         if (filtResSlider.getValue() != resMap)
@@ -704,19 +630,19 @@ void BassOnboardAudioProcessorEditor::filterController()
 void BassOnboardAudioProcessorEditor::sensorOnOffController()
 {
     // Converts -1 Off/1 On values from Arduino to match 1 Off & 2 On values of ComboBox
-    float aX = ( osc.getAccelXOnOff() == 1.0f ) ? 2.0f : 1.0f;
-    float aY = ( osc.getAccelYOnOff() == 1.0f ) ? 2.0f : 1.0f;
-    float aZ = ( osc.getAccelZOnOff() == 1.0f ) ? 2.0f : 1.0f;
+    float aX = ( osc->getAccelXOnOff() == 1.0f ) ? 2.0f : 1.0f;
+    float aY = ( osc->getAccelYOnOff() == 1.0f ) ? 2.0f : 1.0f;
+    float aZ = ( osc->getAccelZOnOff() == 1.0f ) ? 2.0f : 1.0f;
     
-    float gX = ( osc.getGyroXOnOff() == 1.0f ) ? 2.0f : 1.0f;
-    float gY = ( osc.getGyroYOnOff() == 1.0f ) ? 2.0f : 1.0f;
-    float gZ = ( osc.getGyroZOnOff() == 1.0f ) ? 2.0f : 1.0f;
+    float gX = ( osc->getGyroXOnOff() == 1.0f ) ? 2.0f : 1.0f;
+    float gY = ( osc->getGyroYOnOff() == 1.0f ) ? 2.0f : 1.0f;
+    float gZ = ( osc->getGyroZOnOff() == 1.0f ) ? 2.0f : 1.0f;
     
-    float tX = ( osc.getTouchXOnOff() == 1.0f ) ? 2.0f : 1.0f;
-    float tY = ( osc.getTouchYOnOff() == 1.0f ) ? 2.0f : 1.0f;
-    float tZ = ( osc.getTouchZOnOff() == 1.0f ) ? 2.0f : 1.0f;
+    float tX = ( osc->getTouchXOnOff() == 1.0f ) ? 2.0f : 1.0f;
+    float tY = ( osc->getTouchYOnOff() == 1.0f ) ? 2.0f : 1.0f;
+    float tZ = ( osc->getTouchZOnOff() == 1.0f ) ? 2.0f : 1.0f;
     
-    float dis = (osc.getDistanceOnOff() == 1.0f ) ? 2.0f : 1.0f;
+    float dis = (osc->getDistanceOnOff() == 1.0f ) ? 2.0f : 1.0f;
     
     // If the button flipped the value, change the ComboBox value
     if (accelXOnOffBox.getSelectedId() != aX)
@@ -761,11 +687,11 @@ void BassOnboardAudioProcessorEditor::sensorOnOffController()
 void BassOnboardAudioProcessorEditor::encoderMapping()
 {
     // Get value from Rotary Encoders
-    float enc1Val = osc.getEncoder1();
-    float enc2Val = osc.getEncoder2();
+    float enc1Val = osc->getEncoder1();
+    float enc2Val = osc->getEncoder2();
     
     // Encoder1 Button presses cycle through Rotary Encoder Mappings 0 - 6
-    switch ((int)osc.getEncButton1())
+    switch ((int)osc->getEncButton1())
     {
         // Enc1 = outGain; Enc2 = Haas;
         case 0:
@@ -864,10 +790,10 @@ void BassOnboardAudioProcessorEditor::encoderMapping()
  Sets values for mapped encoders. encVal is enc1Val or enc2Val; paramVal is a reference to the parameter value you are controlling; encoder is a reference to the current stored encoder1Val or encoder2Val
  multFactor multiplies the value for each encoder value tick. limitMin is the parameter minimum. limitMax is the parameter maximum. sliderInstance is a reference to the Slider for the parameter.
  */
-void BassOnboardAudioProcessorEditor::encoderMapValueSet(float encVal, float& paramVal, float& encoder, float multFactor, float limitMin, float limitMax, Slider &sliderInstance)
+void BassOnboardAudioProcessorEditor::encoderMapValueSet(float encVal, float& paramVal, float& encoder, float multFactor, float limitMin, float limitMax, juce::Slider &sliderInstance)
 {
     paramVal += (encVal - encoder) * multFactor;
-    paramVal  = jlimit( limitMin, limitMax, paramVal );
+    paramVal  = juce::jlimit( limitMin, limitMax, paramVal );
     
     sliderInstance.setValue( paramVal );
 }
@@ -877,7 +803,7 @@ void BassOnboardAudioProcessorEditor::encoderMapValueSet(float encVal, float& pa
 /// encoderButton2 Presse cycle through sensor mappings to parameters
 void BassOnboardAudioProcessorEditor::sensorMapping()
 {
-    switch ((int)osc.getEncButton2())
+    switch ((int)osc->getEncButton2())
     {
         case 0:
             sensorMap0();
@@ -904,54 +830,54 @@ void BassOnboardAudioProcessorEditor::sensorMapping()
 void BassOnboardAudioProcessorEditor::sensorMap0()
 {
     // AccelX to Waveshape Amt
-    sensorMapValueSet( accelXOnOffBox, wsAmtOverride, wsAmtSlider, osc.getAccelX(), -4.0f, 4.0f, 1.0f, 200.0f );
+    sensorMapValueSet( accelXOnOffBox, wsAmtOverride, wsAmtSlider, osc->getAccelX(), -4.0f, 4.0f, 1.0f, 200.0f );
     
     // AccelY to Foldback Amt
-    sensorMapValueSet( accelYOnOffBox, fbAmtOverride, fbAmtSlider, osc.getAccelY(), -4.0f, 4.0f, 1.0f, 200.0f );
+    sensorMapValueSet( accelYOnOffBox, fbAmtOverride, fbAmtSlider, osc->getAccelY(), -4.0f, 4.0f, 1.0f, 200.0f );
     
     // AccelZ to Bitcrush Amt
-    sensorMapValueSet( accelZOnOffBox, bcAmtOverride, bcAmtSlider, osc.getAccelZ(), -4.0f, 4.0f, 0.0f, 1.0f );
+    sensorMapValueSet( accelZOnOffBox, bcAmtOverride, bcAmtSlider, osc->getAccelZ(), -4.0f, 4.0f, 0.0f, 1.0f );
     
     // Distance to Formant Morph
-    sensorMapValueSet( distanceOnOffBox, formMorphOverride, formMorphSlider, osc.getDistance(), 0.0f, 1200.0f, 0.0f, 9.0f );
+    sensorMapValueSet( distanceOnOffBox, formMorphOverride, formMorphSlider, osc->getDistance(), 0.0f, 1200.0f, 0.0f, 9.0f );
     
     // GyroX to Delay Time
-    sensorMapValueSet( gyroXOnOffBox, delayTimeOverride, delayTimeSlider, osc.getGyroX(), -2000.0f, 2000.0f, 0.0f, 1.0f );
+    sensorMapValueSet( gyroXOnOffBox, delayTimeOverride, delayTimeSlider, osc->getGyroX(), -2000.0f, 2000.0f, 0.0f, 1.0f );
 }
 
 // See Sensor Maps comment above
 void BassOnboardAudioProcessorEditor::sensorMap1()
 {
     // AccelX to Waveshape Amt
-    sensorMapValueSet( accelXOnOffBox, wsAmtOverride, wsAmtSlider, osc.getAccelX(), -4.0f, 4.0f, 1.0f, 200.0f );
+    sensorMapValueSet( accelXOnOffBox, wsAmtOverride, wsAmtSlider, osc->getAccelX(), -4.0f, 4.0f, 1.0f, 200.0f );
     
     // AccelY to Foldback Amt
-    sensorMapValueSet( accelYOnOffBox, fbAmtOverride, fbAmtSlider, osc.getAccelY(), -4.0f, 4.0f, 1.0f, 200.0f );
+    sensorMapValueSet( accelYOnOffBox, fbAmtOverride, fbAmtSlider, osc->getAccelY(), -4.0f, 4.0f, 1.0f, 200.0f );
     
     // AccelZ to Bitcrush Amt
-    sensorMapValueSet( accelZOnOffBox, bcAmtOverride, bcAmtSlider, osc.getAccelZ(), -4.0f, 4.0f, 0.0f, 1.0f );
+    sensorMapValueSet( accelZOnOffBox, bcAmtOverride, bcAmtSlider, osc->getAccelZ(), -4.0f, 4.0f, 0.0f, 1.0f );
     
     // GyroX to formant morph
-    sensorMapValueSet( gyroXOnOffBox, formMorphOverride, formMorphSlider, osc.getGyroX(), -2000.0f, 2000.0f, 0.0f, 9.0f );
+    sensorMapValueSet( gyroXOnOffBox, formMorphOverride, formMorphSlider, osc->getGyroX(), -2000.0f, 2000.0f, 0.0f, 9.0f );
     
     // Distance to delay time
-    sensorMapValueSet( distanceOnOffBox, delayTimeOverride, delayTimeSlider, osc.getDistance(), 0.0f, 1200.0f, 0.0f, 1.0f );
+    sensorMapValueSet( distanceOnOffBox, delayTimeOverride, delayTimeSlider, osc->getDistance(), 0.0f, 1200.0f, 0.0f, 1.0f );
 }
 
 // See Sensor Maps comment above
 void BassOnboardAudioProcessorEditor::sensorMap2()
 {
     // GyroX to WS Amt
-    sensorMapValueSet( gyroXOnOffBox, wsAmtOverride, wsAmtSlider, osc.getGyroX(), -2000.0f, 2000.0f, 1.0f, 200.0f );
+    sensorMapValueSet( gyroXOnOffBox, wsAmtOverride, wsAmtSlider, osc->getGyroX(), -2000.0f, 2000.0f, 1.0f, 200.0f );
     
     // GyroY to FB Amt
-    sensorMapValueSet( gyroYOnOffBox, fbAmtOverride, fbAmtSlider, osc.getGyroY(), -2000.0f, 2000.0f, 1.0f, 200.0f );
+    sensorMapValueSet( gyroYOnOffBox, fbAmtOverride, fbAmtSlider, osc->getGyroY(), -2000.0f, 2000.0f, 1.0f, 200.0f );
     
     // GyroZ to BC Amt
-    sensorMapValueSet( gyroZOnOffBox, bcAmtOverride, bcAmtSlider, osc.getGyroZ(), -2000.0f, 2000.0f, 0.0f, 1.0f );
+    sensorMapValueSet( gyroZOnOffBox, bcAmtOverride, bcAmtSlider, osc->getGyroZ(), -2000.0f, 2000.0f, 0.0f, 1.0f );
     
     // AccelX to Formant morph
-    sensorMapValueSet( accelXOnOffBox, formMorphOverride, formMorphSlider, osc.getAccelX(), -4.0f, 4.0f, 0.0f, 9.0f );
+    sensorMapValueSet( accelXOnOffBox, formMorphOverride, formMorphSlider, osc->getAccelX(), -4.0f, 4.0f, 0.0f, 9.0f );
 }
 
 /**
@@ -959,12 +885,12 @@ void BassOnboardAudioProcessorEditor::sensorMap2()
  sliderInstance is the parameter slider. sensorVal is the current value of the sensor coming over OSC. sensorMin and sensorMax are the min and max values expected from
  the sensor. mapMin and mapMax are the min and max of the parameter that the sensor values will be mapped to.
  */
-void BassOnboardAudioProcessorEditor::sensorMapValueSet(ComboBox &onOffBox, bool &paramOverride, Slider &sliderInstance, float sensorVal, float sensorMin, float sensorMax, float mapMin, float mapMax)
+void BassOnboardAudioProcessorEditor::sensorMapValueSet(juce::ComboBox &onOffBox, bool &paramOverride, juce::Slider &sliderInstance, float sensorVal, float sensorMin, float sensorMax, float mapMin, float mapMax)
 {
     if (onOffBox.getSelectedId() == 2.0f)
     {
         paramOverride = true;
-        sliderInstance.setValue( jmap( sensorVal, sensorMin, sensorMax, mapMin, mapMax ) );
+        sliderInstance.setValue( juce::jmap( sensorVal, sensorMin, sensorMax, mapMin, mapMax ) );
     }
     else paramOverride = false;
 }

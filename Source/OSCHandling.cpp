@@ -174,7 +174,7 @@ OSCHandler::~OSCHandler()
  Automatically called when OSC Bundle comes in, splits bundle into its elements, and calls either
  oscMessageReceived or oscBundleReceived depending on which type the element of the bundle is
  */
-void OSCHandler::oscBundleReceived(const OSCBundle &bundle)
+void OSCHandler::oscBundleReceived(const juce::OSCBundle &bundle)
 {
     if (bundle.size() > 0)
     {
@@ -191,9 +191,9 @@ void OSCHandler::oscBundleReceived(const OSCBundle &bundle)
 }
 
 
-void OSCHandler::oscMessageReceived(const OSCMessage &message)
+void OSCHandler::oscMessageReceived(const juce::OSCMessage &message)
 {
-    String address = message.getAddressPattern().toString();
+    juce::String address = message.getAddressPattern().toString();
     
     if (message[0].isFloat32())
     {

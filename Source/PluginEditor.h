@@ -10,13 +10,15 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
+
 #include "OSCHandling.h"
 #include "TitleHeader.h"
 
 //==============================================================================
 /**
 */
-class BassOnboardAudioProcessorEditor  : public juce::AudioProcessorEditor, public Timer
+class BassOnboardAudioProcessorEditor  : public juce::AudioProcessorEditor,
+                                         public juce::Timer
 {
 public:
     BassOnboardAudioProcessorEditor (BassOnboardAudioProcessor&);
@@ -29,13 +31,13 @@ public:
 
 private:
     /// Sets up Slider object instances in constructor. sliderInstance is the slider to set up, suffix is textValueSuffix, sliderFillColor is the slider color below the thumb
-    void sliderSetup(Slider& sliderInstance, Slider::SliderStyle style, bool showTextBox);
+    void sliderSetup(juce::Slider& sliderInstance, juce::Slider::SliderStyle style, bool showTextBox);
     
     /// Sets up Label for the Slider instances. Takes the labelInstance and the text for setText
-    void sliderLabelSetup(Label& labelInstance, String labelText, float fontSize);
+    void sliderLabelSetup(juce::Label& labelInstance, juce::String labelText, float fontSize);
     
     /// Sets up an On/Off combo box
-    void onOffBoxSetup(ComboBox& boxInstance);
+    void onOffBoxSetup(juce::ComboBox& boxInstance);
     
     /// Interface between Filter Parameters and physical devices
     void filterController();
@@ -57,7 +59,13 @@ private:
     Sets values for mapped encoders. encVal is enc1Val or enc2Val; paramVal is a reference to the parameter value you are controlling; encoder is a reference to the current stored encoder1Val or encoder2Val
     multFactor multiplies the value for each encoder value tick. limitMin is the parameter minimum. limitMax is the parameter maximum. sliderInstance is a reference to the Slider for the parameter.
     */
-    void encoderMapValueSet(float encVal, float& paramVal, float& encoder, float multFactor, float limitMin, float limitMax, Slider& sliderInstance);
+    void encoderMapValueSet(float encVal,
+                            float& paramVal,
+                            float& encoder,
+                            float multFactor,
+                            float limitMin,
+                            float limitMax,
+                            juce::Slider& sliderInstance);
     
     
     /// encoderButton2 Presse cycle through sensor mappings to parameters
@@ -72,214 +80,171 @@ private:
     sliderInstance is the parameter slider. sensorVal is the current value of the sensor coming over OSC. sensorMin and sensorMax are the min and max values expected from
     the sensor. mapMin and mapMax are the min and max of the parameter that the sensor values will be mapped to.
     */
-    void sensorMapValueSet(ComboBox& onOffBox, bool& paramOverride, Slider& sliderInstance, float sensorVal, float sensorMin, float sensorMax, float mapMin, float mapMax);
+    void sensorMapValueSet(juce::ComboBox& onOffBox,
+                           bool&           paramOverride,
+                           juce::Slider&   sliderInstance,
+                           float           sensorVal,
+                           float           sensorMin,
+                           float           sensorMax,
+                           float           mapMin,
+                           float           mapMax);
+    
+    BassOnboardAudioProcessor& audioProcessor;
     
     // Sliders
-    Slider inGainSlider;
+    juce::Slider inGainSlider;
     
-    /*
-     
-     Might want to re-introduce the compressor so I'm just commenting it out.
-     
-    Slider compThreshSlider;
-    Slider compRatioSlider;
-    Slider compAttackSlider;
-    Slider compReleaseSlider;
-    */
+    juce::Slider wsAmtSlider;
+    juce::Slider wsDryWetSlider;
     
+    juce::Slider fbAmtSlider;
+    juce::Slider fbDryWetSlider;
     
-    Slider wsAmtSlider;
-    Slider wsDryWetSlider;
+    juce::Slider bcAmtSlider;
+    juce::Slider bcDryWetSlider;
     
-    Slider fbAmtSlider;
-    Slider fbDryWetSlider;
+    juce::Slider formMorphSlider;
+    juce::Slider formDryWetSlider;
     
-    Slider bcAmtSlider;
-    Slider bcDryWetSlider;
+    juce::Slider delayTimeSlider;
+    juce::Slider delayFeedbackSlider;
+    juce::Slider delayDryWetSlider;
     
-    Slider formMorphSlider;
-    Slider formDryWetSlider;
+    juce::Slider filtCutoffSlider;
+    juce::Slider filtResSlider;
     
-    Slider delayTimeSlider;
-    Slider delayFeedbackSlider;
-    Slider delayDryWetSlider;
+    juce::Slider haasWidthSlider;
     
-    Slider filtCutoffSlider;
-    Slider filtResSlider;
-    
-    Slider haasWidthSlider;
-    
-    Slider outGainSlider;
+    juce::Slider outGainSlider;
     
     // ComboBox
-    ComboBox accelXOnOffBox;
-    ComboBox accelYOnOffBox;
-    ComboBox accelZOnOffBox;
+    juce::ComboBox accelXOnOffBox;
+    juce::ComboBox accelYOnOffBox;
+    juce::ComboBox accelZOnOffBox;
     
-    ComboBox gyroXOnOffBox;
-    ComboBox gyroYOnOffBox;
-    ComboBox gyroZOnOffBox;
+    juce::ComboBox gyroXOnOffBox;
+    juce::ComboBox gyroYOnOffBox;
+    juce::ComboBox gyroZOnOffBox;
     
-    ComboBox touchXOnOffBox;
-    ComboBox touchYOnOffBox;
-    ComboBox touchZOnOffBox;
+    juce::ComboBox touchXOnOffBox;
+    juce::ComboBox touchYOnOffBox;
+    juce::ComboBox touchZOnOffBox;
     
-    ComboBox distanceOnOffBox;
+    juce::ComboBox distanceOnOffBox;
     
-    // ComboBox compOnOffBox;   // Might want to re-introduce the compressor so I'm just commenting it out.
-    // ComboBox wsOnOffBox;
-    // ComboBox fbOnOffBox;
-    // ComboBox bcOnOffBox;
-    // ComboBox formOnOffBox;
-    // ComboBox delayOnOffBox;
-    ComboBox filtTypeBox;
-    ComboBox filtPolesBox;
-    // ComboBox filtOnOffBox;
-    // ComboBox haasOnOffBox;
+    juce::ComboBox filtTypeBox;
+    juce::ComboBox filtPolesBox;
     
     // Labels
-    Label inLabel;
-    Label inGainLabel;
+    juce::Label inLabel;
+    juce::Label inGainLabel;
     
-    /*
-     
-     Might want to re-introduce the compressor so I'm just commenting it out.
-     
-    Label compLabel;
-    Label compThreshLabel;
-    Label compRatioLabel;
-    Label compAttackLabel;
-    Label compReleaseLabel;
-    */
+    juce::Label wsLabel;
+    juce::Label wsAmtLabel;
+    juce::Label wsDryWetLabel;
     
-    Label wsLabel;
-    Label wsAmtLabel;
-    Label wsDryWetLabel;
+    juce::Label fbLabel;
+    juce::Label fbAmtLabel;
+    juce::Label fbDryWetLabel;
     
-    Label fbLabel;
-    Label fbAmtLabel;
-    Label fbDryWetLabel;
+    juce::Label bcLabel;
+    juce::Label bcAmtLabel;
+    juce::Label bcDryWetLabel;
     
-    Label bcLabel;
-    Label bcAmtLabel;
-    Label bcDryWetLabel;
+    juce::Label formLabel;
+    juce::Label formMorphLabel;
+    juce::Label formDryWetLabel;
     
-    Label formLabel;
-    Label formMorphLabel;
-    Label formDryWetLabel;
+    juce::Label delayLabel;
+    juce::Label delayTimeLabel;
+    juce::Label delayFeedbackLabel;
+    juce::Label delayDryWetLabel;
     
-    Label delayLabel;
-    Label delayTimeLabel;
-    Label delayFeedbackLabel;
-    Label delayDryWetLabel;
+    juce::Label filtLabel;
+    juce::Label filtCutoffLabel;
+    juce::Label filtResLabel;
     
-    Label filtLabel;
-    Label filtCutoffLabel;
-    Label filtResLabel;
+    juce::Label haasLabel;
+    juce::Label haasWidthLabel;
     
-    Label haasLabel;
-    Label haasWidthLabel;
+    juce::Label outLabel;
+    juce::Label outGainLabel;
     
-    Label outLabel;
-    Label outGainLabel;
-    
-    Label accelXOnOffLabel;
-    Label accelYOnOffLabel;
-    Label accelZOnOffLabel;
-    Label gyroXOnOffLabel;
-    Label gyroYOnOffLabel;
-    Label gyroZOnOffLabel;
-    Label touchXOnOffLabel;
-    Label touchYOnOffLabel;
-    Label touchZOnOffLabel;
-    Label distanceOnOffLabel;
+    juce::Label accelXOnOffLabel;
+    juce::Label accelYOnOffLabel;
+    juce::Label accelZOnOffLabel;
+    juce::Label gyroXOnOffLabel;
+    juce::Label gyroYOnOffLabel;
+    juce::Label gyroZOnOffLabel;
+    juce::Label touchXOnOffLabel;
+    juce::Label touchYOnOffLabel;
+    juce::Label touchZOnOffLabel;
+    juce::Label distanceOnOffLabel;
     
     
     // Attachments
-    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> inGainAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> inGainAttachment; 
     
-    /*
-     
-     Might want to re-introduce the compressor so I'm just commenting it out.
-     
-    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> compThreshAttachment;
-    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> compRatioAttachment;
-    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> compAttackAttachment;
-    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> compReleaseAttachment;
-    */
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> wsAmtAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> wsDryWetAttachment;
     
-    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> wsAmtAttachment;
-    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> wsDryWetAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> fbAmtAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> fbDryWetAttachment;
     
-    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> fbAmtAttachment;
-    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> fbDryWetAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> bcAmtAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> bcDryWetAttachment;
     
-    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> bcAmtAttachment;
-    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> bcDryWetAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> formMorphAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> formDryWetAttachment;
     
-    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> formMorphAttachment;
-    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> formDryWetAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> delayTimeAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> delayFeedbackAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> delayDryWetAttachment;
     
-    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> delayTimeAttachment;
-    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> delayFeedbackAttachment;
-    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> delayDryWetAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> filtCutoffAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> filtResAttachment;
     
-    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> filtCutoffAttachment;
-    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> filtResAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> haasWidthAttachment;
     
-    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> haasWidthAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> outGainAttachment;
     
-    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> outGainAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> accelXOnOffAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> accelYOnOffAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> accelZOnOffAttachment;
     
-    std::unique_ptr<AudioProcessorValueTreeState::ComboBoxAttachment> accelXOnOffAttachment;
-    std::unique_ptr<AudioProcessorValueTreeState::ComboBoxAttachment> accelYOnOffAttachment;
-    std::unique_ptr<AudioProcessorValueTreeState::ComboBoxAttachment> accelZOnOffAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> gyroXOnOffAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> gyroYOnOffAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> gyroZOnOffAttachment;
     
-    std::unique_ptr<AudioProcessorValueTreeState::ComboBoxAttachment> gyroXOnOffAttachment;
-    std::unique_ptr<AudioProcessorValueTreeState::ComboBoxAttachment> gyroYOnOffAttachment;
-    std::unique_ptr<AudioProcessorValueTreeState::ComboBoxAttachment> gyroZOnOffAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> touchXOnOffAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> touchYOnOffAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> touchZOnOffAttachment;
     
-    std::unique_ptr<AudioProcessorValueTreeState::ComboBoxAttachment> touchXOnOffAttachment;
-    std::unique_ptr<AudioProcessorValueTreeState::ComboBoxAttachment> touchYOnOffAttachment;
-    std::unique_ptr<AudioProcessorValueTreeState::ComboBoxAttachment> touchZOnOffAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> distanceOnOffAttachment;
     
-    std::unique_ptr<AudioProcessorValueTreeState::ComboBoxAttachment> distanceOnOffAttachment;
-    
-    // std::unique_ptr<AudioProcessorValueTreeState::ComboBoxAttachment> compOnOffAttachment;    // Might want to re-introduce the compressor so I'm just commenting it out.
-    
-    /*
-    std::unique_ptr<AudioProcessorValueTreeState::ComboBoxAttachment> wsOnOffAttachment;
-    std::unique_ptr<AudioProcessorValueTreeState::ComboBoxAttachment> fbOnOffAttachment;
-    std::unique_ptr<AudioProcessorValueTreeState::ComboBoxAttachment> bcOnOffAttachment;
-    std::unique_ptr<AudioProcessorValueTreeState::ComboBoxAttachment> formOnOffAttachment;
-    std::unique_ptr<AudioProcessorValueTreeState::ComboBoxAttachment> delayOnOffAttachment;
-     */
-    std::unique_ptr<AudioProcessorValueTreeState::ComboBoxAttachment> filtTypeAttachment;
-    std::unique_ptr<AudioProcessorValueTreeState::ComboBoxAttachment> filtPolesAttachment;
-    /*
-    std::unique_ptr<AudioProcessorValueTreeState::ComboBoxAttachment> filtOnOffAttachment;
-    std::unique_ptr<AudioProcessorValueTreeState::ComboBoxAttachment> haasOnOffAttachment;
-    */
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> filtTypeAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> filtPolesAttachment;
     
     // Colors
-    Colour onyx;
-    Colour lightSlateGray;
-    Colour magicMint;
-    Colour fieryRose;
-    Colour orangePeel;
+    juce::Colour onyx;
+    juce::Colour lightSlateGray;
+    juce::Colour magicMint;
+    juce::Colour fieryRose;
+    juce::Colour orangePeel;
+    juce::Colour transparent;
     
     // Rectangles
-    Rectangle<float> inAreaBG;
-    Rectangle<float> ngAreaBG;
-    Rectangle<float> compAreaBG;
-    Rectangle<float> wsAreaBG;
-    Rectangle<float> fbAreaBG;
-    Rectangle<float> bcAreaBG;
-    Rectangle<float> formAreaBG;
-    Rectangle<float> delayAreaBG;
-    Rectangle<float> filtAreaBG;
-    Rectangle<float> haasAreaBG;
-    Rectangle<float> outAreaBG;
+    juce::Rectangle<float> inAreaBG;
+    juce::Rectangle<float> ngAreaBG;
+    juce::Rectangle<float> compAreaBG;
+    juce::Rectangle<float> wsAreaBG;
+    juce::Rectangle<float> fbAreaBG;
+    juce::Rectangle<float> bcAreaBG;
+    juce::Rectangle<float> formAreaBG;
+    juce::Rectangle<float> delayAreaBG;
+    juce::Rectangle<float> filtAreaBG;
+    juce::Rectangle<float> haasAreaBG;
+    juce::Rectangle<float> outAreaBG;
     
     // Sensor Instances
     //Accelerometer accelerometer;
@@ -288,11 +253,12 @@ private:
     //TouchScreen   touchScreen;
     
     // OSC
-    OSCHandler osc;
+    std::unique_ptr<OSCHandler> osc;
+//    OSCHandler osc;
     
     // Header/Footer
-    TitleHeader titleHeader;
-    TitleFooter titleFooter;
+    std::unique_ptr<TitleHeader> titleHeader;
+    std::unique_ptr<TitleFooter> titleFooter;
     
     int currentEncoderMapping;
     
@@ -317,9 +283,6 @@ private:
     bool bcAmtOverride;
     bool formMorphOverride;
     bool delayTimeOverride;
-    
-    
-    BassOnboardAudioProcessor& audioProcessor;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BassOnboardAudioProcessorEditor)
 };

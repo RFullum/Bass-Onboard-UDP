@@ -59,67 +59,43 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
     
     // APVTS Parameters instalnce
-    AudioProcessorValueTreeState parameters;
+    juce::AudioProcessorValueTreeState parameters;
 
 private:
-    
-    // Member Variables
-    
-    // APVTS Members
-    
     // Gain Params
     std::atomic<float>* inGainDBParam;
     std::atomic<float>* outGainDBParam;
     
-    /*
-     
-     Might want to re-introduce the compressor so I'm just commenting it out.
-     
-    // Compressor Params
-    std::atomic<float>* compThreshParam;
-    std::atomic<float>* compRatioParam;
-    std::atomic<float>* compAttackParam;
-    std::atomic<float>* compReleaseParam;
-    std::atomic<float>* compOnOffParam;
-    */
-    
     // Distortion Params
     std::atomic<float>* waveShapeAmountParam;
     std::atomic<float>* waveShapeDryWetParam;
-    std::atomic<float>* waveShapeOnOffParam;
-    
     std::atomic<float>* foldbackAmountParam;
     std::atomic<float>* foldbackDryWetParam;
-    std::atomic<float>* foldbackOnOffParam;
+    std::atomic<float>* bitCrushAmountParam;
+    std::atomic<float>* bitCrushDryWetParam;
     
-    std::atomic<float>* bitcrushAmtParam;
-    std::atomic<float>* bitcrushDryWetParam;
-    std::atomic<float>* bitcrushOnOffParam;
+    // Formant Params
+    std::atomic<float>* formantMorphParam;
+    std::atomic<float>* formantDryWetParam;
     
-    // Spatial Params
+    // Delay Params
     std::atomic<float>* delayFXTimeParam;
-    std::atomic<float>* delayFXFeedbackParam;
+    std::atomic<float>* delayFXFdbckParam;
     std::atomic<float>* delayFXDryWetParam;
-    std::atomic<float>* delayFXOnOffParam;
-    SmoothedValue<float> delayFXTimeSmooth;
-    SmoothedValue<float> delayFXFeedbackSmooth;
-    
     std::atomic<float>* haasWidthParam;
-    std::atomic<float>* haasOnOffParam;
-    SmoothedValue<float> haasSmooth;
+    
+    juce::SmoothedValue<float> delayFXTimeSmooth;
+    juce::SmoothedValue<float> delayFXFdbckSmooth;
+    juce::SmoothedValue<float> haasSmooth;
     
     // Filter Params
     std::atomic<float>* svFilterCutoffParam;
-    std::atomic<float>* svFilterResonanceParam;
+    std::atomic<float>* svFilterResParam;
     std::atomic<float>* svFilterTypeParam;
     std::atomic<float>* svFilterPolesParam;
-    std::atomic<float>* svFilterOnOffParam;
-    SmoothedValue<float> svFilterCutoffSmooth;
-    SmoothedValue<float> svFilterResonanceSmooth;
     
-    std::atomic<float>* formantMorphParam;
-    std::atomic<float>* formantDryWetParam;
-    std::atomic<float>* formantOnOffParam;
+    juce::SmoothedValue<float> svFilterCutoffSmooth;
+    juce::SmoothedValue<float> svFilterResSmooth;
     
     // Sensor On/Off
     std::atomic<float>* accelXOnOffParam;
@@ -136,22 +112,25 @@ private:
     
     std::atomic<float>* distanceOnOffParam;
     
-    // DSP Widgets & Processors
-    dsp::Gain<float> inGain;
-    dsp::Gain<float> outGain;
-    //dsp::Compressor<float> comp;  // Might want to re-introduce the compressor so I'm just commenting it out.
-    dsp::DelayLine<float, dsp::DelayLineInterpolationTypes::Lagrange3rd> delayFX   { 192000 };
-    dsp::DelayLine<float, dsp::DelayLineInterpolationTypes::Lagrange3rd> haasDelay { 192000 };
-    dsp::StateVariableTPTFilter<float> svFilter1;
-    dsp::StateVariableTPTFilter<float> svFilter2;
+    // Gain
+    juce::dsp::Gain<float> inGain;
+    juce::dsp::Gain<float> outGain;
     
+    // FX
+    std::unique_ptr<WaveShaper>         waveShaper;
+    std::unique_ptr<FoldbackDistortion> foldback;
+    std::unique_ptr<BitCrusher>         bitCrush;
+    std::unique_ptr<FormantFilter>      formant;
     
-    // Non JUCE Processing Classes
-    WaveShaper         waveShaper;
-    FoldbackDistortion foldback;
-    BitCrusher         bitCrusher;
-    DryWet             delayFXDryWet;
-    FormantFilter      formant;
+    juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Lagrange3rd> delayFX   { 192000 };
+    juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Lagrange3rd> haasDelay { 192000 };
+
+    
+    std::unique_ptr<DryWet> delayFXDryWet;
+    
+    // Filter
+    juce::dsp::StateVariableTPTFilter<float> svFilter1;
+    juce::dsp::StateVariableTPTFilter<float> svFilter2;
     
     
     //==============================================================================

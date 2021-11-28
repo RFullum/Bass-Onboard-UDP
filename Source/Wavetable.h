@@ -61,7 +61,7 @@ protected:
     void normalizeWaveTable();
     
     // Wavetable Parameters
-    int waveTableSize;
+    int   waveTableSize;
     float sampleRate;
     float frequency;
     
@@ -123,8 +123,8 @@ private:
     void populateSawWT();
     
     // Instance of oscillators
-    OwnedArray<SinOsc> sawHarmonics;
-    int numSawHarmonics; // Fundamental + 56 partials  -- Adjust this number to mod saw timbre
+    juce::OwnedArray<SinOsc> sawHarmonics;
+    int                      numSawHarmonics; // Fundamental + 56 partials  -- Adjust this number to mod saw timbre
 };
 
 
@@ -163,8 +163,8 @@ private:
     virtual void populateSquareWT();
     
     // Instance of oscillators
-    OwnedArray<SinOsc> squareHarmonics;
-    int numSquareHarmonics; // Fundamental + 56 partials -- Adjust this number to mod square timbre
+    juce::OwnedArray<SinOsc> squareHarmonics;
+    int                      numSquareHarmonics; // Fundamental + 56 partials -- Adjust this number to mod square timbre
     
 };
 
@@ -184,6 +184,6 @@ private:
     void populateSquareWT() override;
     
     // Highpass members
-    IIRFilter highPass;
-    float cutoffFreq;
+    juce::IIRFilter highPass;
+    float           cutoffFreq;
 };

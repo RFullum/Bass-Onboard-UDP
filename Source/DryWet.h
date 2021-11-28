@@ -17,16 +17,17 @@ class DryWet
 {
 public:
     DryWet();
+    ~DryWet();
     
     /**
      Takes the dry sample value, wet sample value, and mix value. Returns their mix sample value
      */
-    float dryWetMixLinear(float dryIn, float wetIn, float mixVal);
+    float dryWetMixLinearBySample(float dryIn, float wetIn, float mixVal);
     
     /**
     Takes the dry sample value, wet sample value, and mix value. Returns their mix sample value
     */
-    float dryWetMixEqualPower(float dryIn, float wetIn, float mixVal);
+    float dryWetMixEqualPowerBySample(float dryIn, float wetIn, float mixVal);
     
 private:
     /// Calculates gain of dry and wet samples. Returns mix sample (Linear by sample)
@@ -40,5 +41,4 @@ private:
     float drySample;
     float wetSample;
     float mixFactor;
-    
 };

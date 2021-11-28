@@ -10,43 +10,64 @@
 
 #include "FoldbackDistortion.h"
 
-FoldbackDistortion::FoldbackDistortion()  {}
+FoldbackDistortion::FoldbackDistortion() :
+    dryWet ( std::make_unique<DryWet>() )
+{}
+
+
 FoldbackDistortion::~FoldbackDistortion() {}
+
 
 void FoldbackDistortion::setSampleRate(float SR)
 {
-    foldbackAmtSmooth.reset          ( SR, 0.01f );
+    foldbackAmtSmooth.reset ( SR, 0.01f );
+    dryWetSmooth.reset      ( SR, 0.01f );
+    
     foldbackAmtSmooth.setTargetValue ( 0.0f );
-    dryWetSmooth.reset               ( SR, 0.01f );
     dryWetSmooth.setTargetValue      ( 0.0f );
 }
 
-AudioBuffer<float> FoldbackDistortion::processFoldback(AudioBuffer<float>& bufferIn, float foldbackAmount, float dryWetVal, float onOff)
+juce::AudioBuffer<float> FoldbackDistortion::processFoldback(juce::AudioBuffer<float> &bufferIn, float foldbackAmount, float dryWetVal)
 {
-    if (onOff == 1.0f)
+    auto* chanL = bufferIn.getWritePointer ( 0 );
+    auto* chanR = bufferIn.getWritePointer ( 1 );
+    
+    foldbackAmtSmooth.setTargetValue ( foldbackAmount );
+    dryWetSmooth.setTargetValue      ( dryWetVal      );
+    
+    for (int sample = 0; sample < bufferIn.getNumSamples(); sample++)
     {
-        auto* readL  = bufferIn.getReadPointer  ( 0 );
-        auto* readR  = bufferIn.getReadPointer  ( 1 );
-        auto* writeL = bufferIn.getWritePointer ( 0 );
-        auto* writeR = bufferIn.getWritePointer ( 1 );
+        float foldbackAmtSmoothVal = foldbackAmtSmooth.getNextValue();
+        float dryWetSmoothVal      = dryWetSmooth.getNextValue();
         
-        foldbackAmtSmooth.setTargetValue ( foldbackAmount );
-        dryWetSmooth.setTargetValue      ( dryWetVal );
+        float wetSampleL = juce::dsp::FastMathApproximations::sin( chanL[sample] * foldbackAmtSmoothVal );
+        float wetSampleR = juce::dsp::FastMathApproximations::sin( chanR[sample] * foldbackAmtSmoothVal );
         
-        for (int sample = 0; sample < bufferIn.getNumSamples(); sample++)
-        {
-            float foldbackAmtSmoothVal = foldbackAmtSmooth.getNextValue();
-            
-            float wetSampleL = dsp::FastMathApproximations::sin( readL[sample] * foldbackAmtSmoothVal );
-            float wetSampleR = dsp::FastMathApproximations::sin( readR[sample] * foldbackAmtSmoothVal );
-            
-            float dryWetSmoothVal = dryWetSmooth.getNextValue();
-            
-            writeL[sample] = dryWet.dryWetMixEqualPower( readL[sample], wetSampleL, dryWetSmoothVal );
-            writeR[sample] = dryWet.dryWetMixEqualPower( readR[sample], wetSampleR, dryWetSmoothVal );
-        }
+        chanL[sample] = dryWet->dryWetMixEqualPowerBySample( chanL[sample], wetSampleL, dryWetSmoothVal );
+        chanR[sample] = dryWet->dryWetMixEqualPowerBySample( chanR[sample], wetSampleR, dryWetSmoothVal );
     }
     
-    
     return bufferIn;
+}
+
+
+void FoldbackDistortion::processFoldbackBuffer(juce::AudioBuffer<float> &bufferIn, float foldbackAmount, float dryWetVal)
+{
+    auto* chanL = bufferIn.getWritePointer ( 0 );
+    auto* chanR = bufferIn.getWritePointer ( 1 );
+    
+    foldbackAmtSmooth.setTargetValue ( foldbackAmount );
+    dryWetSmooth.setTargetValue      ( dryWetVal      );
+    
+    for (int sample = 0; sample < bufferIn.getNumSamples(); sample++)
+    {
+        float foldbackAmtSmoothVal = foldbackAmtSmooth.getNextValue();
+        float dryWetSmoothVal      = dryWetSmooth.getNextValue();
+        
+        float wetSampleL = juce::dsp::FastMathApproximations::sin( chanL[sample] * foldbackAmtSmoothVal );
+        float wetSampleR = juce::dsp::FastMathApproximations::sin( chanR[sample] * foldbackAmtSmoothVal );
+        
+        chanL[sample] = dryWet->dryWetMixEqualPowerBySample( chanL[sample], wetSampleL, dryWetSmoothVal );
+        chanR[sample] = dryWet->dryWetMixEqualPowerBySample( chanR[sample], wetSampleR, dryWetSmoothVal );
+    }
 }

@@ -16,13 +16,15 @@
 //
 
 /// Constructor: initializes all samples in wavetable to 0.0f
-Wavetable::Wavetable() : waveTableSize(1024), sampleRate(44100.0f),
-                         frequency(0.0f), readHeadPos(0.0f), increment(1.0f)
+Wavetable::Wavetable() :
+    waveTableSize ( 1024     ),
+    sampleRate    ( 44100.0f ),
+    frequency     ( 0.0f     ),
+    readHeadPos   ( 0.0f     ),
+    increment     ( 1.0f     )
 {
     for (int i=0; i<waveTableSize; i++)
-    {
         waveTable[i] = 0.0;
-    }
 }
 
 /// Destructo!
@@ -83,9 +85,7 @@ float Wavetable::findMaxAmplitude(float* wt)
     for (int i=0; i<waveTableSize; i++)
     {
         if ( fabsf(wt[i]) > currentMax )
-        {
             currentMax = fabsf(wt[i]);
-        }
     }
     
     return currentMax;
@@ -95,12 +95,10 @@ float Wavetable::findMaxAmplitude(float* wt)
 /// Normalizes wavetable between -1.0f and 1.0f
 void Wavetable::normalizeWaveTable()
 {
-    float maxAmp = findMaxAmplitude(waveTable);
+    float maxAmp = findMaxAmplitude ( waveTable );
     
     for (int i=0; i<waveTableSize; i++)
-    {
         waveTable[i] /= maxAmp;
-    }
 }
 
 
@@ -178,14 +176,14 @@ float Wavetable::lagrangeInterpolation()
 // CHILD Class of Wavetable for band limited Sawtooth
 
 /// Creates Sawtooth Wavetable using a number of amplitude adjusted sine waves at the harmonics
-SawWavetable::SawWavetable() : numSawHarmonics(57) {} // Fundamental + 56 partials  -- Adjust this number to mod saw timbre
+SawWavetable::SawWavetable() :
+    numSawHarmonics(57)         // Fundamental + 56 partials  -- Adjust this number to mod saw timbre
+{}
 
 SawWavetable::~SawWavetable()
 {
     for (int i=0; i<numSawHarmonics; i++)
-    {
         sawHarmonics.remove(i);
-    }
 }
 
 /// Populates wavetables with wave values using their private populate functions
@@ -199,9 +197,7 @@ void SawWavetable::populateWavetable()
 void SawWavetable::createHarmonics()
 {
     for (int i=0; i<numSawHarmonics; i++)
-    {
-        sawHarmonics.add( new SinOsc() );
-    }
+        sawHarmonics.add ( new SinOsc() );
 }
 
 
@@ -209,9 +205,7 @@ void SawWavetable::createHarmonics()
 void SawWavetable::setSawSampleRates()
 {
     for (int i=0; i<numSawHarmonics; i++)
-    {
-        sawHarmonics[i]->setSampleRate(sampleRate);
-    }
+        sawHarmonics[i]->setSampleRate ( sampleRate );
 }
 
 
@@ -222,16 +216,12 @@ void SawWavetable::setSawFrequencies()
     
     for (int i=0; i<numSawHarmonics; i++)
     {
-        if (i == 0)                                 // Fundamental 1/1 ratio
-        {
+        if (i == 0)                             // Fundamental 1/1 ratio
             harmonicFreq = frequency;
-        }
-        else                                        // partials up the harmonic series ratios
-        {
+        else                                    // partials up the harmonic series ratios
             harmonicFreq *= ( (i + 1.0f) / i );
-        }
 
-        sawHarmonics[i]->setFrequency(harmonicFreq);
+        sawHarmonics[i]->setFrequency ( harmonicFreq );
     }
 }
 
@@ -243,7 +233,7 @@ void SawWavetable::sumHarmonics()
     {
         for (int j=0; j<numSawHarmonics; j++)
         {
-            float harmonicAmplitude = 1.0f / (j + 1.0f);    // Amplitude of harmonic is 1/n where n is the harmonic number
+            float harmonicAmplitude = 1.0f / ( j + 1.0f );  // Amplitude of harmonic is 1/n where n is the harmonic number
             
             waveTable[i] += sawHarmonics[j]-> process() * harmonicAmplitude;
         }
@@ -269,14 +259,14 @@ void SawWavetable::populateSawWT()
 //
 
 /// Creates Square Wavetable using a number of amplitude adjusted sine waves at the odd harmonics
-SquareWavetable::SquareWavetable() : numSquareHarmonics(57) {}  // Fundamental + 56 partials -- Adjust this number to mod square timbre
+SquareWavetable::SquareWavetable() :
+    numSquareHarmonics(57)              // Fundamental + 56 partials -- Adjust this number to mod square timbre
+{}
 
 SquareWavetable::~SquareWavetable()
 {
     for (int i=0; i<numSquareHarmonics; i++)
-    {
-        squareHarmonics.remove(i);
-    }
+        squareHarmonics.remove ( i );
 }
 
 /// Populates wavetables with wave values using their private populate functions
@@ -290,9 +280,7 @@ void SquareWavetable::populateWavetable()
 void SquareWavetable::createHarmonics()
 {
     for (int i=0; i<numSquareHarmonics; i++)
-    {
         squareHarmonics.add( new SinOsc() );
-    }
 }
 
 
@@ -300,9 +288,7 @@ void SquareWavetable::createHarmonics()
 void SquareWavetable::setSquareSampleRates()
 {
     for (int i=0; i<numSquareHarmonics; i++)
-    {
-        squareHarmonics[i]->setSampleRate(sampleRate);
-    }
+        squareHarmonics[i]->setSampleRate ( sampleRate );
 }
 
 
@@ -312,24 +298,18 @@ frequency for each sine instance
 */
 void SquareWavetable::setSquareFrequencies()
 {
-    int twiceOddHarmonics = numSquareHarmonics * 2;
-    float* harmonicFreq = new float[twiceOddHarmonics];
+    int    twiceOddHarmonics = numSquareHarmonics * 2;
+    float* harmonicFreq      = new float[twiceOddHarmonics];
     
     for (int i=0; i<twiceOddHarmonics; i++)
     {
         if (i == 0)     // Fundamental 1/1
-        {
             harmonicFreq[i] = frequency;
-        }
-        else            // Harmonic series ratios
-        {
-            harmonicFreq[i] = harmonicFreq[i-1] * ( (i + 1.0f) / i );
-        }
+        else
+            harmonicFreq[i] = harmonicFreq[i-1] * ( (i + 1.0f) / i );   // Harmonic series ratios
         
         if (i % 2 == 0) // Use the odd harmonics (at the even indexes) to set the frequencies
-        {
-            squareHarmonics[i / 2]->setFrequency(harmonicFreq[i]);
-        }
+            squareHarmonics[i / 2]->setFrequency ( harmonicFreq[i] );
     }
     
     delete[] harmonicFreq;
@@ -343,7 +323,7 @@ void SquareWavetable::sumHarmonics()
     {
         for (int j=0; j<numSquareHarmonics; j++)
         {
-            float harmonicAmplitude = 1.0f / (j * 2.0f + 1.0f);    // Amplitude of harmonic is 1/n where n is the harmonic number
+            float harmonicAmplitude = 1.0f / ( j * 2.0f + 1.0f );    // Amplitude of harmonic is 1/n where n is the harmonic number
             
             waveTable[i] += squareHarmonics[j]-> process() * harmonicAmplitude;
         }
@@ -374,13 +354,10 @@ void SpikeWavetable::highPassSpike()
     cutoffFreq = frequency * 10.0f;
     
     highPass.reset();
-    highPass.setCoefficients( IIRCoefficients::makeHighPass(sampleRate, cutoffFreq, 2.0f) );
+    highPass.setCoefficients( juce::IIRCoefficients::makeHighPass ( sampleRate, cutoffFreq, 2.0f ) );
     
     for (int i=0; i<waveTableSize; i++)
-    {
-        waveTable[i] = highPass.processSingleSampleRaw(waveTable[i]);
-    }
-    
+        waveTable[i] = highPass.processSingleSampleRaw ( waveTable[i] );
 }
 
 

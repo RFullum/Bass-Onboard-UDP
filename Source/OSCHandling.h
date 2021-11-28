@@ -34,9 +34,9 @@
 
 #include <JuceHeader.h>
 
-class OSCHandler : private OSCReceiver,
-                   private OSCReceiver::ListenerWithOSCAddress<OSCReceiver::MessageLoopCallback>,
-                   private OSCReceiver::Listener<juce::OSCReceiver::MessageLoopCallback>
+class OSCHandler : private juce::OSCReceiver,
+                   private juce::OSCReceiver::ListenerWithOSCAddress<juce::OSCReceiver::MessageLoopCallback>,
+                   private juce::OSCReceiver::Listener<juce::OSCReceiver::MessageLoopCallback>
 {
 public:
     OSCHandler();
@@ -125,50 +125,50 @@ public:
     
 private:
     /// Automatically called when an OSC Message comes in. Checks the address, and sets appropriate variable with incoming float
-    void oscMessageReceived (const OSCMessage& message) override;
+    void oscMessageReceived (const juce::OSCMessage& message) override;
 
     /**
      Automatically called when OSC Bundle comes in, splits bundle into its elements, and calls either
      oscMessageReceived or oscBundleReceived depending on which type the element of the bundle is
      */
-    void oscBundleReceived (const OSCBundle& bundle) override;
+    void oscBundleReceived (const juce::OSCBundle& bundle) override;
     
-    OSCAddress accelXAddress;
-    OSCAddress accelYAddress;
-    OSCAddress accelZAddress;
+    juce::OSCAddress accelXAddress;
+    juce::OSCAddress accelYAddress;
+    juce::OSCAddress accelZAddress;
     
-    OSCAddress gyroXAddress;
-    OSCAddress gyroYAddress;
-    OSCAddress gyroZAddress;
+    juce::OSCAddress gyroXAddress;
+    juce::OSCAddress gyroYAddress;
+    juce::OSCAddress gyroZAddress;
     
-    OSCAddress distanceAddress;
+    juce::OSCAddress distanceAddress;
     
-    OSCAddress touchXAddress;
-    OSCAddress touchYAddress;
-    OSCAddress touchZAddress;
+    juce::OSCAddress touchXAddress;
+    juce::OSCAddress touchYAddress;
+    juce::OSCAddress touchZAddress;
     
-    OSCAddress accelXOnOffAddress;
-    OSCAddress accelYOnOffAddress;
-    OSCAddress accelZOnOffAddress;
+    juce::OSCAddress accelXOnOffAddress;
+    juce::OSCAddress accelYOnOffAddress;
+    juce::OSCAddress accelZOnOffAddress;
     
-    OSCAddress gyroXOnOffAddress;
-    OSCAddress gyroYOnOffAddress;
-    OSCAddress gyroZOnOffAddress;
+    juce::OSCAddress gyroXOnOffAddress;
+    juce::OSCAddress gyroYOnOffAddress;
+    juce::OSCAddress gyroZOnOffAddress;
     
-    OSCAddress touchXOnOffAddress;
-    OSCAddress touchYOnOffAddress;
-    OSCAddress touchZOnOffAddress;
+    juce::OSCAddress touchXOnOffAddress;
+    juce::OSCAddress touchYOnOffAddress;
+    juce::OSCAddress touchZOnOffAddress;
     
-    OSCAddress distanceOnOffAddress;
+    juce::OSCAddress distanceOnOffAddress;
     
-    OSCAddress filterTypeAddress;
-    OSCAddress filterPoleAddress;
+    juce::OSCAddress filterTypeAddress;
+    juce::OSCAddress filterPoleAddress;
     
-    OSCAddress encoder1Address;
-    OSCAddress encoder2Address;
+    juce::OSCAddress encoder1Address;
+    juce::OSCAddress encoder2Address;
     
-    OSCAddress encButton1Address;
-    OSCAddress encButton2Address;
+    juce::OSCAddress encButton1Address;
+    juce::OSCAddress encButton2Address;
     
     
     float accelXVal;

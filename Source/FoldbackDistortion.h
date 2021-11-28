@@ -22,13 +22,15 @@ public:
     void setSampleRate(float SR);
     
     /// Returns an audio buffer of the dry/wet mixed Foldback signal
-    AudioBuffer<float> processFoldback(AudioBuffer<float>& bufferIn, float foldbackAmount, float dryWetVal, float onOff);
+    juce::AudioBuffer<float> processFoldback(juce::AudioBuffer<float>& bufferIn, float foldbackAmount, float dryWetVal);
+    
+    void processFoldbackBuffer(juce::AudioBuffer<float>& bufferIn, float foldbackAmount, float dryWetVal);
     
 private:
     // DryWet class instance
-    DryWet dryWet;
+    std::unique_ptr<DryWet> dryWet;
     
     // Member Variables
-    SmoothedValue<float> foldbackAmtSmooth;
-    SmoothedValue<float> dryWetSmooth;
+    juce::SmoothedValue<float> foldbackAmtSmooth;
+    juce::SmoothedValue<float> dryWetSmooth;
 };

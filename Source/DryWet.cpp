@@ -10,14 +10,19 @@
 
 #include "DryWet.h"
 
-DryWet::DryWet() : drySample(0.0f), wetSample(0.0f), mixFactor(0.0f)
-{
-}
+DryWet::DryWet() :
+    drySample ( 0.0f ),
+    wetSample ( 0.0f ),
+    mixFactor ( 0.0f )
+{}
+
+
+DryWet::~DryWet() {}
 
 /**
 Takes the dry sample value, wet sample value, and mix value. Returns their mix sample value
 */
-float DryWet::dryWetMixLinear(float dryIn, float wetIn, float mixVal)
+float DryWet::dryWetMixLinearBySample(float dryIn, float wetIn, float mixVal)
 {
     drySample = dryIn;
     wetSample = wetIn;
@@ -26,7 +31,7 @@ float DryWet::dryWetMixLinear(float dryIn, float wetIn, float mixVal)
     return dryWetCalculationLinear();
 }
 
-float DryWet::dryWetMixEqualPower(float dryIn, float wetIn, float mixVal)
+float DryWet::dryWetMixEqualPowerBySample(float dryIn, float wetIn, float mixVal)
 {
     drySample = dryIn;
     wetSample = wetIn;
@@ -47,8 +52,8 @@ float DryWet::dryWetCalculationLinear()
 /// Calculates gain of dry and wet samples. Returns mix sample (Equal Power by sample)
 float DryWet::dryWetCalculationEqualPower()
 {
-    float dryMix = std::sin( 0.5f * MathConstants<float>::pi * (1.0f - mixFactor) ) * drySample;
-    float wetMix = std::sin( 0.5f * MathConstants<float>::pi * mixFactor ) * wetSample;
+    float dryMix = std::sin ( 0.5f * juce::MathConstants<float>::pi * (1.0f - mixFactor) ) * drySample;
+    float wetMix = std::sin ( 0.5f * juce::MathConstants<float>::pi * mixFactor ) * wetSample;
     
     return dryMix + wetMix;
 }

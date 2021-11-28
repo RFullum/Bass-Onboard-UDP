@@ -11,7 +11,8 @@
 #include "FormantFilter.h"
 
 
-FormantFilter::FormantFilter()
+FormantFilter::FormantFilter() :
+    dryWet ( std::make_unique<DryWet>() )
 {
     setQVals();
 }
@@ -20,7 +21,7 @@ FormantFilter::~FormantFilter() {}
 
 
 /// Pass in a ProcessSpec to prepare the filters
-void FormantFilter::prepare(dsp::ProcessSpec& PS)
+void FormantFilter::prepare(juce::dsp::ProcessSpec &PS)
 {
     // Filter ProcessSpec setup
     filt1.prepare ( PS );
@@ -31,9 +32,9 @@ void FormantFilter::prepare(dsp::ProcessSpec& PS)
     filt2.reset();
     filt3.reset();
     
-    filt1.setType ( dsp::StateVariableTPTFilterType::bandpass );
-    filt2.setType ( dsp::StateVariableTPTFilterType::bandpass );
-    filt3.setType ( dsp::StateVariableTPTFilterType::bandpass );
+    filt1.setType ( juce::dsp::StateVariableTPTFilterType::bandpass );
+    filt2.setType ( juce::dsp::StateVariableTPTFilterType::bandpass );
+    filt3.setType ( juce::dsp::StateVariableTPTFilterType::bandpass );
     
     // Smoothed Value Setup
     morphSmooth1.reset          ( PS.sampleRate, 0.01f );
@@ -55,36 +56,38 @@ void FormantFilter::prepare(dsp::ProcessSpec& PS)
 }
 
 
+
+
 /**
 Takes the AudioBuffer, formant morph value (0.0f to 9.0f), and dry/wet (0.0 to 1.0f)
 and returns the formant filtered AudioBuffer
 */
-AudioBuffer<float> FormantFilter::process(AudioBuffer<float> &buf, float morph, float dW)
+juce::AudioBuffer<float> FormantFilter::process(juce::AudioBuffer<float> &buf, float morph, float dW)
 {
-    freqMorph(morph);
+    freqMorph ( morph );
     
-    return filterAudio(buf, dW);
+    return filterAudio ( buf, dW );
 }
 
 
-/// Applies filters to audio, sums filters, and blends with dryWet
-AudioBuffer<float> FormantFilter::filterAudio(AudioBuffer<float>& bufIn, float dryWet_)
+void FormantFilter::processBuffer(juce::AudioBuffer<float> &buf, float morph, float dW)
 {
-    int numSamps = bufIn.getNumSamples();
+    freqMorph         ( morph   );
+    filterAudioBuffer ( buf, dW );
+}
+
+
+
+/// Applies filters to audio, sums filters, and blends with dryWet
+juce::AudioBuffer<float> FormantFilter::filterAudio(juce::AudioBuffer<float> &bufIn, float dryWet_)
+{
+    auto* leftChan  = bufIn.getWritePointer ( 0 );
+    auto* rightChan = bufIn.getWritePointer ( 1 );
     
-    auto* leftChan  = bufIn.getWritePointer( 0 );
-    auto* rightChan = bufIn.getWritePointer( 1 );
+    juce::AudioBuffer<float> f1;
+    juce::AudioBuffer<float> f2;
+    juce::AudioBuffer<float> f3;
     
-    // Create filter buffers
-    AudioBuffer<float> f1;
-    AudioBuffer<float> f2;
-    AudioBuffer<float> f3;
-    
-    f1.clear();
-    f2.clear();
-    f3.clear();
-    
-    // Copy buffer to filter buffers
     f1.makeCopyOf ( bufIn );
     f2.makeCopyOf ( bufIn );
     f3.makeCopyOf ( bufIn );
@@ -92,44 +95,42 @@ AudioBuffer<float> FormantFilter::filterAudio(AudioBuffer<float>& bufIn, float d
     morphSmooth1.setTargetValue ( outFreqs[0] );
     morphSmooth2.setTargetValue ( outFreqs[1] );
     morphSmooth3.setTargetValue ( outFreqs[2] );
+    qSmooth1.setTargetValue     ( outQVals[0] );
+    qSmooth2.setTargetValue     ( outQVals[1] );
+    qSmooth3.setTargetValue     ( outQVals[2] );
     
-    qSmooth1.setTargetValue ( outQVals[0] );
-    qSmooth2.setTargetValue ( outQVals[1] );
-    qSmooth3.setTargetValue ( outQVals[2] );
+    dryWetSmooth.setTargetValue ( dryWet_ );
     
-    dryWetSmooth.setTargetValue( dryWet_ );
-    
-    for (int sample = 0; sample < numSamps; sample++)
+    for (int sample = 0; sample < bufIn.getNumSamples(); sample++)
     {
         filt1.setCutoffFrequency ( morphSmooth1.getNextValue() );
         filt2.setCutoffFrequency ( morphSmooth2.getNextValue() );
         filt3.setCutoffFrequency ( morphSmooth3.getNextValue() );
-        
-        filt1.setResonance ( qSmooth1.getNextValue() );
-        filt2.setResonance ( qSmooth2.getNextValue() );
-        filt3.setResonance ( qSmooth3.getNextValue() );
+        filt1.setResonance       ( qSmooth1.getNextValue() );
+        filt2.setResonance       ( qSmooth2.getNextValue() );
+        filt3.setResonance       ( qSmooth3.getNextValue() );
         
         float smoothedDW = dryWetSmooth.getNextValue();
         
-        // Sum the filter outputs per sample to buffer
-        leftChan[sample]  = dryWet.dryWetMixEqualPower( leftChan[sample],
-                                                        filt1.processSample ( 0, leftChan[sample]  ),           // 0 dBs
-                                                        smoothedDW )
-                          + dryWet.dryWetMixEqualPower( leftChan[sample],
-                                                        filt2.processSample ( 0, leftChan[sample]  ) * 0.178f,  // -15dB
-                                                        smoothedDW )
-                          + dryWet.dryWetMixEqualPower( leftChan[sample],
-                                                        filt3.processSample ( 0, leftChan[sample]  ) * 0.355f,  // -9dB
-                                                        smoothedDW );
-        rightChan[sample] = dryWet.dryWetMixEqualPower( rightChan[sample],
-                                                        filt1.processSample ( 1, rightChan[sample] ),           // 0 dBs
-                                                        smoothedDW)
-                          + dryWet.dryWetMixEqualPower( rightChan[sample],
-                                                        filt2.processSample ( 1, rightChan[sample] ) * 0.178f,  // -15dB
-                                                        smoothedDW)
-                          + dryWet.dryWetMixEqualPower( rightChan[sample],
-                                                        filt3.processSample ( 1, rightChan[sample] ) * 0.355f,  // -9dB
-                                                        smoothedDW );
+        leftChan[sample] = dryWet->dryWetMixEqualPowerBySample ( leftChan[sample],
+                                                                 filt1.processSample ( 0, leftChan[sample] ),           //   0 dB
+                                                                 smoothedDW )
+                         + dryWet->dryWetMixEqualPowerBySample ( leftChan[sample],
+                                                                 filt2.processSample ( 0, leftChan[sample] ) * 0.178f,  // -15 dB
+                                                                 smoothedDW )
+                         + dryWet->dryWetMixEqualPowerBySample ( leftChan[sample],
+                                                                 filt3.processSample ( 0, leftChan[sample] ) * 0.355f,  //  -9 dB
+                                                                 smoothedDW );
+        
+        rightChan[sample] = dryWet->dryWetMixEqualPowerBySample ( rightChan[sample],
+                                                                  filt1.processSample ( 0, rightChan[sample] ),
+                                                                  smoothedDW )
+                          + dryWet->dryWetMixEqualPowerBySample ( rightChan[sample],
+                                                                  filt2.processSample ( 0, rightChan[sample] ) * 0.178f,
+                                                                  smoothedDW )
+                          + dryWet->dryWetMixEqualPowerBySample ( rightChan[sample],
+                                                                  filt2.processSample ( 0, rightChan[sample]) * 0.355f,
+                                                                  smoothedDW );
     }
     
     filt1.snapToZero();
@@ -140,14 +141,72 @@ AudioBuffer<float> FormantFilter::filterAudio(AudioBuffer<float>& bufIn, float d
 }
 
 
+void FormantFilter::filterAudioBuffer(juce::AudioBuffer<float> &bufIn, float dryWet_)
+{
+    auto* leftChan  = bufIn.getWritePointer ( 0 );
+    auto* rightChan = bufIn.getWritePointer ( 1 );
+    
+    juce::AudioBuffer<float> f1;
+    juce::AudioBuffer<float> f2;
+    juce::AudioBuffer<float> f3;
+    
+    f1.makeCopyOf ( bufIn );
+    f2.makeCopyOf ( bufIn );
+    f3.makeCopyOf ( bufIn );
+    
+    morphSmooth1.setTargetValue ( outFreqs[0] );
+    morphSmooth2.setTargetValue ( outFreqs[1] );
+    morphSmooth3.setTargetValue ( outFreqs[2] );
+    qSmooth1.setTargetValue     ( outQVals[0] );
+    qSmooth2.setTargetValue     ( outQVals[1] );
+    qSmooth3.setTargetValue     ( outQVals[2] );
+    
+    dryWetSmooth.setTargetValue ( dryWet_ );
+    
+    for (int sample = 0; sample < bufIn.getNumSamples(); sample++)
+    {
+        filt1.setCutoffFrequency ( morphSmooth1.getNextValue() );
+        filt2.setCutoffFrequency ( morphSmooth2.getNextValue() );
+        filt3.setCutoffFrequency ( morphSmooth3.getNextValue() );
+        filt1.setResonance       ( qSmooth1.getNextValue() );
+        filt2.setResonance       ( qSmooth2.getNextValue() );
+        filt3.setResonance       ( qSmooth3.getNextValue() );
+        
+        float smoothedDW = dryWetSmooth.getNextValue();
+        
+        leftChan[sample] = dryWet->dryWetMixEqualPowerBySample ( leftChan[sample],
+                                                                 filt1.processSample ( 0, leftChan[sample] ),           //   0 dB
+                                                                 smoothedDW )
+                         + dryWet->dryWetMixEqualPowerBySample ( leftChan[sample],
+                                                                 filt2.processSample ( 0, leftChan[sample] ) * 0.178f,  // -15 dB
+                                                                 smoothedDW )
+                         + dryWet->dryWetMixEqualPowerBySample ( leftChan[sample],
+                                                                 filt3.processSample ( 0, leftChan[sample] ) * 0.355f,  //  -9 dB
+                                                                 smoothedDW );
+        
+        rightChan[sample] = dryWet->dryWetMixEqualPowerBySample ( rightChan[sample],
+                                                                  filt1.processSample ( 0, rightChan[sample] ),
+                                                                  smoothedDW )
+                          + dryWet->dryWetMixEqualPowerBySample ( rightChan[sample],
+                                                                  filt2.processSample ( 0, rightChan[sample] ) * 0.178f,
+                                                                  smoothedDW )
+                          + dryWet->dryWetMixEqualPowerBySample ( rightChan[sample],
+                                                                  filt2.processSample ( 0, rightChan[sample]) * 0.355f,
+                                                                  smoothedDW );
+    }
+    
+    filt1.snapToZero();
+    filt2.snapToZero();
+    filt3.snapToZero();
+}
+
+
 /// Morphs each formant frequency and Q to the next formant in the series.
 void FormantFilter::freqMorph(float morph)
 {
     // Morphs through the formant filter freqs
     for (int i = 0; i < 3; i++)
-    {
         freqMapping ( morph, i );
-    }
 }
 
 
@@ -155,64 +214,50 @@ void FormantFilter::freqMorph(float morph)
 /// Morphs each formant frequency and Q to the next formant in the series.
 void FormantFilter::freqMapping(float MV, int inc)
 {
-    switch ((int)MV)
+    switch (static_cast<int>(MV))
     {
-        case 0:
-            outFreqs[inc] = jmap ( MV, 0.0f, 1.0f, ow[inc],  oo[inc]  );
-            outQVals[inc] = jmap ( MV, 0.0f, 1.0f, owQ[inc], ooQ[inc] );
+        case 0 :
+            outFreqs[inc] = juce::jmap( MV, 0.0f, 1.0f, ow[inc],  oo[inc]  );
+            outQVals[inc] = juce::jmap( MV, 0.0f, 1.0f, owQ[inc], ooQ[inc] );
             break;
-        
-        case 1:
-            outFreqs[inc] = jmap ( MV, 1.0f, 2.0f, oo[inc],  uu[inc]  );
-            outQVals[inc] = jmap ( MV, 1.0f, 2.0f, ooQ[inc], uuQ[inc] );
+        case 1 :
+            outFreqs[inc] = juce::jmap( MV, 1.0f, 2.0f, oo[inc],  uu[inc]  );
+            outQVals[inc] = juce::jmap( MV, 1.0f, 2.0f, ooQ[inc], uuQ[inc] );
             break;
-            
-        case 2:
-            outFreqs[inc] = jmap ( MV, 2.0f, 3.0f, uu[inc],  ah[inc]  );
-            outQVals[inc] = jmap ( MV, 2.0f, 3.0f, uuQ[inc], ahQ[inc] );
+        case 2 :
+            outFreqs[inc] = juce::jmap( MV, 2.0f, 3.0f, uu[inc],  ah[inc]  );
+            outQVals[inc] = juce::jmap( MV, 2.0f, 3.0f, uuQ[inc], ahQ[inc] );
             break;
-            
-        case 3:
-            outFreqs[inc] = jmap ( MV, 3.0f, 4.0f, ah[inc],  uh[inc]  );
-            outQVals[inc] = jmap ( MV, 3.0f, 4.0f, ahQ[inc], uhQ[inc] );
+        case 3 :
+            outFreqs[inc] = juce::jmap( MV, 3.0f, 4.0f, ah[inc],  uh[inc]  );
+            outQVals[inc] = juce::jmap( MV, 3.0f, 4.0f, ahQ[inc], uhQ[inc] );
             break;
-            
-        case 4:
-            outFreqs[inc] = jmap ( MV, 4.0f, 5.0f, uh[inc],  er[inc]  );
-            outQVals[inc] = jmap ( MV, 4.0f, 5.0f, uhQ[inc], erQ[inc] );
+        case 4 :
+            outFreqs[inc] = juce::jmap( MV, 4.0f, 5.0f, uh[inc],  er[inc]  );
+            outQVals[inc] = juce::jmap( MV, 4.0f, 5.0f, uhQ[inc], erQ[inc] );
             break;
-            
-        case 5:
-            outFreqs[inc] = jmap ( MV, 5.0f, 6.0f, er[inc],  ae[inc]  );
-            outQVals[inc] = jmap ( MV, 5.0f, 6.0f, erQ[inc], aeQ[inc] );
+        case 5 :
+            outFreqs[inc] = juce::jmap( MV, 5.0f, 6.0f, er[inc],  ae[inc]  );
+            outQVals[inc] = juce::jmap( MV, 5.0f, 6.0f, erQ[inc], aeQ[inc] );
             break;
-            
-        case 6:
-            outFreqs[inc] = jmap ( MV, 6.0f, 7.0f, ae[inc],  eh[inc]  );
-            outQVals[inc] = jmap ( MV, 6.0f, 7.0f, aeQ[inc], ehQ[inc] );
+        case 6 :
+            outFreqs[inc] = juce::jmap( MV, 6.0f, 7.0f, ae[inc],  eh[inc]  );
+            outQVals[inc] = juce::jmap( MV, 6.0f, 7.0f, aeQ[inc], ehQ[inc] );
             break;
-            
-        case 7:
-            outFreqs[inc] = jmap ( MV, 7.0f, 8.0f, eh[inc],  ih[inc]  );
-            outQVals[inc] = jmap ( MV, 7.0f, 8.0f, ehQ[inc], ihQ[inc] );
+        case 7 :
+            outFreqs[inc] = juce::jmap( MV, 7.0f, 8.0f, eh[inc],  ih[inc]  );
+            outQVals[inc] = juce::jmap( MV, 7.0f, 8.0f, ehQ[inc], ihQ[inc] );
             break;
-            
-        case 8:
-            outFreqs[inc] = jmap ( MV, 8.0f, 9.0f, ih[inc],  iy[inc]  );
-            outQVals[inc] = jmap ( MV, 8.0f, 9.0f, ihQ[inc], iyQ[inc] );
+        case 8 :
+        case 9 :
+            outFreqs[inc] = juce::jmap( MV, 8.0f, 9.0f, ih[inc],  iy[inc]  );
+            outQVals[inc] = juce::jmap( MV, 8.0f, 9.0f, ihQ[inc], iyQ[inc] );
             break;
-        
-        case 9:
-            outFreqs[inc] = jmap ( MV, 8.0f, 9.0f, ih[inc],  iy[inc]  );
-            outQVals[inc] = jmap ( MV, 8.0f, 9.0f, ihQ[inc], iyQ[inc] );
-            break;
-            
         default:
             outFreqs[inc] = ow[inc];
             outQVals[inc] = owQ[inc];
             break;
     }
-    
 }
 
 

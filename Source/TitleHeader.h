@@ -25,18 +25,18 @@ public:
     void resized() override;
     
     /// Sets the background color
-    void setBackgroundColor(Colour& bg);
+    void setBackgroundColor(juce::Colour& bg);
     
     /// Sets the textColor
-    void setTextColor(Colour& textC);
+    void setTextColor(juce::Colour& textC);
     
 protected:
-    Colour backgroundColor;
-    Colour textColor;
+    juce::Colour backgroundColor;
+    juce::Colour textColor;
 
 private:
-    Rectangle<int> fullumMusicArea;
-    Rectangle<int> theClockArea;
+    juce::Rectangle<int> fullumMusicArea;
+    juce::Rectangle<int> theClockArea;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TitleHeader)
 };
@@ -52,8 +52,8 @@ public:
     void paint(juce::Graphics&) override;
     void resized() override;
 private:
-    Rectangle<int> versionArea;
-    Rectangle<int> urlArea;
+    juce::Rectangle<int> versionArea;
+    juce::Rectangle<int> urlArea;
 };
 
 

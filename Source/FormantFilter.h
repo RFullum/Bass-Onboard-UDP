@@ -20,13 +20,15 @@ public:
     ~FormantFilter();
     
     /// Pass in a ProcessSpec to prepare the filters
-    void prepare(dsp::ProcessSpec& PS);
+    void prepare(juce::dsp::ProcessSpec& PS);
     
     /**
      Takes the AudioBuffer, formant morph value (0.0f to 9.0f), and dry/wet (0.0 to 1.0f)
      and returns the formant filtered AudioBuffer
      */
-    AudioBuffer<float> process(AudioBuffer<float>& buf, float morph, float dW);
+    juce::AudioBuffer<float> process(juce::AudioBuffer<float> &buf, float morph, float dW);
+    
+    void processBuffer(juce::AudioBuffer<float> &buf, float morph, float dW);
     
     
 private:
@@ -40,24 +42,26 @@ private:
     void setQVals();
     
     /// Applies filters to audio, sums filters, and blends with dryWet
-    AudioBuffer<float> filterAudio(AudioBuffer<float>& bufIn, float dryWet_);
+    juce::AudioBuffer<float> filterAudio(juce::AudioBuffer<float> &bufIn, float dryWet_);
+    
+    void filterAudioBuffer(juce::AudioBuffer<float> &bufIn, float dryWet_);
     
     
     // Filter Instances
-    dsp::StateVariableTPTFilter<float> filt1;
-    dsp::StateVariableTPTFilter<float> filt2;
-    dsp::StateVariableTPTFilter<float> filt3;
+    juce::dsp::StateVariableTPTFilter<float> filt1;
+    juce::dsp::StateVariableTPTFilter<float> filt2;
+    juce::dsp::StateVariableTPTFilter<float> filt3;
     
-    DryWet dryWet;
+    std::unique_ptr<DryWet> dryWet;
     
     // Member Variables
-    SmoothedValue<float> morphSmooth1;
-    SmoothedValue<float> morphSmooth2;
-    SmoothedValue<float> morphSmooth3;
-    SmoothedValue<float> qSmooth1;
-    SmoothedValue<float> qSmooth2;
-    SmoothedValue<float> qSmooth3;
-    SmoothedValue<float> dryWetSmooth;
+    juce::SmoothedValue<float> morphSmooth1;
+    juce::SmoothedValue<float> morphSmooth2;
+    juce::SmoothedValue<float> morphSmooth3;
+    juce::SmoothedValue<float> qSmooth1;
+    juce::SmoothedValue<float> qSmooth2;
+    juce::SmoothedValue<float> qSmooth3;
+    juce::SmoothedValue<float> dryWetSmooth;
       
     // Formant Frequencies
     float ow[3] = {570.0f, 840.0f,  2410.0f};
